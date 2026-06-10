@@ -112,7 +112,34 @@ const KEY = 'stanley_quiniela_v2';
 const DEFAULT = {rank:{}, thirds:[], scores:{}, adv:{}, design:false, active:'grupos'};
 let state = load();
 function load(){ try{ return Object.assign({}, DEFAULT, JSON.parse(localStorage.getItem(KEY))||{}); }catch(e){ return Object.assign({},DEFAULT); } }
-function save(){ localStorage.setItem(KEY, JSON.stringify(state)); }
+function save(){ localStorage.setItem(KEY, JSON.stringify(state)); scheduleCloud(); }
+
+/* ---- jugador + guardado en la nube (Google Sheets vía Apps Script) ---- */
+const APPS_URL = (window.STANLEY||{}).APPS_SCRIPT_URL || '';
+function getPlayer(){ try{ return JSON.parse(localStorage.getItem('stanley_player')); }catch(e){ return null; } }
+function setCloud(s){
+  const el=document.getElementById('cloud'); if(!el) return;
+  const map={pend:'☁️ Cambios sin guardar',saving:'☁️ Guardando…',ok:'✅ Guardado',
+             err:'⚠️ Sin conexión · queda local',local:'💾 Local'};
+  el.textContent=map[s]||''; el.dataset.s=s||'';
+}
+let _saveTimer=null;
+function scheduleCloud(){
+  if(!getPlayer() || !APPS_URL){ setCloud('local'); return; }
+  setCloud('pend'); clearTimeout(_saveTimer); _saveTimer=setTimeout(cloudSave, 2500);
+}
+function cloudSave(){
+  const p=getPlayer(); if(!p || !APPS_URL) return;
+  setCloud('saving');
+  const fin=resultOf(104);
+  const nm=id=> id!=null?team(id).name:'';
+  const body={ action:'savePicks', id:p.id, nombre:p.nombre, documento:p.documento,
+    avance:progressStats().pct, campeon:nm(getWinner(104)),
+    finalista:[fin.A,fin.B].map(nm).filter(Boolean).join(' / '), tercero:nm(getWinner(103)),
+    rank:state.rank, thirds:state.thirds, adv:state.adv, scores:state.scores };
+  fetch(APPS_URL, { method:'POST', body:JSON.stringify(body) })
+    .then(()=>setCloud('ok')).catch(()=>setCloud('err'));
+}
 
 const team = id => (id==null?null:TEAMS[id]);
 const fmtFecha = iso => new Intl.DateTimeFormat('es-BO',
@@ -551,6 +578,9 @@ document.getElementById('btn-resumen').addEventListener('click', openResumen);
 document.getElementById('btn-share').addEventListener('click', share);
 
 (function init(){
+  const p=getPlayer(); const nameEl=document.getElementById('player-name');
+  if(p){ nameEl.textContent='Hola, '+p.nombre+' · tus pronósticos se guardan'+(APPS_URL?' en la nube':' (local)'); setCloud(APPS_URL?'ok':'local'); }
+  else { nameEl.innerHTML='Modo invitado — <a href="index.html" style="color:var(--tan);font-weight:700">inscribite</a> para guardar tus pronósticos'; setCloud('local'); }
   document.getElementById('design-mode').checked=!!state.design;
   STAGES.forEach(s=>_doneFlag[s.id]=isDone(s.id));   // evita festejar al cargar
   _allDoneShown = progressStats().pct===100;

@@ -1,12 +1,7 @@
-/* ====== CONFIG (editar estos valores) ====== */
-const CONFIG = {
-  // URL del Web App de Apps Script o, más adelante, se reemplaza por Supabase.
-  APPS_SCRIPT_URL: "",
-  // Fecha/hora de cierre de inscripciones (ISO, hora local Bolivia -04:00)
-  DEADLINE: "2026-06-11T12:00:00-04:00",
-  // Link de invitación a la comunidad de WhatsApp
-  WHATSAPP_INVITE_URL: "https://chat.whatsapp.com/"
-};
+/* ====== CONFIG (viene de config.js → window.STANLEY) ====== */
+const CONFIG = window.STANLEY || { APPS_SCRIPT_URL:"", DEADLINE:"2026-06-11T12:00:00-04:00", WHATSAPP_INVITE_URL:"https://chat.whatsapp.com/" };
+const newId = () => (window.crypto && crypto.randomUUID) ? crypto.randomUUID()
+  : 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2);
 
 /* ====== archivo comprobante ====== */
 const fileInput = document.getElementById("comprobante");
@@ -58,7 +53,15 @@ form.addEventListener("submit", async (e) => {
   if (!fileData) return showError("Subí tu comprobante de compra.");
   if (!document.getElementById("terminos").checked) return showError("Tenés que aceptar las bases y condiciones.");
 
+  const player = {
+    id: newId(),
+    nombre: form.nombre.value.trim(),
+    documento: form.documento.value.trim(),
+    email: form.email.value.trim()
+  };
   const payload = {
+    action: "register",
+    id: player.id,
     nombre: form.nombre.value.trim(),
     apellido: form.apellido.value.trim(),
     documento: form.documento.value.trim(),
@@ -72,18 +75,15 @@ form.addEventListener("submit", async (e) => {
   submitBtn.disabled = true; submitBtn.textContent = "Enviando…";
   try {
     if (!CONFIG.APPS_SCRIPT_URL) {
-      // modo demo (sin backend conectado): simula éxito
-      await new Promise(r => setTimeout(r, 600));
-      console.warn("APPS_SCRIPT_URL vacío: registro NO guardado (modo demo).", payload);
+      // modo demo (sin backend conectado): simula éxito, guarda jugador local
+      await new Promise(r => setTimeout(r, 500));
+      console.warn("APPS_SCRIPT_URL vacío: registro NO enviado a la nube (modo demo).", payload);
     } else {
-      const res = await fetch(CONFIG.APPS_SCRIPT_URL, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(payload)
-      });
-      const out = await res.json();
-      if (!out.ok) throw new Error(out.error || "Error del servidor");
+      // text/plain → request "simple" (sin preflight CORS a Apps Script).
+      // El id lo generamos en el cliente, así que no dependemos de leer la respuesta.
+      await fetch(CONFIG.APPS_SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
     }
+    localStorage.setItem("stanley_player", JSON.stringify(player));   // vincula la quiniela
     showConfirm();
   } catch (err) {
     submitBtn.disabled = false; submitBtn.textContent = "Inscribirme y armar mi quiniela";
