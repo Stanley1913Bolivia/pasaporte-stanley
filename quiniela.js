@@ -119,6 +119,47 @@ const fmtFecha = iso => new Intl.DateTimeFormat('es-BO',
   {weekday:'short',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit',timeZone:'America/La_Paz'}
 ).format(new Date(iso)).replace(',', '');
 
+/* tiempo relativo "en 3d 5h" */
+function relTime(iso){
+  const diff=new Date(iso).getTime()-Date.now();
+  if(diff<=0) return 'cerrado';
+  const d=Math.floor(diff/864e5), h=Math.floor((diff%864e5)/36e5), m=Math.floor((diff%36e5)/6e4);
+  if(d>0) return `en ${d}d ${h}h`;
+  if(h>0) return `en ${h}h ${m}m`;
+  return `en ${m}m`;
+}
+
+/* toast (aviso flotante) */
+function toast(msg,type){
+  let t=document.getElementById('toast');
+  if(!t){ t=document.createElement('div'); t.id='toast'; document.body.appendChild(t); }
+  t.textContent=msg; t.className='toast show'+(type?' '+type:'');
+  clearTimeout(toast._t); toast._t=setTimeout(()=>{ t.className='toast'; },2800);
+}
+
+/* progreso + próximo cierre, por etapa */
+function stageMeta(id){
+  if(id==='grupos'){
+    const gc=GLETTERS.filter(g=>rankTeam(g,1)!=null&&rankTeam(g,2)!=null).length;
+    const tn=state.thirds.length;
+    return `<span class="chip-prog${gc===12?' ok':''}">Grupos ${gc}/12</span>`
+         + `<span class="chip-prog${tn===8?' ok':''}">Terceros ${tn}/8</span>`;
+  }
+  const nums=STAGE_MATCHES[id]; const chosen=nums.filter(n=>state.adv[n]).length;
+  let html=`<span class="chip-prog${chosen===nums.length?' ok':''}">Elegidos ${chosen}/${nums.length}</span>`;
+  const up=nums.map(n=>({n,t:new Date(MATCHES[n].d).getTime()})).filter(x=>x.t>Date.now()).sort((a,b)=>a.t-b.t)[0];
+  if(up) html+=`<span class="chip-prog">⏱ Cierra P${up.n} ${relTime(MATCHES[up.n].d)}</span>`;
+  return html;
+}
+
+/* festeja cuando una etapa se completa (una sola vez) */
+const _doneFlag={};
+function notifyIfComplete(id){
+  const d=isDone(id);
+  if(d && !_doneFlag[id]){ _doneFlag[id]=true; const s=STAGES.find(x=>x.id===id); toast(`🎉 ¡${s.title} completa!`,'ok'); }
+  else if(!d){ _doneFlag[id]=false; }
+}
+
 /* ---- resolución de equipos ---- */
 function rankTeam(g, r){
   const m = state.rank[g]||{};
@@ -183,7 +224,8 @@ function renderStage(id){
   wrap.className='stage active';
   wrap.innerHTML = `<div class="stage__head">
       <span class="stage__kicker">${s.etapa}</span>
-      <h2>${s.title}</h2><p>${s.lead}</p></div>`;
+      <h2>${s.title}</h2><p>${s.lead}</p>
+      <div class="stage__meta">${stageMeta(id)}</div></div>`;
   if(id==='grupos'){ wrap.appendChild(renderGroups()); wrap.appendChild(renderThirds()); }
   else { wrap.appendChild(renderRound(id)); }
   wrap.appendChild(stageNav(id));
@@ -196,12 +238,14 @@ function renderGroups(){
   GLETTERS.forEach(g=>{
     const card=document.createElement('div'); card.className='group';
     card.innerHTML=`<div class="group__head"><h4>Grupo ${g}</h4><span class="group__hint">1.º · 2.º clasifican · 3.º repechaje</span></div>`;
+    const rk=state.rank[g]||{}; const rankedCount=Object.keys(rk).length;
     GROUPS[g].forEach(id=>{
-      const t=team(id); const r=(state.rank[g]||{})[id];
+      const t=team(id); const r=rk[id];
+      const out=!r && rankedCount>=3;        // marcados los 3 → el 4.º queda eliminado
       const row=document.createElement('div');
-      row.className='grow'+(r?(' r'+r):'');
+      row.className='grow'+(r?(' r'+r):'')+(out?' out':'');
       row.innerHTML=`${flagTag(t)}<span class="gname">${t.name}</span>
-        <span class="grow__rank">${r?r+'°':''}</span>`;
+        <span class="grow__rank">${r?r+'°':(out?'✗':'')}</span>`;
       row.onclick=()=>cycleRank(g,id);
       card.appendChild(row);
     });
@@ -220,7 +264,7 @@ function cycleRank(g,id){
     if(!free) return;
     m[id]=free;
   }
-  save(); renderStepper(); renderStage('grupos');
+  save(); notifyIfComplete('grupos'); renderStepper(); renderStage('grupos');
 }
 function renderThirds(){
   const box=document.createElement('div'); box.className='thirds';
@@ -246,7 +290,7 @@ function renderThirds(){
       const i=state.thirds.indexOf(id);
       if(i>=0) state.thirds.splice(i,1);
       else { if(state.thirds.length>=8) return; state.thirds.push(id); }
-      save(); renderStepper(); renderStage('grupos');
+      save(); notifyIfComplete('grupos'); renderStepper(); renderStage('grupos');
     };
     grid.appendChild(chip);
   });
@@ -316,6 +360,7 @@ function chooseAdv(key,slot,num){
   if(prev && prev!==slot) delete state.scores[num];   // marcador viejo pudo quedar contradictorio
   save();
   refreshCard(key,num); renderStepper();
+  notifyIfComplete(MATCHES[num].e==='tercer'?'final':MATCHES[num].e);
   // (el modal de marcador NO se abre solo: lo abre el usuario con el botón 🎯)
 }
 function refreshCard(key,num){
@@ -384,7 +429,11 @@ function stageNav(id){
   nav.innerHTML = (prev?`<button class="btn" data-go="${prev.id}">← ${prev.short}</button>`:'<span class="spacer"></span>')
     + '<span class="spacer"></span>'
     + (next?`<button class="btn" data-go="${next.id}">${next.short} →</button>`:'');
-  nav.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>goto(b.dataset.go));
+  nav.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{
+    const fwd = order.indexOf(b.dataset.go) > i;
+    if(fwd && !isDone(id)) toast(`Te faltan datos en ${STAGES[i].title} — podés completarlos luego`,'warn');
+    goto(b.dataset.go);
+  });
   return nav;
 }
 
@@ -400,6 +449,7 @@ document.getElementById('design-mode').addEventListener('change', e=>{
 
 (function init(){
   document.getElementById('design-mode').checked=!!state.design;
+  STAGES.forEach(s=>_doneFlag[s.id]=isDone(s.id));   // evita festejar al cargar
   renderStepper();
   renderStage(state.active);
 })();

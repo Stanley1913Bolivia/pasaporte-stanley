@@ -64,6 +64,25 @@
 .grow.r2 .grow__rank{background:var(--green-2);color:#fff}
 .grow.r3{background:rgba(181,150,119,.1)}
 .grow.r3 .grow__rank{background:var(--tan);color:#fff}
+.grow.out{background:rgba(218,41,28,.06)}
+.grow.out .gname{color:#b3261e}
+.grow.out .flagimg{opacity:.55;filter:grayscale(.4)}
+.grow.out .grow__rank{background:var(--bo-red);color:#fff}
+
+/* progreso por etapa */
+.stage__meta{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+.chip-prog{font-family:'Montserrat',sans-serif;font-weight:700;font-size:12px;padding:6px 13px;border-radius:999px;
+  background:#fff;border:1.5px solid var(--line-soft);color:var(--text)}
+.chip-prog.ok{background:var(--green);border-color:var(--green);color:#fff}
+
+/* toast */
+#toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);z-index:200;
+  background:var(--ink);color:#fff;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;
+  padding:12px 20px;border-radius:999px;box-shadow:0 10px 30px rgba(0,0,0,.28);opacity:0;pointer-events:none;
+  transition:opacity .2s,transform .2s;max-width:90vw;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.ok{background:var(--green)}
+#toast.warn{background:var(--tan-dark)}
 
 /* selector de mejores terceros */
 .thirds{margin-top:30px;background:#fff;border:1px solid var(--line-soft);border-radius:14px;padding:22px}
