@@ -306,17 +306,17 @@ function matchFoot(key,num,aI,bI,locked){
   btn.className='scorebtn'+(hasScore?' set':'');
   btn.innerHTML = hasScore ? `🎯 Marcador ${sc.a}–${sc.b} <small>editar</small>`
                            : `🎯 Adivinar marcador <small>+ puntos extra</small>`;
-  btn.onclick=()=>openScoreModal(key,num,false);
+  btn.onclick=()=>openScoreModal(key,num);
   foot.appendChild(btn);
   return foot;
 }
 function chooseAdv(key,slot,num){
   const prev=state.adv[num];
   state.adv[num]=slot;
-  if(prev && prev!==slot) delete state.scores[num];
+  if(prev && prev!==slot) delete state.scores[num];   // marcador viejo pudo quedar contradictorio
   save();
   refreshCard(key,num); renderStepper();
-  if(prev!==slot && !state.scores[num]) openScoreModal(key,num,true);
+  // (el modal de marcador NO se abre solo: lo abre el usuario con el botón 🎯)
 }
 function refreshCard(key,num){
   const old=document.querySelector(`.match[data-key="${key}"]`);
@@ -325,7 +325,7 @@ function refreshCard(key,num){
 
 /* ---- modal de marcador (puntos extra) ---- */
 function closeModal(){ const m=document.getElementById('modal'); if(m){m.hidden=true; document.getElementById('modal-body').innerHTML='';} }
-function openScoreModal(key,num,offer){
+function openScoreModal(key,num){
   const def=MATCHES[num];
   const aI=slotInfo(def.a), bI=slotInfo(def.b);
   if(aI.id==null||bI.id==null) return;
@@ -333,10 +333,11 @@ function openScoreModal(key,num,offer){
   const adv=state.adv[num]; if(!adv) return;
   const advTeam = adv==='a'?A:B;
   const sc=state.scores[num]||{};
+  const hasScore = sc.a!=null && sc.b!=null;
   const body=document.getElementById('modal-body');
   body.innerHTML=`
-    <h3 class="modal__h">⚽ ¡Avanza ${advTeam.name}!</h3>
-    <p class="modal__p">${offer?'¿Querés sumar <b>puntos extra</b> adivinando el marcador exacto? Es opcional.':'Editá tu marcador para los puntos extra.'}</p>
+    <h3 class="modal__h">🎯 Puntos extra</h3>
+    <p class="modal__p">${hasScore?'Editá tu marcador para los puntos extra.':'<b>Opcional:</b> adiviná el marcador exacto y sumá puntos extra. Avanza '+advTeam.name+'.'}</p>
     <div class="modal__match">
       <div class="ms-row${adv==='a'?' adv':''}"><span class="mname">${flagTag(A)} ${A.name}</span>
         <input class="score" type="number" min="0" max="99" inputmode="numeric" id="ms-a" value="${sc.a!=null?sc.a:''}"></div>
