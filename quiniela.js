@@ -47,7 +47,7 @@ const STAGES = [
   {id:'grupos', n:1, etapa:'Etapa 1', title:'Fase de grupos',  short:'Grupos',
    lead:'En cada grupo ordená 1.º, 2.º y 3.º (tocá cada equipo). Los dos primeros clasifican; después elegí los 8 mejores terceros.', locked:false},
   {id:'r32', n:2, etapa:'Etapa 2', title:'Dieciseisavos', short:'16avos', count:16, prev:null,
-   lead:'Predecí el marcador de cada partido. El ganador avanza solo a octavos.', locked:false},
+   lead:'Elegí quién avanza en cada llave (un toque). Después, si querés, sumá puntos extra adivinando el marcador.', locked:false},
   {id:'r16', n:3, etapa:'Etapa 3', title:'Octavos de final', short:'Octavos', count:8, prev:'r32',
    lead:'Se habilita cuando se definan los dieciseisavos.', locked:true},
   {id:'qf',  n:4, etapa:'Etapa 4', title:'Cuartos de final', short:'Cuartos', count:4, prev:'r16',
@@ -55,13 +55,13 @@ const STAGES = [
   {id:'sf',  n:5, etapa:'Etapa 5', title:'Semifinales', short:'Semis', count:2, prev:'qf',
    lead:'Se habilita cuando se definan los cuartos.', locked:true},
   {id:'final', n:6, etapa:'Etapa 6', title:'La final', short:'Final', count:1, prev:'sf',
-   lead:'Marcador de la final y del partido por el 3.er puesto.', locked:true}
+   lead:'Elegí al campeón y al 3.er puesto. Sumá puntos extra con los marcadores.', locked:true}
 ];
 const ROUND_ORDER = ['r32','r16','qf','sf','final'];
 
 /* ---- estado ---- */
 const KEY = 'stanley_quiniela_v1';
-const DEFAULT = {rank:{}, thirds:[], scores:{}, pen:{}, design:false, active:'grupos'};
+const DEFAULT = {rank:{}, thirds:[], scores:{}, adv:{}, design:false, active:'grupos'};
 let state = load();
 function load(){ try{ return Object.assign({}, DEFAULT, JSON.parse(localStorage.getItem(KEY))||{}); }catch(e){ return Object.assign({},DEFAULT); } }
 function save(){ localStorage.setItem(KEY, JSON.stringify(state)); }
@@ -95,14 +95,11 @@ function slotInfo(slot){
 }
 function resultOf(round,m){
   const key = round+'-'+m;
-  const sc = state.scores[key];
   const defs = matchDefs(round)[m];
   const A = slotInfo(defs[0]).id, B = slotInfo(defs[1]).id;
-  if(A==null||B==null||!sc||sc.a==null||sc.b==null) return {A,B,win:null,lose:null};
-  let win,lose;
-  if(sc.a>sc.b){win=A;lose=B;}
-  else if(sc.b>sc.a){win=B;lose=A;}
-  else { const p=state.pen[key]; if(!p) return {A,B,win:null,lose:null}; win=p==='a'?A:B; lose=p==='a'?B:A; }
+  const adv = state.adv[key];                 // quién avanza = decide la cascada
+  if(A==null||B==null||!adv) return {A,B,win:null,lose:null};
+  const win = adv==='a'?A:B, lose = adv==='a'?B:A;
   return {A,B,win,lose};
 }
 const getWinner = (round,m)=> resultOf(round,m).win;
@@ -249,62 +246,109 @@ function renderRound(round){
 
 function matchCard(round,m,def){
   const key=round+'-'+m;
-  const sc=state.scores[key]||{};
   const aI=slotInfo(def[0]), bI=slotInfo(def[1]);
   const res=resultOf(round,m);
   const card=document.createElement('div'); card.className='match'; card.dataset.key=key;
   card.innerHTML=`<div class="match__head"><span>Partido ${m+1}</span><span class="mdate">Fecha por confirmar</span></div>`;
-
-  card.appendChild(teamRow(key,'a',aI,res.win));
-  card.appendChild(teamRow(key,'b',bI,res.win));
-
-  // fila de penales (desempate) — visible solo si empate con ambos equipos definidos
-  const pen=document.createElement('div'); pen.className='match__pen'; pen.dataset.pen=key;
-  pen.innerHTML=`<span>Empate → ¿quién avanza?</span>
-    <button type="button" class="pbtn${state.pen[key]==='a'?' sel':''}" data-p="a">${aI.id!=null?team(aI.id).name:aI.label}</button>
-    <button type="button" class="pbtn${state.pen[key]==='b'?' sel':''}" data-p="b">${bI.id!=null?team(bI.id).name:bI.label}</button>`;
-  pen.querySelectorAll('.pbtn').forEach(btn=>btn.onclick=()=>{
-    state.pen[key]=btn.dataset.p; save();
-    refreshMatch(card,round,m,def);
-    renderStepper();
-  });
-  card.appendChild(pen);
-  togglePen(pen, round, m, def);
+  card.appendChild(advRow(key,'a',aI,res.win,round,m));
+  card.appendChild(advRow(key,'b',bI,res.win,round,m));
+  card.appendChild(matchFoot(key,round,m,aI,bI));
   return card;
 }
 
-function teamRow(key,slot,info,winId){
+/* fila: tocar para elegir quién AVANZA (decide la cascada) */
+function advRow(key,slot,info,winId,round,m){
   const row=document.createElement('div');
   const known=info.id!=null;
   const isWin = known && winId===info.id;
-  row.className='mteam'+(isWin?' win':'');
+  row.className='mteam'+(known?' pick':' tbd-row')+(isWin?' win':'');
   row.dataset.slot=slot;
-  const name = known ? `<span class="mname">${flagTag(team(info.id))} ${team(info.id).name}</span>`
-                     : `<span class="mname tbd">${info.label}</span>`;
-  const sc=state.scores[key]||{};
-  const val = sc[slot]!=null ? sc[slot] : '';
-  row.innerHTML = `${name}
-    <input class="score" type="number" min="0" max="99" inputmode="numeric"
-      value="${val}" ${known?'':'disabled'} aria-label="Goles" />`;
+  if(known){
+    const t=team(info.id);
+    row.innerHTML=`<span class="mname">${flagTag(t)} ${t.name}</span>
+      <span class="advflag">${isWin?'✓ avanza':'avanza'}</span>`;
+    row.onclick=()=>chooseAdv(key,slot,round,m);
+  } else {
+    row.innerHTML=`<span class="mname tbd">${info.label}</span>`;
+  }
   return row;
 }
 
-function togglePen(penEl, round, m, def){
-  const key=round+'-'+m; const sc=state.scores[key]||{};
-  const aI=slotInfo(def[0]), bI=slotInfo(def[1]);
-  const tie = aI.id!=null && bI.id!=null && sc.a!=null && sc.b!=null && sc.a===sc.b;
-  penEl.style.display = tie ? 'flex' : 'none';
+/* pie de la tarjeta: estado + acceso al marcador (puntos extra) */
+function matchFoot(key,round,m,aI,bI){
+  const foot=document.createElement('div'); foot.className='match__foot';
+  if(aI.id==null||bI.id==null){
+    foot.innerHTML=`<span class="foot-hint">${round==='r32'?'Completá la fase de grupos':'Se define con la ronda anterior'}</span>`;
+    return foot; }
+  const adv=state.adv[key]; const sc=state.scores[key];
+  if(!adv){ foot.innerHTML=`<span class="foot-hint">👆 Tocá quién avanza</span>`; return foot; }
+  const hasScore = sc && sc.a!=null && sc.b!=null;
+  const btn=document.createElement('button');
+  btn.className='scorebtn'+(hasScore?' set':'');
+  btn.innerHTML = hasScore ? `🎯 Marcador ${sc.a}–${sc.b} <small>editar</small>`
+                           : `🎯 Adivinar marcador <small>+ puntos extra</small>`;
+  btn.onclick=()=>openScoreModal(key,round,m,false);
+  foot.appendChild(btn);
+  return foot;
 }
 
-/* actualiza una tarjeta en vivo (sin reconstruir inputs → no pierde foco) */
-function refreshMatch(card,round,m,def){
-  const res=resultOf(round,m);
-  ['a','b'].forEach(slot=>{
-    const info=slotInfo(def[slot==='a'?0:1]);
-    const row=card.querySelector(`.mteam[data-slot="${slot}"]`);
-    row.classList.toggle('win', info.id!=null && res.win===info.id);
-  });
-  togglePen(card.querySelector('.match__pen'), round, m, def);
+function chooseAdv(key,slot,round,m){
+  const prev=state.adv[key];
+  state.adv[key]=slot;
+  // si cambió el que avanza, el marcador anterior pudo quedar contradictorio → se descarta
+  if(prev && prev!==slot) delete state.scores[key];
+  save();
+  refreshCard(key,round,m); renderStepper();
+  // recién elegido y sin marcador → ofrecer adivinarlo (puntos extra)
+  if(prev!==slot && !state.scores[key]) openScoreModal(key,round,m,true);
+}
+
+function refreshCard(key,round,m){
+  const old=document.querySelector(`.match[data-key="${key}"]`);
+  if(old) old.replaceWith(matchCard(round,m,matchDefs(round)[m]));
+}
+
+/* ---- modal de marcador (puntos extra) ---- */
+function closeModal(){ const m=document.getElementById('modal'); if(m){m.hidden=true; document.getElementById('modal-body').innerHTML='';} }
+function openScoreModal(key,round,m,offer){
+  const def=matchDefs(round)[m];
+  const aI=slotInfo(def[0]), bI=slotInfo(def[1]);
+  if(aI.id==null||bI.id==null) return;
+  const A=team(aI.id), B=team(bI.id);
+  const adv=state.adv[key]; if(!adv) return;
+  const advTeam = adv==='a'?A:B;
+  const sc=state.scores[key]||{};
+  const body=document.getElementById('modal-body');
+  body.innerHTML=`
+    <h3 class="modal__h">⚽ ¡Avanza ${advTeam.name}!</h3>
+    <p class="modal__p">${offer?'¿Querés sumar <b>puntos extra</b> adivinando el marcador exacto? Es opcional.':'Editá tu marcador para los puntos extra.'}</p>
+    <div class="modal__match">
+      <div class="ms-row${adv==='a'?' adv':''}"><span class="mname">${flagTag(A)} ${A.name}</span>
+        <input class="score" type="number" min="0" max="99" inputmode="numeric" id="ms-a" value="${sc.a!=null?sc.a:''}"></div>
+      <div class="ms-row${adv==='b'?' adv':''}"><span class="mname">${flagTag(B)} ${B.name}</span>
+        <input class="score" type="number" min="0" max="99" inputmode="numeric" id="ms-b" value="${sc.b!=null?sc.b:''}"></div>
+    </div>
+    <p class="modal__note">📌 Si empatan, <b>${advTeam.name}</b> avanza por penales (según tu decisión).</p>
+    <p class="modal__warn" id="ms-warn" hidden></p>
+    <div class="modal__actions">
+      ${sc.a!=null
+        ? '<button class="btn btn--sm" id="ms-clear" style="background:#9aa2a6">Quitar marcador</button>'
+        : '<button class="btn btn--sm" id="ms-skip" style="background:#aab">Más tarde</button>'}
+      <button class="btn btn--sm" id="ms-save">Guardar</button>
+    </div>`;
+  document.getElementById('modal').hidden=false;
+  const warn=body.querySelector('#ms-warn');
+  const skip=body.querySelector('#ms-skip'); if(skip) skip.onclick=closeModal;
+  const clr=body.querySelector('#ms-clear'); if(clr) clr.onclick=()=>{ delete state.scores[key]; save(); refreshCard(key,round,m); renderStepper(); closeModal(); };
+  body.querySelector('#ms-save').onclick=()=>{
+    const a=parseInt(body.querySelector('#ms-a').value,10);
+    const b=parseInt(body.querySelector('#ms-b').value,10);
+    if(isNaN(a)||isNaN(b)){ warn.textContent='Completá ambos marcadores o tocá “Más tarde”.'; warn.hidden=false; return; }
+    const advG=adv==='a'?a:b, rivG=adv==='a'?b:a;
+    if(rivG>advG){ warn.textContent=`El que no avanza no puede ganar: ${advTeam.name} debe ir igual o arriba (un empate se va a penales).`; warn.hidden=false; return; }
+    state.scores[key]={a:Math.max(0,Math.min(99,a)), b:Math.max(0,Math.min(99,b))};
+    save(); refreshCard(key,round,m); renderStepper(); closeModal();
+  };
 }
 
 function thirdPlaceCard(){
@@ -356,20 +400,10 @@ matchDefs=function(round){ return matchDefsCache[round]||_matchDefs(round); };
 /* =========================================================
    eventos globales (scores) + init
    ========================================================= */
-stagesEl.addEventListener('input', e=>{
-  const inp=e.target.closest('.score'); if(!inp) return;
-  const row=inp.closest('.mteam'); const card=inp.closest('.match');
-  const key=card.dataset.key; const slot=row.dataset.slot;
-  let v=parseInt(inp.value,10);
-  state.scores[key]=state.scores[key]||{};
-  if(isNaN(v)||inp.value===''){ delete state.scores[key][slot]; }
-  else { v=Math.max(0,Math.min(99,v)); state.scores[key][slot]=v; }
-  save();
-  const round=key.split('-').slice(0,-1).join('-'); // 'r32' etc (final, third sin guion interno)
-  const m=Number(key.split('-').pop());
-  refreshMatch(card,round,m,matchDefs(round)[m]);
-  renderStepper();
-});
+// cierre del modal (botón × y click fuera de la tarjeta)
+document.getElementById('modal-x').addEventListener('click', closeModal);
+document.getElementById('modal').addEventListener('click', e=>{ if(e.target.id==='modal') closeModal(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
 
 document.getElementById('design-mode').addEventListener('change', e=>{
   state.design=e.target.checked; save();
