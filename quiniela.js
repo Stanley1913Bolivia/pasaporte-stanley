@@ -128,15 +128,29 @@ function scheduleCloud(){
   if(!getPlayer() || !APPS_URL){ setCloud('local'); return; }
   setCloud('pend'); clearTimeout(_saveTimer); _saveTimer=setTimeout(cloudSave, 2500);
 }
+const _nm = id => id!=null ? team(id).name : '';
+function buildPronostico(){
+  const clasificados=[];
+  GLETTERS.forEach(g=>{ const a=rankTeam(g,1), b=rankTeam(g,2);
+    if(a!=null) clasificados.push({e:_nm(a),p:1});
+    if(b!=null) clasificados.push({e:_nm(b),p:2}); });
+  state.thirds.forEach(id=> clasificados.push({e:_nm(id),p:3}));
+  const llaves={};
+  Object.keys(MATCHES).forEach(n=>{ const r=resultOf(n); if(r.win==null) return;
+    const adv=state.adv[n], sc=state.scores[n]||{};
+    const gf=adv==='a'?sc.a:sc.b, gc=adv==='a'?sc.b:sc.a;
+    llaves[n]={av:_nm(r.win), gf:(gf!=null?gf:''), gc:(gc!=null?gc:'')};
+  });
+  return {clasificados, llaves};
+}
 function cloudSave(){
   const p=getPlayer(); if(!p || !APPS_URL) return;
   setCloud('saving');
   const fin=resultOf(104);
-  const nm=id=> id!=null?team(id).name:'';
   const body={ action:'savePicks', id:p.id, nombre:p.nombre, documento:p.documento,
-    avance:progressStats().pct, campeon:nm(getWinner(104)),
-    finalista:[fin.A,fin.B].map(nm).filter(Boolean).join(' / '), tercero:nm(getWinner(103)),
-    rank:state.rank, thirds:state.thirds, adv:state.adv, scores:state.scores };
+    avance:progressStats().pct, campeon:_nm(getWinner(104)),
+    finalista:[fin.A,fin.B].map(_nm).filter(Boolean).join(' / '), tercero:_nm(getWinner(103)),
+    pronostico: buildPronostico() };
   fetch(APPS_URL, { method:'POST', body:JSON.stringify(body) })
     .then(()=>setCloud('ok')).catch(()=>setCloud('err'));
 }
