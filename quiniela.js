@@ -154,10 +154,97 @@ function stageMeta(id){
 
 /* festeja cuando una etapa se completa (una sola vez) */
 const _doneFlag={};
+let _allDoneShown=false;
 function notifyIfComplete(id){
   const d=isDone(id);
   if(d && !_doneFlag[id]){ _doneFlag[id]=true; const s=STAGES.find(x=>x.id===id); toast(`🎉 ¡${s.title} completa!`,'ok'); }
   else if(!d){ _doneFlag[id]=false; }
+}
+
+/* ---- progreso global ---- */
+function progressStats(){
+  const gc=GLETTERS.filter(g=>rankTeam(g,1)!=null&&rankTeam(g,2)!=null).length;
+  const tn=Math.min(state.thirds.length,8);
+  const mc=Object.keys(MATCHES).filter(n=>state.adv[n]).length;
+  const done=gc+tn+mc, total=12+8+32;
+  return {done,total,pct:Math.round(done/total*100)};
+}
+function updateProgress(){
+  const st=progressStats();
+  const f=document.getElementById('pg-fill'), l=document.getElementById('pg-label');
+  if(f) f.style.width=st.pct+'%';
+  if(l) l.textContent=st.pct+'%';
+  if(st.pct===100 && !_allDoneShown){ _allDoneShown=true; toast('🏆 ¡Quiniela completa! Mucha suerte',''); }
+  else if(st.pct<100) _allDoneShown=false;
+}
+
+/* ---- próximo partido (cuenta regresiva en la barra) ---- */
+function nextMatch(){
+  return Object.keys(MATCHES).map(n=>({n:+n,t:new Date(MATCHES[n].d).getTime()}))
+    .filter(x=>x.t>Date.now()).sort((a,b)=>a.t-b.t)[0]||null;
+}
+function tickNext(){
+  const el=document.getElementById('nextmatch'); if(!el) return;
+  const up=nextMatch();
+  if(!up){ el.textContent=''; return; }
+  let diff=up.t-Date.now();
+  const d=Math.floor(diff/864e5), h=Math.floor((diff%864e5)/36e5), m=Math.floor((diff%36e5)/6e4), s=Math.floor((diff%6e4)/1e3);
+  const pad=x=>String(x).padStart(2,'0');
+  el.innerHTML=`⏱ <b>P${up.n}</b> ${d>0?d+'d ':''}${pad(h)}:${pad(m)}:${pad(s)}`;
+}
+
+/* ---- resumen "Mi quiniela" (modal) ---- */
+function openResumen(){
+  const body=document.getElementById('modal-body');
+  const nm=id=> id!=null ? flagTag(team(id))+team(id).name : '—';
+  let grp='';
+  GLETTERS.forEach(g=>{ grp+=`<div class="res-row"><b>${g}</b> · 1.º ${nm(rankTeam(g,1))} · 2.º ${nm(rankTeam(g,2))}</div>`; });
+  const champ=getWinner(104), fin=resultOf(104), third=getWinner(103);
+  const finalists=[fin.A,fin.B].some(x=>x!=null)?`${nm(fin.A)} <b>vs</b> ${nm(fin.B)}`:'Por definir';
+  const st=progressStats();
+  body.innerHTML=`<h3 class="modal__h">📋 Mi quiniela</h3>
+    <p class="modal__p">Avance: <b>${st.pct}%</b> (${st.done}/${st.total})</p>
+    <div class="res-block"><h4>🏆 Campeón</h4><p>${nm(champ)}</p></div>
+    <div class="res-block"><h4>Final</h4><p>${finalists}</p></div>
+    <div class="res-block"><h4>3.er puesto</h4><p>${nm(third)}</p></div>
+    <div class="res-block"><h4>Clasificados de grupos</h4>${grp}</div>
+    <div class="modal__actions">
+      <button class="btn btn--sm" id="res-share">📲 Compartir</button>
+      <button class="btn btn--sm" id="res-close" style="background:#9aa2a6">Cerrar</button>
+    </div>`;
+  document.getElementById('modal').hidden=false;
+  body.querySelector('#res-close').onclick=closeModal;
+  body.querySelector('#res-share').onclick=share;
+}
+
+/* ---- compartir ---- */
+function share(){
+  const champ=getWinner(104);
+  const txt = champ!=null
+    ? `Mi campeón en la quiniela Stanley es ${team(champ).name} 🏆 ¿Te animás a pronosticar?`
+    : `Armé mi quiniela en Pronosticá con Stanley 🏆 ¿Te animás?`;
+  const url='https://centro-de-estudios-populi.github.io/pronostica-con-stanley/';
+  if(navigator.share){ navigator.share({title:'Pronosticá con Stanley',text:txt,url}).catch(()=>{}); }
+  else { window.open('https://wa.me/?text='+encodeURIComponent(txt+' '+url),'_blank'); }
+}
+
+/* ---- confeti (sin librerías) ---- */
+function confetti(){
+  const c=document.createElement('canvas'); c.className='confetti-c';
+  c.width=window.innerWidth; c.height=window.innerHeight; document.body.appendChild(c);
+  const ctx=c.getContext('2d');
+  const cols=['#01A66A','#b59677','#DA291C','#F4C300','#ffffff','#2BE08A'];
+  const P=Array.from({length:130},()=>({x:Math.random()*c.width,y:-20-Math.random()*c.height*0.4,
+    r:4+Math.random()*5,vy:2+Math.random()*4,vx:-2+Math.random()*4,rot:Math.random()*6,vr:-0.2+Math.random()*0.4,
+    col:cols[Math.floor(Math.random()*cols.length)]}));
+  let t0=null;
+  (function frame(ts){ if(!t0)t0=ts;
+    ctx.clearRect(0,0,c.width,c.height);
+    P.forEach(p=>{ p.x+=p.vx; p.y+=p.vy; p.vy+=0.05; p.rot+=p.vr;
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot); ctx.fillStyle=p.col;
+      ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r*1.6); ctx.restore(); });
+    if(ts-t0<2600) requestAnimationFrame(frame); else c.remove();
+  })();
 }
 
 /* ---- resolución de equipos ---- */
@@ -214,6 +301,7 @@ function renderStepper(){
     b.onclick=()=>goto(s.id);
     stepperEl.appendChild(b);
   });
+  updateProgress();
 }
 function goto(id){ state.active=id; save(); renderStepper(); renderStage(id); window.scrollTo({top:0,behavior:'smooth'}); }
 
@@ -360,7 +448,14 @@ function chooseAdv(key,slot,num){
   if(prev && prev!==slot) delete state.scores[num];   // marcador viejo pudo quedar contradictorio
   save();
   refreshCard(key,num); renderStepper();
-  notifyIfComplete(MATCHES[num].e==='tercer'?'final':MATCHES[num].e);
+  const st = MATCHES[num].e==='tercer'?'final':MATCHES[num].e;
+  notifyIfComplete(st);
+  if(num===104) confetti();                 // ¡elegiste campeón!
+  // auto-scroll a la próxima llave sin elegir (misma ronda)
+  const list=STAGE_MATCHES[st], idx=list.indexOf(num);
+  const nx=list.slice(idx+1).find(n=>!state.adv[n]
+    && slotInfo(MATCHES[n].a).id!=null && slotInfo(MATCHES[n].b).id!=null && !matchLocked(n));
+  if(nx){ const elc=document.querySelector(`.match[data-key="${nx}"]`); if(elc) elc.scrollIntoView({behavior:'smooth',block:'center'}); }
   // (el modal de marcador NO se abre solo: lo abre el usuario con el botón 🎯)
 }
 function refreshCard(key,num){
@@ -447,9 +542,14 @@ document.getElementById('design-mode').addEventListener('change', e=>{
   renderStepper(); renderStage(state.active);
 });
 
+document.getElementById('btn-resumen').addEventListener('click', openResumen);
+document.getElementById('btn-share').addEventListener('click', share);
+
 (function init(){
   document.getElementById('design-mode').checked=!!state.design;
   STAGES.forEach(s=>_doneFlag[s.id]=isDone(s.id));   // evita festejar al cargar
+  _allDoneShown = progressStats().pct===100;
   renderStepper();
   renderStage(state.active);
+  tickNext(); setInterval(tickNext,1000);
 })();

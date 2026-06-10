@@ -12,6 +12,30 @@
 .designtoggle{display:flex;align-items:center;gap:8px;font-size:12px;color:#cfcfcf;cursor:pointer;user-select:none}
 .designtoggle input{width:16px;height:16px;accent-color:var(--tan)}
 
+/* barra de juego: próximo partido + botones */
+.nextmatch{font-family:'Montserrat',sans-serif;font-weight:700;font-size:12.5px;color:#fff;
+  background:rgba(255,255,255,.12);padding:6px 12px;border-radius:999px;white-space:nowrap}
+.nextmatch b{color:var(--tan)}
+.gb-btn{font-family:'Montserrat',sans-serif;font-weight:700;font-size:12px;color:#fff;background:var(--tan);
+  border:0;border-radius:999px;padding:7px 14px;cursor:pointer;transition:background .15s}
+.gb-btn:hover{background:var(--tan-dark)}
+
+/* barra de progreso global */
+.progress-global{position:relative;height:18px;background:#e7e1d6}
+.pg-fill{height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--bright));transition:width .45s ease}
+.pg-label{position:absolute;top:0;left:50%;transform:translateX(-50%);font-family:'Montserrat',sans-serif;
+  font-weight:800;font-size:11px;color:var(--ink);line-height:18px}
+
+/* resumen (en el modal) */
+.res-block{margin:12px 0;text-align:left}
+.res-block h4{font-family:'Montserrat',sans-serif;font-weight:800;font-size:13px;text-transform:uppercase;color:var(--ink);margin-bottom:4px}
+.res-block p,.res-row{font-size:14px;color:var(--text);line-height:1.55}
+.res-row{padding:2px 0}
+.res-block .flagimg,.res-row .flagimg{margin:0 5px -3px 0}
+
+/* confetti */
+.confetti-c{position:fixed;inset:0;pointer-events:none;z-index:300}
+
 /* stepper de etapas */
 .stepper{display:flex;gap:8px;overflow-x:auto;padding:16px 24px;background:var(--mist);
   border-bottom:1px solid var(--line-soft);scrollbar-width:thin}

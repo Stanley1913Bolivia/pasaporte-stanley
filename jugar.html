@@ -30,11 +30,19 @@
 <div class="gamebar">
   <div class="gamebar__title">Tu quiniela<small id="player-name">Modo invitado · se guarda en este dispositivo</small></div>
   <div class="gamebar__right">
-    <label class="designtoggle" title="Desbloquea todas las etapas para revisar el diseño">
-      <input type="checkbox" id="design-mode" /> Modo diseño (ver todo)
+    <span class="nextmatch" id="nextmatch"></span>
+    <button class="gb-btn" id="btn-resumen">📋 Resumen</button>
+    <button class="gb-btn" id="btn-share">📲 Compartir</button>
+    <label class="designtoggle" title="Desbloquea las etapas aunque ya hayan pasado las fechas">
+      <input type="checkbox" id="design-mode" /> Modo diseño
     </label>
-    <div class="points" title="Los puntos se calcularán al cierre de cada etapa">⚽ Puntos <b id="points">—</b></div>
   </div>
+</div>
+
+<!-- PROGRESO GLOBAL -->
+<div class="progress-global" title="Avance total de tu quiniela">
+  <div class="pg-fill" id="pg-fill"></div>
+  <span class="pg-label" id="pg-label">0%</span>
 </div>
 
 <!-- STEPPER -->
