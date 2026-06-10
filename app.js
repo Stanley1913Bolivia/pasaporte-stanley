@@ -1,91 +1,14 @@
-/* ====== CONFIG (editar estos 3 valores) ====== */
+/* ====== CONFIG (editar estos valores) ====== */
 const CONFIG = {
-  // Pegá acá la URL del Web App de Google Apps Script (ver apps-script/Code.gs)
+  // URL del Web App de Apps Script o, más adelante, se reemplaza por Supabase.
   APPS_SCRIPT_URL: "",
   // Fecha/hora de cierre de inscripciones (ISO, hora local Bolivia -04:00)
   DEADLINE: "2026-06-11T12:00:00-04:00",
-  // Link de invitación a la comunidad de WhatsApp (para clasificados)
+  // Link de invitación a la comunidad de WhatsApp
   WHATSAPP_INVITE_URL: "https://chat.whatsapp.com/"
 };
 
-/* ====== banderas por imagen (flagcdn) — los emojis no renderizan en Windows ====== */
-const flagURL = iso => `https://flagcdn.com/h40/${iso}.png`;
-const flagTag = (iso, name) => `<img class="flagimg" src="${flagURL(iso)}" alt="${name}" loading="lazy" />`;
-
-/* ====== 48 SELECCIONES (genéricas, editables) — [nombre, ISO] ====== */
-const COUNTRIES = [
-  ["Argentina","ar"],["Brasil","br"],["Uruguay","uy"],["Colombia","co"],
-  ["Chile","cl"],["Perú","pe"],["Ecuador","ec"],["Paraguay","py"],
-  ["Bolivia","bo"],["Venezuela","ve"],["Francia","fr"],["Alemania","de"],
-  ["España","es"],["Italia","it"],["Portugal","pt"],["Países Bajos","nl"],
-  ["Bélgica","be"],["Inglaterra","gb-eng"],["Croacia","hr"],["Dinamarca","dk"],
-  ["Suiza","ch"],["Serbia","rs"],["Polonia","pl"],["Austria","at"],
-  ["Suecia","se"],["Noruega","no"],["Turquía","tr"],["Ucrania","ua"],
-  ["Estados Unidos","us"],["México","mx"],["Canadá","ca"],["Costa Rica","cr"],
-  ["Japón","jp"],["Corea del Sur","kr"],["Arabia Saudita","sa"],["Irán","ir"],
-  ["Australia","au"],["Catar","qa"],["Marruecos","ma"],["Senegal","sn"],
-  ["Nigeria","ng"],["Ghana","gh"],["Camerún","cm"],["Egipto","eg"],
-  ["Argelia","dz"],["Costa de Marfil","ci"],["Túnez","tn"],["Sudáfrica","za"]
-];
-const MAX = 32;
-const selected = new Set();
-let posicion = "";
-
-/* ====== render grilla de selecciones ====== */
-const teamsEl = document.getElementById("teams");
-const counterEl = document.getElementById("counter");
-COUNTRIES.forEach(([name, iso]) => {
-  const el = document.createElement("div");
-  el.className = "team";
-  el.dataset.name = name;
-  el.innerHTML = `${flagTag(iso, name)}<span>${name}</span>`;
-  el.addEventListener("click", () => toggle(name, el));
-  teamsEl.appendChild(el);
-});
-
-function toggle(name, el) {
-  if (selected.has(name)) { selected.delete(name); el.classList.remove("sel"); }
-  else { if (selected.size >= MAX) return; selected.add(name); el.classList.add("sel"); }
-  updateCounter();
-  refreshSelects();
-}
-
-function updateCounter() {
-  counterEl.textContent = `${selected.size} / ${MAX}`;
-  counterEl.classList.toggle("full", selected.size === MAX);
-  const full = selected.size >= MAX;
-  document.querySelectorAll(".team").forEach(t => {
-    t.classList.toggle("disabled", full && !t.classList.contains("sel"));
-  });
-}
-
-/* campeón / finalista: opciones desde las selecciones elegidas */
-const campeonEl = document.getElementById("campeon");
-const finalistaEl = document.getElementById("finalista");
-function refreshSelects() {
-  [campeonEl, finalistaEl].forEach(sel => {
-    const prev = sel.value;
-    const placeholder = sel.options[0].textContent;
-    sel.innerHTML = `<option value="">${placeholder}</option>`;
-    [...selected].sort().forEach(n => {
-      const o = document.createElement("option");
-      o.value = n; o.textContent = n;
-      sel.appendChild(o);
-    });
-    if (selected.has(prev)) sel.value = prev;
-  });
-}
-
-/* chips posición */
-document.querySelectorAll("#posicion .chip").forEach(chip => {
-  chip.addEventListener("click", () => {
-    document.querySelectorAll("#posicion .chip").forEach(c => c.classList.remove("sel"));
-    chip.classList.add("sel");
-    posicion = chip.dataset.val;
-  });
-});
-
-/* archivo comprobante */
+/* ====== archivo comprobante ====== */
 const fileInput = document.getElementById("comprobante");
 const fileHint = document.getElementById("file-hint");
 let fileData = null; // {name, mime, b64}
@@ -118,7 +41,7 @@ function tick() {
 }
 tick(); setInterval(tick, 1000);
 
-/* ====== submit ====== */
+/* ====== submit (solo registro) ====== */
 const form = document.getElementById("form");
 const errorEl = document.getElementById("form-error");
 const submitBtn = document.getElementById("submit");
@@ -128,14 +51,11 @@ form.addEventListener("submit", async (e) => {
   e.preventDefault();
   errorEl.hidden = true;
 
-  // validaciones
-  for (const el of form.querySelectorAll("input[required], select[required]")) {
+  for (const el of form.querySelectorAll("input[required]")) {
     if (el.type === "file") continue;
     if (!el.value.trim()) { showError("Completá todos los campos obligatorios."); el.focus(); return; }
   }
   if (!fileData) return showError("Subí tu comprobante de compra.");
-  if (selected.size !== MAX) return showError(`Elegí exactamente ${MAX} selecciones. Llevás ${selected.size}.`);
-  if (!posicion) return showError("Elegí tu posición en la cancha.");
   if (!document.getElementById("terminos").checked) return showError("Tenés que aceptar las bases y condiciones.");
 
   const payload = {
@@ -145,12 +65,6 @@ form.addEventListener("submit", async (e) => {
     whatsapp: form.whatsapp.value.trim(),
     email: form.email.value.trim(),
     ciudad: form.ciudad.value.trim(),
-    selecciones: [...selected],
-    campeon: form.campeon.value,
-    finalista: form.finalista.value,
-    figura: form.figura.value.trim(),
-    desempate: form.desempate.value,
-    posicion,
     enviado: new Date().toISOString(),
     comprobante: fileData
   };
@@ -172,8 +86,8 @@ form.addEventListener("submit", async (e) => {
     }
     showConfirm();
   } catch (err) {
-    submitBtn.disabled = false; submitBtn.textContent = "Enviar mi jugada";
-    showError("No pudimos registrar tu jugada. Revisá tu conexión e intentá de nuevo.");
+    submitBtn.disabled = false; submitBtn.textContent = "Inscribirme y armar mi quiniela";
+    showError("No pudimos registrar tu inscripción. Revisá tu conexión e intentá de nuevo.");
     console.error(err);
   }
 });
@@ -185,5 +99,3 @@ function showConfirm() {
   document.getElementById("wa-cta").href = CONFIG.WHATSAPP_INVITE_URL;
   c.scrollIntoView({ behavior: "smooth", block: "center" });
 }
-
-updateCounter();
