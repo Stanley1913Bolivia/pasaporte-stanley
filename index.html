@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Pronosticá con Stanley</title>
-<meta name="description" content="Comprá tu Stanley, registrá tu comprobante y armá tus pronósticos de la temporada futbolera. Subí en el ranking y ganá premios Stanley." />
+<meta name="description" content="Registrá tu compra Stanley y participá en una temporada de predicciones futboleras. Competí en el Ranking General Stanley o activá el Modo Nostradamus y ganá premios Stanley." />
 <meta property="og:title" content="Pronosticá con Stanley" />
 <meta property="og:description" content="Registrá tu compra Stanley, armá tus pronósticos de la temporada futbolera y ganá premios Stanley." />
 <meta property="og:type" content="website" />
@@ -28,15 +28,15 @@
 </head>
 <body>
 
-<!-- ===== FRANJA BOLIVIA (guiño Convocados) ===== -->
+<!-- ===== FRANJA BOLIVIA ===== -->
 <div class="flagbar" aria-hidden="true"></div>
 
 <!-- ===== NAV ===== -->
 <header class="nav">
   <img class="nav__logo" src="assets/logo-stanley-horizontal.png" alt="Stanley 1913" />
   <nav class="nav__links">
-    <a class="nav__link nav__link--hide-mobile" href="#como-funciona">Cómo se juega</a>
-    <a class="nav__link nav__link--hide-mobile" href="#premios">Premios</a>
+    <a class="nav__link nav__link--hide-mobile" href="#como-participar">Cómo participar</a>
+    <a class="nav__link nav__link--hide-mobile" href="#modalidades">Modalidades</a>
     <a class="nav__link" href="jugar.html">Mi quiniela</a>
     <a class="nav__link nav__link--etapa2" href="etapa2.html">Etapa 2</a>
     <a class="nav__link" href="ranking.html">Ranking</a>
@@ -47,11 +47,11 @@
 
 <!-- ===== BANNER DE FASE (solo en eliminatorias) ===== -->
 <a class="phase-banner" href="etapa2.html">
-  🏆 ¡Empezaron las eliminatorias! Predecí los partidos de hoy
+  ¡Empezaron los cruces eliminatorios! Cargá tus pronósticos
   <span class="phase-banner__cta">Ir a Etapa 2 →</span>
 </a>
 
-<!-- ===== HERO ===== -->
+<!-- ===== 1 · HERO ===== -->
 <section class="hero pitch">
   <div class="hero__inner">
     <span class="kicker">Temporada futbolera 2026</span>
@@ -69,7 +69,7 @@
 
     <div class="hero__cta only-inscripcion">
       <a href="#registro" class="btn btn--lg">Participar ahora</a>
-      <a href="#como-funciona" class="btn btn--lg btn--ghost">Ver cómo funciona</a>
+      <a href="#como-participar" class="btn btn--lg btn--ghost">Ver cómo funciona</a>
     </div>
     <div class="hero__cta only-eliminatorias">
       <a href="etapa2.html" class="btn btn--lg">Ver mis pronósticos →</a>
@@ -79,37 +79,101 @@
   </div>
 </section>
 
-<!-- ===== CÓMO FUNCIONA ===== -->
-<section class="section" id="como-funciona">
-  <h2 class="h2">¿Cómo se juega?</h2>
+<!-- ===== 2 · RESUMEN RÁPIDO ===== -->
+<section class="section" id="resumen">
+  <h2 class="h2">En resumen</h2>
+  <div class="info-cards">
+    <article class="info-card"><span class="info-card__ico">🧾</span><h3>Registrá tu compra</h3><p>Subí tu factura o respaldo válido de compra Stanley.</p></article>
+    <article class="info-card"><span class="info-card__ico">⚽</span><h3>Armá tu pronóstico</h3><p>Elegí tus 32 selecciones clasificadas y completá tus predicciones.</p></article>
+    <article class="info-card"><span class="info-card__ico">🏆</span><h3>Sumá puntos y ganá</h3><p>Competí en el Ranking General Stanley o activá el Modo Nostradamus por un premio especial.</p></article>
+  </div>
+</section>
+
+<!-- ===== 3 · CÓMO PARTICIPAR ===== -->
+<section class="section section--cream" id="como-participar">
+  <h2 class="h2">Cómo participar</h2>
   <div class="steps">
-    <article class="step">
-      <span class="step__n">1</span>
-      <h3>Comprá tu Stanley</h3>
-      <p>Conseguí tu Stanley en <a href="https://stanley1913.bo/collections/convocados-stanley" target="_blank" rel="noopener" style="color:var(--tan-dark);font-weight:700">stanley1913.bo</a> durante el período de la promoción y guardá tu comprobante.</p>
+    <article class="step"><span class="step__n">1</span><h3>Comprá o registrá tu Stanley</h3><p>Participan compras realizadas desde el 1 de mayo de 2026 en canales autorizados.</p></article>
+    <article class="step"><span class="step__n">2</span><h3>Completá tu registro</h3><p>Cargá tus datos y subí factura o respaldo válido de compra.</p></article>
+    <article class="step"><span class="step__n">3</span><h3>Elegí tus 32 clasificadas</h3><p>Cada selección correctamente clasificada suma 1 punto en la fase inicial.</p></article>
+    <article class="step"><span class="step__n">4</span><h3>Pasá el corte</h3><p>Avanzan quienes estén dentro del Top 50% y logren al menos 24 aciertos.</p></article>
+    <article class="step"><span class="step__n">5</span><h3>Seguí compitiendo</h3><p>Los clasificados continúan sumando puntos etapa por etapa en la comunidad Stanley.</p></article>
+    <article class="step"><span class="step__n">6</span><h3>Activá el Modo Nostradamus</h3><p>Si querés ir por el desafío completo, completá tu predicción extendida hasta la final.</p></article>
+  </div>
+</section>
+
+<!-- ===== 4 · QUIÉNES PUEDEN PARTICIPAR ===== -->
+<section class="section" id="quienes">
+  <h2 class="h2">Quiénes pueden participar</h2>
+  <p class="section__lead">Pueden participar personas mayores de edad, residentes en Bolivia, que hayan comprado productos Stanley desde el 1 de mayo de 2026 en Tienda Stanley Bolivia, Web Stanley Bolivia o distribuidores autorizados.</p>
+  <div class="rule-band">1 compra válida = 1 inscripción = 1 persona participante</div>
+  <p class="section__foot">Cada persona podrá registrarse una sola vez. Las inscripciones duplicadas, incompletas o no verificables podrán ser anuladas por Stanley Bolivia.</p>
+</section>
+
+<!-- ===== 5 · MODALIDADES ===== -->
+<section class="section section--cream" id="modalidades">
+  <h2 class="h2">Modalidades de juego</h2>
+  <div class="modos">
+    <article class="modo modo--main">
+      <span class="modo__label modo__label--main">Competencia principal</span>
+      <h3 class="modo__title">Ranking General Stanley</h3>
+      <p>Es la modalidad principal de la campaña. Todos los participantes registrados eligen 32 selecciones clasificadas. Cada acierto suma 1 punto. Quienes estén dentro del Top 50% y logren al menos 24 aciertos avanzan y siguen compitiendo por etapas.</p>
+      <p class="modo__hl">Este ranking define los premios finales principales.</p>
+      <p>Después de la fase de grupos, los participantes clasificados podrán sumar puntos en 16avos, octavos, cuartos, semifinales y la final mediante preguntas y dinámicas específicas que se comunicarán en la comunidad de Stanley Bolivia.</p>
     </article>
-    <article class="step">
-      <span class="step__n">2</span>
-      <h3>Registrate</h3>
-      <p>Entrá acá, cargá tus datos y subí la foto de tu comprobante. Todo en un solo paso.</p>
-    </article>
-    <article class="step">
-      <span class="step__n">3</span>
-      <h3>Armá tus pronósticos</h3>
-      <p>Elegí tus 32 selecciones, el campeón, la figura y más. Cada acierto suma puntos.</p>
-    </article>
-    <article class="step">
-      <span class="step__n">4</span>
-      <h3>Subí y ganá</h3>
-      <p>Pasá el corte, entrá a la comunidad y competí hasta el final por premios Stanley.</p>
+    <article class="modo modo--alt">
+      <span class="modo__label">Desafío opcional</span>
+      <h3 class="modo__title">Modo Nostradamus</h3>
+      <p>Es una modalidad especial para quienes quieran ir más allá y completar una predicción extendida, simulando el camino completo hasta la final.</p>
+      <p class="modo__note">El Modo Nostradamus tiene premio propio. No reemplaza, no modifica y no reduce la importancia del Ranking General Stanley.</p>
+      <p>Comparte la predicción de fase de grupos como base, pero luego sigue su propia lógica de puntuación extendida.</p>
     </article>
   </div>
 </section>
 
-<!-- ===== PREMIOS ===== -->
-<section class="section section--cream" id="premios">
-  <h2 class="h2">Tu equipo Stanley</h2>
-  <p class="section__lead">Cada producto juega su posición. A lo largo de la temporada se reparten <strong>hasta 15 premios Stanley</strong>: 5 intermedios y 10 finales para los mejores del ranking.</p>
+<!-- ===== 6 · SISTEMA DE PUNTOS ===== -->
+<section class="section" id="puntos">
+  <h2 class="h2">Sistema de puntos inicial</h2>
+  <div class="ptable-wrap">
+    <table class="ptable">
+      <thead><tr><th>Dinámica</th><th>Puntaje</th></tr></thead>
+      <tbody>
+        <tr><td>Cada selección clasificada acertada</td><td>1 punto</td></tr>
+        <tr><td>Máximo posible en fase de grupos</td><td>32 puntos</td></tr>
+        <tr><td>Corte mínimo</td><td>24 aciertos</td></tr>
+        <tr><td>Clasificación</td><td>Top 50% + mínimo 24 aciertos</td></tr>
+        <tr><td>Desempate principal</td><td>Total de goles de fase de grupos</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="section__foot">El Ranking General Stanley continuará con nuevas dinámicas por etapa. Las preguntas, puntos y condiciones de cada etapa serán comunicadas oportunamente en la comunidad de Stanley Bolivia.</p>
+  <div class="note-card">El Modo Nostradamus tendrá una puntuación especial para la predicción extendida. Esta puntuación será independiente del Ranking General Stanley, salvo por los puntos compartidos de fase de grupos.</div>
+</section>
+
+<!-- ===== 7 · PREMIO NUEVOS COMPRADORES ===== -->
+<section class="section section--cream" id="nuevos">
+  <div class="newbuyers">
+    <span class="newbuyers__tag">Premio especial</span>
+    <h2 class="h2">Premio especial para nuevos compradores</h2>
+    <p>Quienes realicen una compra Stanley desde el lanzamiento de la campaña hasta el <strong>jueves 18 de junio de 2026, 11:30 a. m.</strong>, participarán automáticamente por un premio especial adicional.</p>
+    <p class="newbuyers__note">Este premio no modifica el puntaje del Ranking General Stanley ni del Modo Nostradamus.</p>
+  </div>
+</section>
+
+<!-- ===== 8 · PREMIOS ===== -->
+<section class="section" id="premios">
+  <h2 class="h2">Premios Stanley</h2>
+  <p class="section__lead">Habrá premios Stanley para los mejores participantes del Ranking General Stanley y premios especiales para dinámicas seleccionadas.</p>
+  <ul class="prize-list">
+    <li><strong>10 premios finales</strong> para el Ranking General Stanley</li>
+    <li>Premios <strong>más fuertes para el Top 5</strong></li>
+    <li><strong>1 gran ganador nacional</strong></li>
+    <li>Premio especial <strong>Modo Nostradamus</strong></li>
+    <li>Premio especial para <strong>nuevos compradores</strong></li>
+    <li>Posibles premios o beneficios de <strong>distribuidores autorizados</strong></li>
+  </ul>
+
+  <h3 class="prizes__sub">Algunos de los productos en juego</h3>
   <div class="prizes">
     <a class="prize" href="https://stanley1913.bo/collections/camping/products/nevera-adventure-fast-flow-7-6-lts-pool-stanley" target="_blank" rel="noopener">
       <div class="prize__media" data-carousel>
@@ -147,14 +211,31 @@
       <span class="prize__cta">Ver en la tienda →</span>
     </a>
   </div>
-  <p class="section__foot">Y muchos más en juego para el Top 10 del ranking general.</p>
+  <p class="section__foot">Los premios no incluyen entradas, viajes, hospitality, experiencias oficiales ni productos asociados a organizaciones, torneos o competiciones oficiales.</p>
 </section>
 
-<!-- ===== REGISTRO ===== -->
+<!-- ===== 9 · COMUNIDAD STANLEY ===== -->
+<section class="section section--cream" id="comunidad">
+  <h2 class="h2">Comunidad Stanley</h2>
+  <p class="section__lead">Los participantes podrán recibir comunicaciones por WhatsApp, correo electrónico u otros canales oficiales de Stanley Bolivia relacionadas con rankings, recordatorios, dinámicas, beneficios, cupones y retos especiales.</p>
+  <p class="section__foot">La comunidad será el canal principal para comunicar nuevas etapas del Ranking General Stanley después de la fase de grupos. Los participantes podrán dejar de recibir comunicaciones según las opciones disponibles en cada canal.</p>
+</section>
+
+<!-- ===== 10 · RANKINGS ===== -->
+<section class="section" id="rankings">
+  <h2 class="h2">Rankings</h2>
+  <p class="section__lead">Dos competencias, dos tablas: el <strong>Ranking General Stanley</strong> y el <strong>Modo Nostradamus</strong>.</p>
+  <div class="rank-preview">
+    <p class="rank-empty">Los rankings se actualizarán una vez cerrada la etapa correspondiente.</p>
+    <a class="btn btn--lg" href="ranking.html">Ver rankings</a>
+  </div>
+</section>
+
+<!-- ===== 11 · REGISTRO ===== -->
 <section class="section pitch pitch--dark" id="registro">
   <div class="form-card">
     <header class="form-card__head">
-      <span class="kicker kicker--dark">Paso 1 · Inscripción</span>
+      <span class="kicker kicker--dark">Inscripción</span>
       <h2 class="h2">Inscribite</h2>
       <p>Completá tus datos y subí tu factura o respaldo de compra. Después armás tu pronóstico: grupos y, opcional, el desafío Nostradamus.</p>
       <p class="form-deadline">⏳ Inscripciones hasta el <strong>jueves 18 de junio de 2026, 11:30 a. m.</strong></p>
@@ -208,40 +289,107 @@
 
       <p class="form-error" id="form-error" hidden></p>
       <button type="submit" class="btn btn--lg btn--full" id="submit">Inscribirme y armar mi pronóstico</button>
+      <p class="form-fine">Tu registro será revisado. Si cumple con las condiciones de participación, quedarás habilitado para competir en Pronosticá con Stanley.</p>
     </form>
   </div>
 
-  <!-- CONFIRMACIÓN -->
+  <!-- CONFIRMACIÓN (no se usa: tras enviar vamos directo a la quiniela) -->
   <div class="confirm" id="confirm" hidden>
     <div class="confirm__card">
       <div class="confirm__check">✓</div>
-      <h2>¡Inscripción lista!</h2>
-      <p>Ya estás dentro. Ahora armá tu quiniela: elegí los clasificados de cada grupo y, cuando se conozcan los partidos, las llaves hasta la final.</p>
+      <h2>¡Registro recibido!</h2>
+      <p>Revisaremos tu información y, si cumple con las condiciones, quedarás habilitado para competir. Ahora armá tu pronóstico.</p>
       <div class="hero__cta">
-        <a class="btn btn--lg" href="jugar.html">Armar mi quiniela →</a>
+        <a class="btn btn--lg" href="jugar.html">Armar mi pronóstico →</a>
         <a class="btn btn--lg" id="wa-cta" href="#" target="_blank" rel="noopener" style="background:var(--green)">Sumate a la comunidad</a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ===== COMUNIDAD ===== -->
-<section class="section section--cream" id="comunidad">
-  <h2 class="h2">La comunidad sigue después del pitazo</h2>
-  <p class="section__lead">Quienes pasen el primer corte entran a la comunidad oficial de WhatsApp: rankings, recordatorios, retos y beneficios durante toda la temporada.</p>
+<!-- ===== 12 · BASES Y CONDICIONES ===== -->
+<section class="section section--cream" id="bases">
+  <h2 class="h2">Bases y condiciones</h2>
+  <ol class="bases-list">
+    <li><strong>Organizador:</strong> Campaña organizada por Stanley Bolivia / Openbrands S.R.L.</li>
+    <li><strong>Vigencia:</strong> Inscripciones válidas hasta el jueves 18 de junio de 2026, 11:30 a. m.</li>
+    <li><strong>Participantes:</strong> Personas mayores de edad, residentes en Bolivia, con compra Stanley válida desde el 1 de mayo de 2026.</li>
+    <li><strong>Canales válidos:</strong> Tienda Stanley Bolivia, Web Stanley Bolivia y distribuidores autorizados.</li>
+    <li><strong>Una inscripción:</strong> Cada compra válida permite una inscripción asociada a una persona. Cada persona puede participar una sola vez.</li>
+    <li><strong>Validación:</strong> Stanley Bolivia podrá revisar, validar, rechazar o anular registros incompletos, duplicados, inconsistentes, ilegibles o no verificables.</li>
+    <li><strong>Ranking General:</strong> El Ranking General Stanley es la competencia principal y define los premios finales.</li>
+    <li><strong>Modo Nostradamus:</strong> Es opcional, paralelo y tendrá premio propio.</li>
+    <li><strong>Premios:</strong> Podrán incluir productos Stanley y posibles premios o beneficios de distribuidores autorizados.</li>
+    <li><strong>No afiliación:</strong> La campaña no está afiliada, patrocinada, administrada ni asociada a ninguna organización, torneo, competición o entidad oficial.</li>
+  </ol>
+  <button class="btn btn--lg" type="button" onclick="document.getElementById('bases-modal').showModal()">Ver bases completas</button>
 </section>
 
-<!-- ===== FOOTER ===== -->
-<footer class="footer pitch pitch--dark" id="bases">
+<!-- ===== 13 · PREGUNTAS FRECUENTES ===== -->
+<section class="section" id="faq">
+  <h2 class="h2">Preguntas frecuentes</h2>
+  <div class="faq">
+    <details class="faq-item"><summary>¿Necesito factura para participar?</summary><p>Debés cargar factura o respaldo válido de compra. Stanley Bolivia podrá revisar y validar la información presentada.</p></details>
+    <details class="faq-item"><summary>¿Puedo participar si compré desde mayo?</summary><p>Sí. Participan compras realizadas desde el 1 de mayo de 2026 en canales autorizados.</p></details>
+    <details class="faq-item"><summary>¿Puedo participar más de una vez si compré más de un producto?</summary><p>No. Cada persona puede registrarse una sola vez.</p></details>
+    <details class="faq-item"><summary>¿Hasta cuándo puedo registrarme?</summary><p>Hasta el jueves 18 de junio de 2026, 11:30 a. m.</p></details>
+    <details class="faq-item"><summary>¿Qué es el Ranking General Stanley?</summary><p>Es la competencia principal de la campaña. Inicia con la elección de 32 selecciones clasificadas y continúa con dinámicas por etapa.</p></details>
+    <details class="faq-item"><summary>¿Qué es el Modo Nostradamus?</summary><p>Es un desafío opcional para completar una predicción extendida hasta la final. Tiene premio propio y no reemplaza al Ranking General Stanley.</p></details>
+    <details class="faq-item"><summary>¿Dónde se publicarán los rankings?</summary><p>En la sección de rankings de la página y/o en canales oficiales de Stanley Bolivia.</p></details>
+    <details class="faq-item"><summary>¿Cómo se comunicarán los ganadores?</summary><p>Stanley Bolivia podrá comunicar a los ganadores por WhatsApp, correo electrónico o canales oficiales.</p></details>
+    <details class="faq-item"><summary>¿Esta campaña está asociada a algún torneo oficial?</summary><p>No. Es una campaña recreativa de Stanley Bolivia y no está afiliada, patrocinada ni administrada por ninguna organización, torneo o competición oficial.</p></details>
+  </div>
+</section>
+
+<!-- ===== 14 · FOOTER / DISCLAIMER ===== -->
+<footer class="footer pitch pitch--dark">
   <img class="footer__logo" src="assets/logo-stanley-vertical.png" alt="Stanley" />
   <div class="footer__legal">
-    <h3>Bases y condiciones</h3>
-    <p>Campaña organizada por <strong>Stanley Bolivia / Openbrands S.R.L.</strong> Válida para compras de productos Stanley realizadas desde el <strong>1 de mayo de 2026</strong> en Tienda Stanley Bolivia, Web Stanley Bolivia (<a href="https://stanley1913.bo" target="_blank" rel="noopener">stanley1913.bo</a>) y distribuidores autorizados. Inscripciones hasta el <strong>jueves 18 de junio de 2026, 11:30 a. m.</strong> Participan personas mayores de edad residentes en Bolivia. Cada compra válida permite una inscripción por persona y requiere factura o respaldo válido de compra. Stanley Bolivia podrá revisar, validar, rechazar o anular registros incompletos, duplicados, inconsistentes, ilegibles o no verificables.</p>
     <p class="disclaimer"><strong>Aviso legal:</strong> Esta campaña es organizada exclusivamente por Stanley Bolivia / Openbrands S.R.L. con fines promocionales y recreativos. No está afiliada, patrocinada, administrada, avalada ni asociada con ningún torneo, competición, organización deportiva, federación, selección, patrocinador oficial ni entidad relacionada. Todas las referencias a fútbol, selecciones, temporada, grupos, llaves o pronósticos son utilizadas de forma genérica y recreativa.</p>
-    <p>Consultas: <a href="mailto:info@openbrands.com.bo">info@openbrands.com.bo</a> · WhatsApp <a href="https://wa.me/59175133288" target="_blank" rel="noopener">+591 75133288</a></p>
-    <p class="footer__copy">© 2026 Openbrands S.R.L. · Stanley 1913 Bolivia · Todos los derechos reservados.</p>
+    <p class="footer__links">
+      <a href="#bases">Bases y condiciones</a> ·
+      <a href="#" onclick="document.getElementById('bases-modal').showModal();return false;">Bases completas</a> ·
+      Consultas: <a href="mailto:info@openbrands.com.bo">info@openbrands.com.bo</a> ·
+      WhatsApp <a href="https://wa.me/59175133288" target="_blank" rel="noopener">+591 75133288</a>
+    </p>
+    <p class="footer__copy">Organiza Stanley Bolivia / Openbrands S.R.L. · © 2026 · Todos los derechos reservados.</p>
   </div>
 </footer>
+
+<!-- ===== MODAL: BASES COMPLETAS ===== -->
+<dialog id="bases-modal" class="bases-modal">
+  <div class="bases-modal__head">
+    <h3>Bases y condiciones completas</h3>
+    <button type="button" class="bases-modal__x" onclick="this.closest('dialog').close()" aria-label="Cerrar">×</button>
+  </div>
+  <div class="bases-modal__body">
+    <p><strong>Organizador.</strong> Stanley Bolivia / Openbrands S.R.L.</p>
+    <p><strong>Nombre de la campaña.</strong> "Pronosticá con Stanley".</p>
+    <p><strong>Territorio.</strong> Estado Plurinacional de Bolivia.</p>
+    <p><strong>Vigencia.</strong> Inscripciones válidas hasta el jueves 18 de junio de 2026, 11:30 a. m. Después de ese horario no se aceptan nuevos registros para rankings ni premios.</p>
+    <p><strong>Participantes habilitados.</strong> Personas mayores de edad, residentes en Bolivia.</p>
+    <p><strong>Compras válidas.</strong> Compras de productos Stanley realizadas desde el 1 de mayo de 2026.</p>
+    <p><strong>Canales válidos.</strong> Tienda Stanley Bolivia, Web Stanley Bolivia y distribuidores autorizados.</p>
+    <p><strong>Respaldo válido de compra.</strong> Se requiere factura o respaldo válido de compra, sujeto a revisión y validación.</p>
+    <p><strong>Una inscripción por persona.</strong> Cada compra válida permite una inscripción asociada a una persona. Cada persona puede participar una sola vez.</p>
+    <p><strong>Registros duplicados.</strong> Los registros incompletos, duplicados, inconsistentes, ilegibles o no verificables podrán ser anulados.</p>
+    <p><strong>Mecánica del Ranking General Stanley.</strong> Modalidad principal. Cada participante elige 32 selecciones clasificadas; cada acierto suma 1 punto (máximo 32). Avanzan quienes estén dentro del Top 50% y logren al menos 24 aciertos. Continúa con dinámicas por etapa.</p>
+    <p><strong>Mecánica del Modo Nostradamus.</strong> Desafío opcional y paralelo: predicción extendida hasta la final, con puntuación propia. Comparte la base de fase de grupos pero tiene su propia lógica.</p>
+    <p><strong>Sistema de puntos.</strong> Fase de grupos: 1 punto por selección clasificada acertada. Las dinámicas posteriores se comunicarán oportunamente.</p>
+    <p><strong>Desempates.</strong> Desempate principal por total de goles de fase de grupos.</p>
+    <p><strong>Premios.</strong> Productos Stanley para los mejores del Ranking General Stanley y premios especiales para dinámicas seleccionadas; posibles premios o beneficios de distribuidores autorizados.</p>
+    <p><strong>Premio especial para nuevos compradores.</strong> Quienes compren Stanley dentro del período de campaña participan por un premio especial adicional, sin modificar el puntaje de las modalidades.</p>
+    <p><strong>Premio especial Modo Nostradamus.</strong> Premio propio para la predicción extendida más certera.</p>
+    <p><strong>Comunicación de ganadores.</strong> Stanley Bolivia podrá comunicar a los ganadores por WhatsApp, correo electrónico u otros canales oficiales.</p>
+    <p><strong>Entrega de premios.</strong> Coordinada por Stanley Bolivia con los ganadores válidos.</p>
+    <p><strong>Causales de descalificación.</strong> Información falsa, compras no válidas, registros duplicados o cualquier intento de fraude.</p>
+    <p><strong>Uso de datos personales.</strong> Los datos se utilizan para la gestión de la campaña y las comunicaciones autorizadas por el participante.</p>
+    <p><strong>Comunidad WhatsApp.</strong> Canal principal de comunicación de etapas, recordatorios y beneficios. El participante puede dejar de recibir comunicaciones.</p>
+    <p><strong>Dinámicas complementarias.</strong> Podrán existir dinámicas adicionales comunicadas en los canales oficiales.</p>
+    <p><strong>No afiliación oficial.</strong> La campaña no está afiliada, patrocinada, administrada, avalada ni asociada con ningún torneo, competición, organización deportiva, federación, selección, patrocinador oficial ni entidad relacionada.</p>
+    <p><strong>Modificaciones.</strong> Stanley Bolivia podrá modificar fechas, mecánicas o premios por causas operativas, comunicándolo por sus canales oficiales.</p>
+  </div>
+</dialog>
 
 <script src="config.js"></script>
 <script src="phase.js"></script>
