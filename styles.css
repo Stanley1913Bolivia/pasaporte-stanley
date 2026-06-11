@@ -198,6 +198,9 @@ html[data-phase="eliminatorias"] .only-inscripcion{display:none}
 .disclaimer{font-size:12px;opacity:.85;line-height:1.6;border-top:1px solid rgba(255,255,255,.15);padding-top:14px;margin-top:6px}
 .terms input{margin-top:3px;width:20px;height:20px;accent-color:var(--tan);flex-shrink:0}
 .terms a{color:var(--tan-dark);font-weight:700}
+.form-note{margin-top:16px;background:var(--mist);border-left:4px solid var(--tan);border-radius:8px;
+  padding:11px 14px;font-size:13px;color:var(--text);line-height:1.5}
+.form-note b{color:var(--ink)}
 .form-error{background:#fdeaea;color:#b3261e;border:1px solid #f3c0bc;border-radius:8px;padding:12px 14px;font-size:14px;font-weight:600;margin-bottom:14px}
 
 /* confirmación */
