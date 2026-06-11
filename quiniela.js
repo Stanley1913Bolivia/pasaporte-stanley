@@ -88,7 +88,7 @@ const STAGES = [
   {id:'grupos', n:1, etapa:'Etapa 1', title:'Fase de grupos', short:'Grupos',
    lead:'En cada grupo ordená 1.º, 2.º y 3.º (tocá cada equipo). Los dos primeros clasifican; después elegí los 8 mejores terceros.'},
   {id:'r32', n:2, etapa:'Etapa 2', title:'Dieciseisavos', short:'16avos',
-   lead:'Del 28 jun al 3 jul · 16 partidos. Elegí quién avanza en cada llave; sumá puntos extra adivinando el marcador.'},
+   lead:'Del 28 jun al 3 jul · 16 partidos. Elegí quién avanza; cargá el marcador a 90\' y, si hay empate, definí si pasa por alargue o penales.'},
   {id:'r16', n:3, etapa:'Etapa 3', title:'Octavos de final', short:'Octavos',
    lead:'Del 4 al 7 jul · 8 partidos.'},
   {id:'qf', n:4, etapa:'Etapa 4', title:'Cuartos de final', short:'Cuartos',
@@ -109,9 +109,14 @@ const STAGE_MATCHES = {
 
 /* ---- estado ---- */
 const KEY = 'stanley_quiniela_v2';
-const DEFAULT = {rank:{}, thirds:[], scores:{}, adv:{}, design:false, active:'grupos'};
+const DEFAULT = {rank:{}, thirds:[], scores:{}, adv:{}, design:false, active:'grupos',
+  groupsSubmitted:false, nostradamus:{sent:false, at:''}};
 let state = load();
-function load(){ try{ return Object.assign({}, DEFAULT, JSON.parse(localStorage.getItem(KEY))||{}); }catch(e){ return Object.assign({},DEFAULT); } }
+function load(){
+  let s; try{ s = Object.assign({}, DEFAULT, JSON.parse(localStorage.getItem(KEY))||{}); }catch(e){ s = Object.assign({},DEFAULT); }
+  if(!s.nostradamus || typeof s.nostradamus!=='object') s.nostradamus = {sent:false, at:''};
+  return s;
+}
 function save(){ localStorage.setItem(KEY, JSON.stringify(state)); scheduleCloud(); }
 
 /* ---- jugador + guardado en la nube (Google Sheets vía Apps Script) ---- */
@@ -139,7 +144,8 @@ function buildPronostico(){
   Object.keys(MATCHES).forEach(n=>{ const r=resultOf(n); if(r.win==null) return;
     const adv=state.adv[n], sc=state.scores[n]||{};
     const gf=adv==='a'?sc.a:sc.b, gc=adv==='a'?sc.b:sc.a;
-    llaves[n]={av:_nm(r.win), gf:(gf!=null?gf:''), gc:(gc!=null?gc:'')};
+    // gf/gc = marcador a 90' desde el que avanza; tb = método si hubo empate a 90' ('alargue'|'penales')
+    llaves[n]={av:_nm(r.win), gf:(gf!=null?gf:''), gc:(gc!=null?gc:''), tb:(sc.tb||'')};
   });
   return {clasificados, llaves};
 }
@@ -150,6 +156,8 @@ function cloudSave(){
   const body={ action:'savePicks', id:p.id, nombre:p.nombre, documento:p.documento,
     avance:progressStats().pct, campeon:_nm(getWinner(104)),
     finalista:[fin.A,fin.B].map(_nm).filter(Boolean).join(' / '), tercero:_nm(getWinner(103)),
+    grupos_enviados: state.groupsSubmitted?1:0,
+    nostradamus: state.nostradamus.sent?1:0, nostra_at: state.nostradamus.at||'',
     pronostico: buildPronostico() };
   fetch(APPS_URL, { method:'POST', body:JSON.stringify(body) })
     .then(()=>setCloud('ok')).catch(()=>setCloud('err'));
@@ -238,8 +246,11 @@ function tickNext(){
 function openResumen(){
   const body=document.getElementById('modal-body');
   const nm=id=> id!=null ? flagTag(team(id))+team(id).name : '—';
+  const cell=id=> id==null
+    ? `<span class="rg-team empty">—</span>`
+    : `<span class="rg-team">${flagTag(team(id))}<span class="nm">${team(id).name}</span></span>`;
   let grp='';
-  GLETTERS.forEach(g=>{ grp+=`<div class="res-row"><b>${g}</b> · 1.º ${nm(rankTeam(g,1))} · 2.º ${nm(rankTeam(g,2))}</div>`; });
+  GLETTERS.forEach(g=>{ grp+=`<div class="rg-row"><span class="rg-g">${g}</span>${cell(rankTeam(g,1))}${cell(rankTeam(g,2))}</div>`; });
   const champ=getWinner(104), fin=resultOf(104), third=getWinner(103);
   const finalists=[fin.A,fin.B].some(x=>x!=null)?`${nm(fin.A)} <b>vs</b> ${nm(fin.B)}`:'Por definir';
   const st=progressStats();
@@ -248,17 +259,23 @@ function openResumen(){
     <div class="res-block"><h4>🏆 Campeón</h4><p>${nm(champ)}</p></div>
     <div class="res-block"><h4>Final</h4><p>${finalists}</p></div>
     <div class="res-block"><h4>3.er puesto</h4><p>${nm(third)}</p></div>
-    <div class="res-block"><h4>Clasificados de grupos</h4>${grp}</div>
+    <div class="res-block"><h4>Clasificados de grupos</h4>
+      <div class="res-groups">
+        <div class="rg-head"><span class="rg-c">Gr</span><span>1.º clasificado</span><span>2.º clasificado</span></div>
+        ${grp}
+      </div>
+    </div>
     <div class="modal__actions">
-      <button class="btn btn--sm" id="res-share">📲 Compartir</button>
+      <button class="btn btn--sm" id="res-share">📲 Compartir imagen</button>
       <button class="btn btn--sm" id="res-close" style="background:#9aa2a6">Cerrar</button>
     </div>`;
-  document.getElementById('modal').hidden=false;
+  const modal=document.getElementById('modal');
+  modal.classList.add('wide'); modal.hidden=false;
   body.querySelector('#res-close').onclick=closeModal;
-  body.querySelector('#res-share').onclick=share;
+  body.querySelector('#res-share').onclick=shareResumen;
 }
 
-/* ---- compartir ---- */
+/* ---- compartir (texto, fallback) ---- */
 function share(){
   const champ=getWinner(104);
   const txt = champ!=null
@@ -267,6 +284,309 @@ function share(){
   const url='https://centro-de-estudios-populi.github.io/pronostica-con-stanley/';
   if(navigator.share){ navigator.share({title:'Pronosticá con Stanley',text:txt,url}).catch(()=>{}); }
   else { window.open('https://wa.me/?text='+encodeURIComponent(txt+' '+url),'_blank'); }
+}
+
+/* ---- imagen para redes (canvas, marca Stanley) ---- */
+const loadImg = src => new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=rej; i.src=src; });
+function ensureFonts(){
+  if(!document.fonts) return Promise.resolve();
+  const load = Promise.all([
+    document.fonts.load('400 130px Anton'),
+    document.fonts.load('900 22px Montserrat'),
+    document.fonts.load('800 40px Montserrat'),
+    document.fonts.load('700 34px Montserrat'),
+    document.fonts.load('600 24px Montserrat')
+  ]).then(()=>document.fonts.ready).catch(()=>{});
+  const timeout = new Promise(r=>setTimeout(r,1500));   // nunca se cuelga esperando fuentes
+  return Promise.race([load, timeout]);
+}
+async function buildShareCanvas(withLogo){
+  const W=1080,H=1080;
+  const c=document.createElement('canvas'); c.width=W; c.height=H;
+  const x=c.getContext('2d');
+  // fondo cancha (rayas verde oscuro)
+  for(let i=0;i<W;i+=140){ x.fillStyle=((i/140)%2)?'#022417':'#03301f'; x.fillRect(i,0,140,H); }
+  // marcas de cancha
+  x.strokeStyle='rgba(255,255,255,.10)'; x.lineWidth=3;
+  x.beginPath(); x.arc(W/2,H/2,170,0,Math.PI*2); x.stroke();
+  x.beginPath(); x.moveTo(W/2,0); x.lineTo(W/2,H); x.stroke();
+  // franja Bolivia
+  const bw=W/3; x.fillStyle='#DA291C'; x.fillRect(0,0,bw,16);
+  x.fillStyle='#F4C300'; x.fillRect(bw,0,bw,16); x.fillStyle='#007A33'; x.fillRect(bw*2,0,bw,16);
+  // logo Stanley (blanco). En HTTPS no contamina; bajo file:// puede tainting → por eso es opcional
+  // datos + banderas (en HTTPS/localhost no contaminan; bajo file:// sí)
+  const champ=getWinner(104), fin=resultOf(104), third=getWinner(103);
+  const flags={};
+  if(withLogo){
+    const ids=new Set(); [champ,fin.A,fin.B,third].forEach(id=>{ if(id!=null) ids.add(id); });
+    const arr=[...ids]; const imgs=await Promise.all(arr.map(id=>loadFlagImg(team(id).iso)));
+    arr.forEach((id,i)=> flags[id]=imgs[i]);
+  }
+  if(withLogo){
+    try{ const logo=await loadImg('assets/logo-stanley-horizontal.png');
+      drawLogoFitted(x, logo, W/2, 56, 360, 186);
+    }catch(e){}
+  }
+  x.textAlign='center';
+  x.fillStyle='#b59677'; x.font='800 30px Montserrat, sans-serif';
+  x.fillText('PRONOSTICÁ · MUNDIAL 2026', W/2, 300);
+  x.fillStyle='rgba(255,255,255,.85)'; x.font='800 40px Montserrat, sans-serif';
+  x.fillText('MI CAMPEÓN', W/2, 432);
+  // campeón con su bandera
+  const name=(champ!=null?team(champ).name:'Por definir').toUpperCase();
+  const showCF = champ!=null && flags[champ];
+  let fs=132; x.font=`400 ${fs}px Anton, sans-serif`;
+  const maxW = showCF ? W-300 : W-130;
+  while(x.measureText(name).width>maxW && fs>54){ fs-=6; x.font=`400 ${fs}px Anton, sans-serif`; }
+  const nameW=x.measureText(name).width;
+  if(showCF){
+    const fw=flagDims(fs).fw, gap=36, total=fw+gap+nameW, sx=(W-total)/2;
+    drawCanvasFlag(x, flags[champ], sx, 582, fs);
+    x.textAlign='left'; x.fillStyle='#fff'; x.font=`400 ${fs}px Anton, sans-serif`; x.fillText(name, sx+fw+gap, 582); x.textAlign='center';
+  } else {
+    x.fillStyle='#fff'; x.fillText(name, W/2, 582);
+  }
+  x.fillStyle='#b59677'; x.fillRect(W/2-64, 626, 128, 6);
+  x.fillStyle='rgba(255,255,255,.92)'; x.font='700 34px Montserrat, sans-serif'; x.fillText('LA FINAL', W/2, 712);
+  x.font='600 31px Montserrat, sans-serif';
+  drawFlaggedPair(x, fin.A, fin.B, 758, 31, flags, 'rgba(255,255,255,.82)');
+  if(third!=null){
+    x.font='600 27px Montserrat, sans-serif';
+    drawLabeledTeam(x, '3.er puesto · ', third, team(third).name, W/2, 804, 27, flags, 'rgba(255,255,255,.65)');
+  }
+  const p=getPlayer();
+  if(p&&p.nombre){ x.fillStyle='#b59677'; x.font='700 31px Montserrat, sans-serif'; x.fillText('por '+p.nombre, W/2, 884); }
+  x.fillStyle='rgba(255,255,255,.6)'; x.font='600 24px Montserrat, sans-serif';
+  x.fillText('Pronosticá con Stanley · stanley1913.bo', W/2, 1012);
+  return c;
+}
+/* genera el blob; si el canvas se contamina (file://) reintenta sin logo */
+function makeBlob(withLogo){
+  return buildShareCanvas(withLogo).then(c=> new Promise(res=>{
+    try{ c.toBlob(b=>res(b||null),'image/png'); }catch(e){ res(null); }
+  })).catch(()=>null);
+}
+async function shareImage(){
+  toast('Generando tu imagen…');
+  await ensureFonts();
+  let blob = await makeBlob(true);
+  if(!blob) blob = await makeBlob(false);     // fallback sin logo (evita taint local)
+  if(!blob){ toast('No se pudo generar la imagen','warn'); return; }
+  showSharePreview(blob);
+}
+/* vista previa: siempre se ve (no depende de la API de compartir) */
+function defaultShareText(){
+  const champ=getWinner(104);
+  return champ!=null
+    ? `Mi campeón en la quiniela Stanley es ${team(champ).name} 🏆 ¿Te animás?`
+    : 'Armé mi quiniela en Pronosticá con Stanley 🏆';
+}
+function showSharePreview(blob, opts){
+  opts = opts||{};
+  const filename = opts.filename || 'mi-campeon-stanley.png';
+  const title    = opts.title    || '📲 Compartí tu campeón';
+  const txt      = opts.text     || defaultShareText();
+  const url=URL.createObjectURL(blob);
+  const file=new File([blob],filename,{type:'image/png'});
+  const canShareFiles = !!(navigator.canShare && navigator.canShare({files:[file]}));
+  const body=document.getElementById('modal-body');
+  body.innerHTML=`
+    <h3 class="modal__h">${title}</h3>
+    <img class="share-preview" src="${url}" alt="${title} · Pronosticá con Stanley" />
+    <div class="modal__actions">
+      <button class="btn btn--sm" id="sp-dl">⬇️ Descargar</button>
+      ${canShareFiles?'<button class="btn btn--sm" id="sp-share">Compartir</button>':''}
+    </div>`;
+  document.getElementById('modal').hidden=false;
+  body.querySelector('#sp-dl').onclick=()=>{
+    const a=document.createElement('a'); a.href=url; a.download=filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    toast('⬇️ Imagen descargada','ok');
+  };
+  const sb=body.querySelector('#sp-share');
+  if(sb) sb.onclick=async()=>{
+    try{ await navigator.share({files:[file], text:txt, url:'https://centro-de-estudios-populi.github.io/pronostica-con-stanley/'}); }catch(e){}
+  };
+  setTimeout(()=>URL.revokeObjectURL(url), 60000);
+}
+
+/* =========================================================
+   IMAGEN DEL RESUMEN — cuadro completo (logo + banderas)
+   ========================================================= */
+function loadFlagImg(iso){
+  return new Promise(res=>{ const i=new Image(); i.crossOrigin='anonymous';
+    i.onload=()=>res(i); i.onerror=()=>res(null); i.src=flagURL(iso); });
+}
+function fitFont(ctx, text, max, base, weight){
+  let fs=base; ctx.font=`${weight} ${fs}px Montserrat, sans-serif`;
+  while(ctx.measureText(text).width>max && fs>13){ fs-=2; ctx.font=`${weight} ${fs}px Montserrat, sans-serif`; }
+  return fs;
+}
+/* tamaño de bandera (3:2) proporcional a la altura del texto */
+function flagDims(fontH){ const fh=fontH*0.72, fw=fh*1.5; return {fw,fh}; }
+/* dibuja una bandera centrada vertical en la baseline del texto; devuelve su ancho */
+function drawCanvasFlag(ctx, img, sx, baseline, fontH){
+  const d=flagDims(fontH), midY=baseline-fontH*0.33;
+  ctx.drawImage(img, sx, midY-d.fh/2, d.fw, d.fh);
+  ctx.strokeStyle='rgba(255,255,255,.3)'; ctx.lineWidth=1.5; ctx.strokeRect(sx, midY-d.fh/2, d.fw, d.fh);
+  return d.fw;
+}
+/* dibuja el logo ajustado a una caja (maxW × maxH), centrado en cx; devuelve el borde inferior */
+function drawLogoFitted(ctx, img, cx, top, maxW, maxH){
+  let w=maxW, h=w*img.height/img.width;
+  if(h>maxH){ h=maxH; w=h*img.width/img.height; }
+  ctx.drawImage(img, cx-w/2, top, w, h);
+  return top+h;
+}
+/* "prefijo + [bandera] + nombre" centrado en cx (ctx.font ya seteado) */
+function drawLabeledTeam(ctx, prefix, id, name, cx, baseline, fontH, flags, color){
+  const fw=flagDims(fontH).fw, gap=fontH*0.4;
+  const showFlag = id!=null && flags && flags[id];
+  const pw = prefix? ctx.measureText(prefix).width : 0;
+  const nw = ctx.measureText(name).width;
+  const total = pw + (showFlag? fw+gap : 0) + nw;
+  let sx=cx-total/2;
+  ctx.textAlign='left'; ctx.fillStyle=color;
+  if(prefix){ ctx.fillText(prefix, sx, baseline); sx+=pw; }
+  if(showFlag){ drawCanvasFlag(ctx, flags[id], sx, baseline, fontH); sx+=fw+gap; }
+  ctx.fillStyle=color; ctx.fillText(name, sx, baseline);
+  ctx.textAlign='center';
+}
+/* "[bandera] A  vs  [bandera] B" centrado (ctx.font ya seteado) */
+function drawFlaggedPair(ctx, idA, idB, baseline, fontH, flags, color){
+  const fw=flagDims(fontH).fw, gap=fontH*0.4, sep='   vs   ';
+  const nA=idA!=null?team(idA).name:'—', nB=idB!=null?team(idB).name:'—';
+  const segW=(id,nm)=> ((id!=null&&flags&&flags[id])? fw+gap:0) + ctx.measureText(nm).width;
+  const total=segW(idA,nA)+ctx.measureText(sep).width+segW(idB,nB);
+  let sx=(ctx.canvas.width-total)/2;
+  ctx.textAlign='left';
+  const seg=(id,nm)=>{ if(id!=null&&flags&&flags[id]){ drawCanvasFlag(ctx, flags[id], sx, baseline, fontH); sx+=fw+gap; }
+    ctx.fillStyle=color; ctx.fillText(nm, sx, baseline); sx+=ctx.measureText(nm).width; };
+  seg(idA,nA); ctx.fillStyle=color; ctx.fillText(sep, sx, baseline); sx+=ctx.measureText(sep).width; seg(idB,nB);
+  ctx.textAlign='center';
+}
+async function buildResumenCanvas(withMedia){
+  const W=1080, H=1500;
+  const c=document.createElement('canvas'); c.width=W; c.height=H;
+  const x=c.getContext('2d');
+  // fondo cancha (rayas)
+  for(let i=0;i<W;i+=140){ x.fillStyle=((i/140)%2)?'#022417':'#03301f'; x.fillRect(i,0,140,H); }
+  x.strokeStyle='rgba(255,255,255,.07)'; x.lineWidth=3;
+  x.beginPath(); x.moveTo(W/2,150); x.lineTo(W/2,H); x.stroke();
+  // franja Bolivia
+  const bw=W/3; x.fillStyle='#DA291C'; x.fillRect(0,0,bw,16);
+  x.fillStyle='#F4C300'; x.fillRect(bw,0,bw,16); x.fillStyle='#007A33'; x.fillRect(bw*2,0,bw,16);
+
+  // datos
+  const champ=getWinner(104), fin=resultOf(104), third=getWinner(103);
+  const rows=GLETTERS.map(g=>({g, a:rankTeam(g,1), b:rankTeam(g,2)}));
+
+  // precargar banderas (solo si withMedia)
+  const flags={};
+  if(withMedia){
+    const ids=new Set();
+    [champ,fin.A,fin.B,third].forEach(id=>{ if(id!=null) ids.add(id); });
+    rows.forEach(r=>{ if(r.a!=null) ids.add(r.a); if(r.b!=null) ids.add(r.b); });
+    const arr=[...ids];
+    const imgs=await Promise.all(arr.map(id=>loadFlagImg(team(id).iso)));
+    arr.forEach((id,i)=> flags[id]=imgs[i]);
+  }
+
+  // logo o wordmark
+  function drawWordmark(){ x.textAlign='center'; x.fillStyle='#fff'; x.font='400 56px Anton, sans-serif'; x.fillText('STANLEY 1913', W/2, 112); }
+  if(withMedia){
+    try{ const logo=await loadImg('assets/logo-stanley-horizontal.png');
+      drawLogoFitted(x, logo, W/2, 38, 300, 112);
+    }catch(e){ drawWordmark(); }
+  } else { drawWordmark(); }
+
+  // kicker
+  x.textAlign='center';
+  x.fillStyle='#b59677'; x.font='800 26px Montserrat, sans-serif';
+  x.fillText('MI QUINIELA · MUNDIAL 2026', W/2, 192);
+
+  // campeón
+  x.fillStyle='rgba(255,255,255,.9)'; x.font='800 30px Montserrat, sans-serif'; x.fillText('TU CAMPEÓN', W/2, 240);
+  const champName=(champ!=null?team(champ).name:'Por definir').toUpperCase();
+  let cfs=84; x.font=`400 ${cfs}px Anton, sans-serif`;
+  const maxNameW=(champ!=null && withMedia && flags[champ]) ? W-300 : W-150;
+  while(x.measureText(champName).width>maxNameW && cfs>40){ cfs-=4; x.font=`400 ${cfs}px Anton, sans-serif`; }
+  const cnameW=x.measureText(champName).width;
+  const cBaseline=332;
+  if(champ!=null && withMedia && flags[champ]){
+    const fw=flagDims(cfs).fw, gap=30, total=fw+gap+cnameW, sx=(W-total)/2;
+    drawCanvasFlag(x, flags[champ], sx, cBaseline, cfs);
+    x.textAlign='left'; x.fillStyle='#fff'; x.font=`400 ${cfs}px Anton, sans-serif`; x.fillText(champName, sx+fw+gap, cBaseline);
+    x.textAlign='center';
+  } else {
+    x.fillStyle='#fff'; x.font=`400 ${cfs}px Anton, sans-serif`; x.fillText(champName, W/2, cBaseline);
+  }
+  x.fillStyle='#b59677'; x.fillRect(W/2-70, 360, 140, 6);
+
+  // final + tercero
+  const fname=id=> id!=null?team(id).name:'—';
+  x.fillStyle='rgba(255,255,255,.92)'; x.font='800 26px Montserrat, sans-serif'; x.fillText('LA FINAL', W/2, 426);
+  const finText=`${fname(fin.A)}   vs   ${fname(fin.B)}`;
+  fitFont(x, finText, W-150, 34, '700'); x.fillStyle='rgba(255,255,255,.86)'; x.fillText(finText, W/2, 470);
+  if(third!=null){ x.fillStyle='rgba(255,255,255,.6)'; x.font='600 24px Montserrat, sans-serif'; x.fillText('3.er puesto · '+team(third).name, W/2, 514); }
+
+  // divisor
+  x.strokeStyle='rgba(181,150,119,.5)'; x.lineWidth=2; x.beginPath(); x.moveTo(80,558); x.lineTo(W-80,558); x.stroke();
+
+  // clasificados — encabezado
+  x.fillStyle='#b59677'; x.font='800 24px Montserrat, sans-serif'; x.fillText('CLASIFICADOS · FASE DE GRUPOS', W/2, 600);
+  x.textAlign='left'; x.fillStyle='rgba(255,255,255,.5)'; x.font='800 16px Montserrat, sans-serif';
+  x.fillText('GR', 72, 646); x.fillText('1.º', 150, 646); x.fillText('2.º', 540, 646);
+
+  // celda de equipo (bandera + nombre)
+  function drawTeamCell(id, flagX, y, fwc, fhc, rightEdge){
+    const nameX=flagX+fwc+14;
+    if(id==null){ x.fillStyle='rgba(255,255,255,.4)'; x.font='600 24px Montserrat, sans-serif'; x.fillText('—', nameX, y+8); return; }
+    if(withMedia && flags[id]){ x.drawImage(flags[id], flagX, y-fhc/2, fwc, fhc);
+      x.strokeStyle='rgba(255,255,255,.22)'; x.lineWidth=1; x.strokeRect(flagX, y-fhc/2, fwc, fhc); }
+    const nm=team(id).name;
+    const fs=fitFont(x, nm, rightEdge-nameX, 26, '600');
+    x.fillStyle='#fff'; x.fillText(nm, nameX, y+fs*0.34);
+  }
+  const rowY0=692, step=60, fw=40, fh=26;
+  rows.forEach((r,i)=>{
+    const y=rowY0 + i*step;
+    if(i%2===0){ x.fillStyle='rgba(255,255,255,.045)'; x.fillRect(60, y-step/2+2, W-120, step-4); }
+    // badge del grupo
+    x.fillStyle='#b59677'; x.beginPath(); x.arc(90, y, 21, 0, Math.PI*2); x.fill();
+    x.fillStyle='#06251a'; x.textAlign='center'; x.font='900 22px Montserrat, sans-serif'; x.fillText(r.g, 90, y+8);
+    x.textAlign='left';
+    drawTeamCell(r.a, 150, y, fw, fh, 520);
+    drawTeamCell(r.b, 540, y, fw, fh, 1010);
+  });
+
+  // pie
+  const p=getPlayer();
+  x.textAlign='center';
+  if(p&&p.nombre){ x.fillStyle='#b59677'; x.font='700 26px Montserrat, sans-serif'; x.fillText('por '+p.nombre, W/2, H-92); }
+  x.fillStyle='rgba(255,255,255,.6)'; x.font='600 22px Montserrat, sans-serif';
+  x.fillText('Pronosticá con Stanley · stanley1913.bo', W/2, H-50);
+  return c;
+}
+function makeResumenBlob(withMedia){
+  return buildResumenCanvas(withMedia).then(c=> new Promise(res=>{
+    try{ c.toBlob(b=>res(b||null),'image/png'); }catch(e){ res(null); }
+  })).catch(()=>null);
+}
+async function shareResumen(){
+  toast('Generando tu resumen…');
+  await ensureFonts();
+  let blob = await makeResumenBlob(true);
+  if(!blob) blob = await makeResumenBlob(false);   // fallback sin logo/banderas (file://)
+  if(!blob){ toast('No se pudo generar la imagen','warn'); return; }
+  const champ=getWinner(104);
+  showSharePreview(blob, {
+    title:'📲 Compartí tu quiniela',
+    filename:'mi-quiniela-stanley.png',
+    text: champ!=null
+      ? `Mi quiniela Stanley — campeón: ${team(champ).name} 🏆 ¿Te animás a pronosticar?`
+      : 'Armé mi quiniela en Pronosticá con Stanley 🏆 ¿Te animás?'
+  });
 }
 
 /* ---- confeti (sin librerías) ---- */
@@ -314,8 +634,17 @@ function resultOf(num){
 const getWinner = num => resultOf(num).win;
 const getLoser  = num => resultOf(num).lose;
 
-/* ¿el partido ya está cerrado? (pasó su hora de inicio) — modo diseño lo ignora */
-const matchLocked = num => !state.design && Date.now() >= new Date(MATCHES[num].d).getTime();
+/* ¿el partido ya está cerrado? — modo diseño ignora todo
+   Reglas: 1) Nostradamus sellado bloquea TODO el cuadro · 2) las llaves requieren
+   la fase de grupos enviada · 3) si no, cierra por su hora de inicio. */
+function matchLocked(num){
+  if(state.design) return false;
+  if(state.nostradamus.sent) return true;
+  if(!state.groupsSubmitted) return true;
+  return Date.now() >= new Date(MATCHES[num].d).getTime();
+}
+/* grupos en solo-lectura una vez enviados (diseño lo ignora para probar) */
+const groupsLocked = () => state.groupsSubmitted && !state.design;
 
 /* ---- completitud ---- */
 function groupsDone(){
@@ -326,6 +655,9 @@ function roundDone(stageId){
   return STAGE_MATCHES[stageId].every(num=> getWinner(num)!=null);
 }
 const isDone = id => id==='grupos' ? groupsDone() : roundDone(id);
+/* Nostradamus completo = todas las llaves (16avos→final) con un ganador elegido */
+const KO_STAGES = ['r32','r16','qf','sf','final'];
+const nostraComplete = () => KO_STAGES.every(sid=> STAGE_MATCHES[sid].every(num=> getWinner(num)!=null));
 
 /* =========================================================
    RENDER
@@ -336,10 +668,11 @@ const stagesEl  = document.getElementById('stages');
 function renderStepper(){
   stepperEl.innerHTML='';
   STAGES.forEach(s=>{
+    const lockedStep = s.id!=='grupos' && !state.groupsSubmitted && !state.design;
     const b = document.createElement('button');
-    b.className='step-btn'+(s.id===state.active?' active':'')+(isDone(s.id)?' done':'');
-    b.innerHTML = `<span class="sb__n">${isDone(s.id)?'✓':s.n}</span>${s.short}`;
-    b.onclick=()=>goto(s.id);
+    b.className='step-btn'+(s.id===state.active?' active':'')+(isDone(s.id)?' done':'')+(lockedStep?' locked':'');
+    b.innerHTML = `<span class="sb__n">${lockedStep?'🔒':(isDone(s.id)?'✓':s.n)}</span>${s.short}`;
+    b.onclick = lockedStep ? ()=>toast('Primero enviá tu fase de grupos','warn') : ()=>goto(s.id);
     stepperEl.appendChild(b);
   });
   updateProgress();
@@ -347,6 +680,7 @@ function renderStepper(){
 function goto(id){ state.active=id; save(); renderStepper(); renderStage(id); window.scrollTo({top:0,behavior:'smooth'}); }
 
 function renderStage(id){
+  if(id==='nostra'){ renderNostra(); return; }
   const s = STAGES.find(x=>x.id===id);
   stagesEl.innerHTML='';
   const wrap = document.createElement('section');
@@ -355,7 +689,7 @@ function renderStage(id){
       <span class="stage__kicker">${s.etapa}</span>
       <h2>${s.title}</h2><p>${s.lead}</p>
       <div class="stage__meta">${stageMeta(id)}</div></div>`;
-  if(id==='grupos'){ wrap.appendChild(renderGroups()); wrap.appendChild(renderThirds()); }
+  if(id==='grupos'){ wrap.appendChild(renderGroups()); wrap.appendChild(renderThirds()); wrap.appendChild(groupsSubmitBar()); }
   else { wrap.appendChild(renderRound(id)); }
   wrap.appendChild(stageNav(id));
   stagesEl.appendChild(wrap);
@@ -363,10 +697,11 @@ function renderStage(id){
 
 /* ---- fase de grupos ---- */
 function renderGroups(){
-  const grid=document.createElement('div'); grid.className='groups';
+  const locked=groupsLocked();
+  const grid=document.createElement('div'); grid.className='groups'+(locked?' ro':'');
   GLETTERS.forEach(g=>{
     const card=document.createElement('div'); card.className='group';
-    card.innerHTML=`<div class="group__head"><h4>Grupo ${g}</h4><span class="group__hint">1.º · 2.º clasifican · 3.º repechaje</span></div>`;
+    card.innerHTML=`<div class="group__head"><h4>Grupo ${g}</h4><span class="group__hint">${locked?'🔒 enviado':'1.º · 2.º clasifican · 3.º repechaje'}</span></div>`;
     const rk=state.rank[g]||{}; const rankedCount=Object.keys(rk).length;
     const thirdsFull = state.thirds.length>=8;
     GROUPS[g].forEach(id=>{
@@ -377,10 +712,10 @@ function renderGroups(){
       const rankCls = (r && !isThirdOut) ? ' r'+r : '';   // 1°/2° y 3.º elegido conservan su color
       const badge = r ? r+'°' : (isFourth ? '4°' : '');
       const row=document.createElement('div');
-      row.className='grow'+rankCls+(out?' out':'');
+      row.className='grow'+rankCls+(out?' out':'')+(locked?' ro':'');
       row.innerHTML=`${flagTag(t)}<span class="gname">${t.name}</span>
         <span class="grow__rank">${badge}</span>`;
-      row.onclick=()=>cycleRank(g,id);
+      if(!locked) row.onclick=()=>cycleRank(g,id);
       card.appendChild(row);
     });
     grid.appendChild(card);
@@ -388,6 +723,7 @@ function renderGroups(){
   return grid;
 }
 function cycleRank(g,id){
+  if(groupsLocked()) return;
   const m = state.rank[g] = state.rank[g]||{};
   if(m[id]){
     const was=m[id]; delete m[id];
@@ -401,6 +737,7 @@ function cycleRank(g,id){
   save(); notifyIfComplete('grupos'); renderStepper(); renderStage('grupos');
 }
 function renderThirds(){
+  const locked=groupsLocked();
   const box=document.createElement('div'); box.className='thirds';
   const pool=[];
   GLETTERS.forEach(g=>{ const id=rankTeam(g,3); if(id!=null) pool.push(id); });
@@ -418,9 +755,9 @@ function renderThirds(){
     const t=team(id); const sel=state.thirds.includes(id);
     const full = state.thirds.length>=8 && !sel;
     const chip=document.createElement('div');
-    chip.className='third'+(sel?' sel':'')+(full?' disabled':'');
+    chip.className='third'+(sel?' sel':'')+(full?' disabled':'')+(locked?' ro':'');
     chip.innerHTML=`${flagTag(t)}<span>${t.name}</span>`;
-    chip.onclick=()=>{
+    if(!locked) chip.onclick=()=>{
       const i=state.thirds.indexOf(id);
       if(i>=0) state.thirds.splice(i,1);
       else { if(state.thirds.length>=8) return; state.thirds.push(id); }
@@ -473,7 +810,12 @@ function advRow(key,slot,info,winId,num,locked){
 }
 function matchFoot(key,num,aI,bI,locked){
   const foot=document.createElement('div'); foot.className='match__foot';
-  if(locked){ foot.innerHTML=`<span class="foot-hint">🔒 Cerrado · ya se jugó o está en juego</span>`; return foot; }
+  if(locked){
+    let why='🔒 Cerrado · ya se jugó o está en juego';
+    if(!state.groupsSubmitted) why='🔒 Enviá tu fase de grupos para habilitar';
+    else if(state.nostradamus.sent) why='🔒 Sellado en Nostradamus';
+    foot.innerHTML=`<span class="foot-hint">${why}</span>`; return foot;
+  }
   if(aI.id==null||bI.id==null){
     foot.innerHTML=`<span class="foot-hint">${MATCHES[num].e==='r32'?'Completá la fase de grupos':'Se define con la ronda anterior'}</span>`;
     return foot; }
@@ -482,8 +824,12 @@ function matchFoot(key,num,aI,bI,locked){
   const hasScore = sc && sc.a!=null && sc.b!=null;
   const btn=document.createElement('button');
   btn.className='scorebtn'+(hasScore?' set':'');
-  btn.innerHTML = hasScore ? `🎯 Marcador ${sc.a}–${sc.b} <small>editar</small>`
-                           : `🎯 Adivinar marcador <small>+ puntos extra</small>`;
+  if(hasScore){
+    const tbtxt = (sc.a===sc.b) ? (sc.tb==='penales'?' · pen' : ' · alargue') : '';
+    btn.innerHTML = `✅ ${sc.a}–${sc.b}${tbtxt} <small>editar</small>`;
+  } else {
+    btn.innerHTML = `🎯 Cargar resultado <small>90' + definición</small>`;
+  }
   btn.onclick=()=>openScoreModal(key,num);
   foot.appendChild(btn);
   return foot;
@@ -509,8 +855,8 @@ function refreshCard(key,num){
   if(old) old.replaceWith(matchCard(num));
 }
 
-/* ---- modal de marcador (puntos extra) ---- */
-function closeModal(){ const m=document.getElementById('modal'); if(m){m.hidden=true; document.getElementById('modal-body').innerHTML='';} }
+/* ---- modal de resultado (90' + definición por alargue/penales) ---- */
+function closeModal(){ const m=document.getElementById('modal'); if(m){m.hidden=true; m.classList.remove('wide'); document.getElementById('modal-body').innerHTML='';} }
 function openScoreModal(key,num){
   const def=MATCHES[num];
   const aI=slotInfo(def.a), bI=slotInfo(def.b);
@@ -520,35 +866,56 @@ function openScoreModal(key,num){
   const advTeam = adv==='a'?A:B;
   const sc=state.scores[num]||{};
   const hasScore = sc.a!=null && sc.b!=null;
+  let tb = sc.tb||null;                       // método elegido ('alargue'|'penales'), solo si empate a 90'
   const body=document.getElementById('modal-body');
   body.innerHTML=`
-    <h3 class="modal__h">🎯 Puntos extra</h3>
-    <p class="modal__p">${hasScore?'Editá tu marcador para los puntos extra.':'<b>Opcional:</b> adiviná el marcador exacto y sumá puntos extra. Avanza '+advTeam.name+'.'}</p>
+    <h3 class="modal__h">🎯 Resultado del partido</h3>
+    <p class="modal__p">Cargá el marcador a los <b>90 minutos</b>. Avanza <b>${advTeam.name}</b>; si hay empate a los 90', definís cómo pasa.</p>
     <div class="modal__match">
       <div class="ms-row${adv==='a'?' adv':''}"><span class="mname">${flagTag(A)} ${A.name}</span>
         <input class="score" type="number" min="0" max="99" inputmode="numeric" id="ms-a" value="${sc.a!=null?sc.a:''}"></div>
       <div class="ms-row${adv==='b'?' adv':''}"><span class="mname">${flagTag(B)} ${B.name}</span>
         <input class="score" type="number" min="0" max="99" inputmode="numeric" id="ms-b" value="${sc.b!=null?sc.b:''}"></div>
     </div>
-    <p class="modal__note">📌 Si empatan, <b>${advTeam.name}</b> avanza por penales (según tu decisión).</p>
+    <div class="tb-block" id="tb-block" hidden>
+      <p class="tb-q">Empate a los 90' — <b>${advTeam.name}</b> avanza por:</p>
+      <div class="tb-opts">
+        <button type="button" class="tb-opt" data-tb="alargue">⏱ Alargue <small>(30')</small></button>
+        <button type="button" class="tb-opt" data-tb="penales">🥅 Penales</button>
+      </div>
+    </div>
+    <p class="modal__note">📌 Acertar el marcador a 90' suma puntos extra; acertar la definición (alargue/penales) da un bonus.</p>
     <p class="modal__warn" id="ms-warn" hidden></p>
     <div class="modal__actions">
       ${sc.a!=null
-        ? '<button class="btn btn--sm" id="ms-clear" style="background:#9aa2a6">Quitar marcador</button>'
+        ? '<button class="btn btn--sm" id="ms-clear" style="background:#9aa2a6">Quitar</button>'
         : '<button class="btn btn--sm" id="ms-skip" style="background:#aab">Más tarde</button>'}
       <button class="btn btn--sm" id="ms-save">Guardar</button>
     </div>`;
   document.getElementById('modal').hidden=false;
   const warn=body.querySelector('#ms-warn');
+  const tbBlock=body.querySelector('#tb-block');
+  const inA=body.querySelector('#ms-a'), inB=body.querySelector('#ms-b');
+  function refreshTB(){
+    const a=parseInt(inA.value,10), b=parseInt(inB.value,10);
+    const tie = !isNaN(a)&&!isNaN(b)&&a===b;
+    tbBlock.hidden=!tie;
+    if(!tie) tb=null;
+    body.querySelectorAll('.tb-opt').forEach(btn=> btn.classList.toggle('sel', btn.dataset.tb===tb));
+  }
+  inA.addEventListener('input',refreshTB);
+  inB.addEventListener('input',refreshTB);
+  body.querySelectorAll('.tb-opt').forEach(btn=> btn.onclick=()=>{ tb=btn.dataset.tb; refreshTB(); });
+  refreshTB();
   const skip=body.querySelector('#ms-skip'); if(skip) skip.onclick=closeModal;
   const clr=body.querySelector('#ms-clear'); if(clr) clr.onclick=()=>{ delete state.scores[num]; save(); refreshCard(key,num); renderStepper(); closeModal(); };
   body.querySelector('#ms-save').onclick=()=>{
-    const a=parseInt(body.querySelector('#ms-a').value,10);
-    const b=parseInt(body.querySelector('#ms-b').value,10);
+    const a=parseInt(inA.value,10), b=parseInt(inB.value,10);
     if(isNaN(a)||isNaN(b)){ warn.textContent='Completá ambos marcadores o tocá “Más tarde”.'; warn.hidden=false; return; }
     const advG=adv==='a'?a:b, rivG=adv==='a'?b:a;
-    if(rivG>advG){ warn.textContent=`El que no avanza no puede ganar: ${advTeam.name} debe ir igual o arriba (un empate se va a penales).`; warn.hidden=false; return; }
-    state.scores[num]={a:Math.max(0,Math.min(99,a)), b:Math.max(0,Math.min(99,b))};
+    if(rivG>advG){ warn.textContent=`${advTeam.name} avanza: su marcador no puede ser menor al del rival (un empate se define en alargue o penales).`; warn.hidden=false; return; }
+    if(a===b && !tb){ warn.textContent="Empate a los 90': elegí si avanza por alargue o por penales."; warn.hidden=false; return; }
+    state.scores[num]={a:Math.max(0,Math.min(99,a)), b:Math.max(0,Math.min(99,b)), tb:(a===b?tb:null)};
     save(); refreshCard(key,num); renderStepper(); closeModal();
   };
 }
@@ -558,6 +925,11 @@ function championBanner(){
   const b=document.createElement('div'); b.className='champion-banner';
   b.innerHTML=`<div class="cb__k">Tu campeón</div>
     <div class="cb__team">${champ!=null?flagTag(team(champ))+' '+team(champ).name:'🏆 Por definir'}</div>`;
+  if(champ!=null){
+    const sh=document.createElement('button'); sh.className='cb__share';
+    sh.innerHTML='📲 Compartir mi campeón'; sh.onclick=shareImage;
+    b.appendChild(sh);
+  }
   return b;
 }
 
@@ -578,6 +950,138 @@ function stageNav(id){
   return nav;
 }
 
+/* ---- modal de confirmación genérico ---- */
+function openConfirmModal({title, body, ok, onOk}){
+  const mb=document.getElementById('modal-body');
+  mb.innerHTML=`<h3 class="modal__h">${title}</h3><p class="modal__p">${body}</p>
+    <div class="modal__actions">
+      <button class="btn btn--sm" id="cf-no" style="background:#9aa2a6">Cancelar</button>
+      <button class="btn btn--sm" id="cf-yes">${ok}</button>
+    </div>`;
+  document.getElementById('modal').hidden=false;
+  mb.querySelector('#cf-no').onclick=closeModal;
+  mb.querySelector('#cf-yes').onclick=()=>{ closeModal(); onOk(); };
+}
+
+/* ---- ETAPA 1: barra de envío de la fase de grupos ---- */
+function groupsSubmitBar(){
+  const wrap=document.createElement('div'); wrap.className='submit-bar';
+  if(state.groupsSubmitted){
+    const done=document.createElement('div'); done.className='submit-bar__done';
+    done.innerHTML='🔒 <b>Fase de grupos enviada.</b> Tus clasificados quedaron registrados para la Etapa 1.';
+    wrap.appendChild(done);
+    if(!state.nostradamus.sent){
+      const b=document.createElement('button'); b.className='btn btn--lg'; b.textContent='🔮 Jugar Nostradamus';
+      b.onclick=openNostradamusModal; wrap.appendChild(b);
+    } else {
+      const tag=document.createElement('div'); tag.className='submit-bar__done';
+      tag.innerHTML='🔮 <b>Nostradamus enviado.</b> Tu cuadro completo quedó sellado.';
+      const b=document.createElement('button'); b.className='btn'; b.style.background='var(--green)';
+      b.textContent='Ver mi Nostradamus'; b.onclick=()=>goto('nostra');
+      wrap.appendChild(tag); wrap.appendChild(b);
+    }
+    return wrap;
+  }
+  const done=groupsDone();
+  const b=document.createElement('button'); b.className='btn btn--lg'; b.disabled=!done;
+  b.textContent = done ? '✅ Enviar fase de grupos' : 'Completá 12 grupos y 8 terceros para enviar';
+  b.onclick=submitGroups;
+  wrap.appendChild(b);
+  if(!done){
+    const hint=document.createElement('p'); hint.className='submit-bar__hint';
+    hint.textContent='Al enviar se cierra tu participación en la Etapa 1: no podrás cambiar tus clasificados.';
+    wrap.appendChild(hint);
+  }
+  return wrap;
+}
+function submitGroups(){
+  if(!groupsDone() || state.groupsSubmitted) return;
+  openConfirmModal({
+    title:'¿Enviar tu fase de grupos?',
+    body:'Una vez enviada <b>no podrás modificar</b> tus clasificados. Con esto cerrás tu participación en la Etapa 1 (primera entrega de premios).',
+    ok:'Sí, enviar',
+    onOk:()=>{
+      state.groupsSubmitted=true; save(); cloudSave();
+      renderStepper(); renderStage('grupos'); confetti();
+      setTimeout(openNostradamusModal, 700);
+    }
+  });
+}
+
+/* ---- popup Nostradamus ---- */
+function openNostradamusModal(){
+  const body=document.getElementById('modal-body');
+  body.innerHTML=`
+    <h3 class="modal__h">🔮 Modo Nostradamus</h3>
+    <p class="modal__p">¿Te animás a predecir <b>todo el cuadro</b> —de 16avos a la final— ahora mismo, en base a tus clasificados?</p>
+    <ul class="nostra-list">
+      <li>🎯 Sellás tu bracket completo de una sola vez.</li>
+      <li>🏆 El que más se acerque gana un <b>kit Stanley</b> especial.</li>
+      <li>⚠️ Es un compromiso: <b>no podrás editarlo</b> después.</li>
+      <li>➕ Igual seguís sumando puntos ronda por ronda en el ranking general.</li>
+    </ul>
+    <div class="modal__actions">
+      <button class="btn btn--sm" id="nostra-later" style="background:#9aa2a6">Ahora no</button>
+      <button class="btn btn--sm" id="nostra-go">Jugar Nostradamus</button>
+    </div>`;
+  document.getElementById('modal').hidden=false;
+  body.querySelector('#nostra-later').onclick=closeModal;
+  body.querySelector('#nostra-go').onclick=()=>{ closeModal(); goto('nostra'); };
+}
+
+/* ---- vista Nostradamus: todo el cuadro de una vez ---- */
+function renderNostra(){
+  stagesEl.innerHTML='';
+  const sent=state.nostradamus.sent;
+  const wrap=document.createElement('section'); wrap.className='stage active';
+  wrap.innerHTML=`<div class="stage__head">
+      <span class="stage__kicker">Modo Nostradamus</span>
+      <h2>🔮 Tu cuadro completo</h2>
+      <p>${sent
+        ? 'Tu bracket quedó sellado. Competís por el kit Stanley con la predicción más certera; seguís sumando puntos ronda por ronda.'
+        : 'Predecí de 16avos a la final con tus clasificados. Al confirmar, queda sellado y entrás a la competencia por el kit Stanley.'}</p></div>`;
+  KO_STAGES.forEach(sid=>{
+    const s=STAGES.find(x=>x.id===sid);
+    const h=document.createElement('h3'); h.className='nostra-round-title'; h.textContent=s.title;
+    wrap.appendChild(h);
+    wrap.appendChild(renderRound(sid));
+  });
+  const bar=document.createElement('div'); bar.className='submit-bar';
+  if(sent){
+    const d=document.createElement('div'); d.className='submit-bar__done';
+    d.innerHTML='🔒 <b>Nostradamus sellado.</b> ¡Mucha suerte!';
+    bar.appendChild(d);
+  } else {
+    const full=nostraComplete();
+    const b=document.createElement('button'); b.className='btn btn--lg'; b.disabled=!full;
+    b.textContent = full ? '🔮 Enviar mis pronósticos' : 'Elegí quién avanza en todas las llaves';
+    b.onclick=confirmNostra;
+    bar.appendChild(b);
+    const hint=document.createElement('p'); hint.className='submit-bar__hint';
+    hint.textContent='Elegí quién avanza en cada llave (obligatorio). El marcador a 90\' y la definición son opcionales pero suman para acercarte más.';
+    bar.appendChild(hint);
+  }
+  const back=document.createElement('button'); back.className='btn'; back.style.background='#9aa2a6';
+  back.textContent='← Volver a grupos'; back.onclick=()=>goto('grupos');
+  bar.appendChild(back);
+  wrap.appendChild(bar);
+  stagesEl.appendChild(wrap);
+}
+function confirmNostra(){
+  if(!nostraComplete() || state.nostradamus.sent) return;
+  openConfirmModal({
+    title:'¿Sellar tu Nostradamus?',
+    body:'Tu cuadro completo quedará <b>bloqueado</b>: no podrás editarlo. Competís por el kit Stanley con la predicción más certera.',
+    ok:'Sí, sellar',
+    onOk:()=>{
+      state.nostradamus={sent:true, at:new Date().toISOString()};
+      save(); cloudSave();
+      renderStepper(); renderNostra(); confetti();
+      toast('🔮 ¡Nostradamus sellado! Mucha suerte','ok');
+    }
+  });
+}
+
 /* ---- eventos globales + init ---- */
 document.getElementById('modal-x').addEventListener('click', closeModal);
 document.getElementById('modal').addEventListener('click', e=>{ if(e.target.id==='modal') closeModal(); });
@@ -589,7 +1093,7 @@ document.getElementById('design-mode').addEventListener('change', e=>{
 });
 
 document.getElementById('btn-resumen').addEventListener('click', openResumen);
-document.getElementById('btn-share').addEventListener('click', share);
+document.getElementById('btn-share').addEventListener('click', shareImage);
 
 (function init(){
   const p=getPlayer(); const nameEl=document.getElementById('player-name');
@@ -598,6 +1102,8 @@ document.getElementById('btn-share').addEventListener('click', share);
   document.getElementById('design-mode').checked=!!state.design;
   STAGES.forEach(s=>_doneFlag[s.id]=isDone(s.id));   // evita festejar al cargar
   _allDoneShown = progressStats().pct===100;
+  // antes de enviar grupos, la única etapa jugable es 'grupos' (salvo modo diseño)
+  if(!state.groupsSubmitted && !state.design && state.active!=='grupos') state.active='grupos';
   renderStepper();
   renderStage(state.active);
   tickNext(); setInterval(tickNext,1000);

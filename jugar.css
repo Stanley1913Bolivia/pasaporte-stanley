@@ -32,9 +32,26 @@
 /* resumen (en el modal) */
 .res-block{margin:12px 0;text-align:left}
 .res-block h4{font-family:'Montserrat',sans-serif;font-weight:800;font-size:13px;text-transform:uppercase;color:var(--ink);margin-bottom:4px}
-.res-block p,.res-row{font-size:14px;color:var(--text);line-height:1.55}
-.res-row{padding:2px 0}
-.res-block .flagimg,.res-row .flagimg{margin:0 5px -3px 0}
+.res-block p{font-size:14px;color:var(--text);line-height:1.55}
+.res-block p .flagimg{margin:0 5px -3px 0}
+
+/* resumen: tabla de clasificados (Grupo · 1.º · 2.º) */
+.modal.wide .modal__card{max-width:580px}
+.res-groups{margin-top:6px;border:1px solid var(--line-soft);border-radius:12px;overflow:hidden}
+.rg-head,.rg-row{display:grid;grid-template-columns:44px 1fr 1fr;align-items:stretch}
+.rg-head{background:var(--ink)}
+.rg-head span{padding:9px 10px;font-family:'Montserrat',sans-serif;font-weight:800;font-size:10.5px;
+  text-transform:uppercase;letter-spacing:.5px;color:#fff;display:flex;align-items:center}
+.rg-head .rg-c{justify-content:center;color:var(--tan)}
+.rg-row{border-top:1px solid var(--line-soft)}
+.rg-row:nth-child(even){background:var(--mist)}
+.rg-g{display:grid;place-items:center;font-family:'Montserrat',sans-serif;font-weight:900;font-size:14px;
+  color:#fff;background:var(--ink)}
+.rg-team{display:flex;align-items:center;gap:7px;padding:9px 10px;min-width:0;
+  font-size:13px;font-weight:600;color:var(--ink);border-left:1px solid var(--line-soft)}
+.rg-team .flagimg{flex:0 0 auto;margin:0}
+.rg-team .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rg-team.empty{color:var(--text-soft);font-style:italic;font-weight:500}
 
 /* confetti */
 .confetti-c{position:fixed;inset:0;pointer-events:none;z-index:300}
@@ -176,10 +193,49 @@
   color:#fff;border-radius:16px;padding:28px;box-shadow:var(--shadow)}
 .champion-banner .cb__k{font-family:'Montserrat',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:2px;font-size:12px;color:var(--tan)}
 .champion-banner .cb__team{font-family:'Anton',sans-serif;font-size:34px;margin-top:6px;display:flex;align-items:center;justify-content:center;gap:12px}
+.champion-banner .cb__share{margin-top:18px;font-family:'Montserrat',sans-serif;font-weight:800;font-size:13px;
+  text-transform:uppercase;letter-spacing:.5px;color:var(--green-deep);background:#fff;border:0;border-radius:999px;
+  padding:11px 22px;cursor:pointer;transition:transform .15s,background .15s}
+.champion-banner .cb__share:hover{transform:translateY(-2px);background:var(--tan);color:#fff}
 
 /* navegación inferior del wizard */
 .stage__nav{display:flex;justify-content:space-between;gap:12px;margin-top:34px}
 .stage__nav .spacer{flex:1}
+
+/* solo-lectura (grupos enviados / cuadro sellado) */
+.groups.ro .grow.ro,.third.ro{cursor:default}
+.groups.ro .grow.ro:hover{background:none}
+.third.ro{pointer-events:none}
+
+/* barra de envío (grupos / Nostradamus) */
+.submit-bar{display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:36px;text-align:center}
+.submit-bar .btn:disabled{opacity:.55;cursor:not-allowed}
+.submit-bar__done{background:var(--mist);border:1.5px solid var(--line-soft);border-radius:12px;
+  padding:14px 20px;font-size:14px;color:var(--ink);max-width:560px;line-height:1.5}
+.submit-bar__done b{color:var(--green-2)}
+.submit-bar__hint{color:var(--text-soft);font-size:13px;max-width:520px;line-height:1.5}
+
+/* definición por alargue / penales (modal de resultado) */
+.tb-block{margin:4px 0 14px;background:var(--mist);border-radius:10px;padding:12px 14px}
+.tb-q{font-size:13.5px;color:var(--ink);margin-bottom:10px;line-height:1.4}
+.tb-opts{display:flex;gap:10px}
+.tb-opt{flex:1;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;padding:11px 10px;border-radius:10px;
+  border:1.5px solid #ddd;background:#fff;color:var(--ink);cursor:pointer;transition:.12s}
+.tb-opt small{font-weight:600;color:var(--text-soft)}
+.tb-opt:hover{border-color:var(--tan)}
+.tb-opt.sel{background:var(--ink);color:#fff;border-color:var(--ink)}
+.tb-opt.sel small{color:var(--tan)}
+
+/* vista previa de la imagen para compartir */
+.share-preview{width:100%;max-width:340px;margin:6px auto 4px;display:block;border-radius:14px;
+  box-shadow:0 10px 30px rgba(0,0,0,.25)}
+
+/* popup + vista Nostradamus */
+.nostra-list{list-style:none;margin:0 0 8px;padding:0;display:flex;flex-direction:column;gap:9px}
+.nostra-list li{font-size:14px;color:var(--text);line-height:1.45;background:var(--mist);border-radius:9px;padding:9px 12px}
+.nostra-round-title{font-family:'Montserrat',sans-serif;font-weight:900;text-transform:uppercase;letter-spacing:.5px;
+  font-size:16px;color:var(--ink);margin:30px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--line-soft)}
+.nostra-round-title:first-of-type{margin-top:10px}
 
 @media(max-width:560px){
   .gamebar{top:54px;padding:10px 14px}
@@ -187,4 +243,5 @@
   .stage{padding:26px 14px 70px}
   .groups{grid-template-columns:1fr}
   .round{grid-template-columns:1fr}
+  .tb-opts{flex-direction:column}
 }
