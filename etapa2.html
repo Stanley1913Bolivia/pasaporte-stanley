@@ -54,11 +54,15 @@
   .e2-tie.show{display:flex}
   .e2-tie-q{font-size:12.5px;color:var(--tan-dark);font-weight:700;line-height:1.35}
   .e2-tie-opts{display:flex;gap:8px}
+  /* candado de fase: gate "Próximamente" si todavía no es eliminatorias */
+  .e2-gate{display:none}
+  html:not([data-phase="eliminatorias"]) .e2-gate{display:block;padding:24px 16px}
+  html:not([data-phase="eliminatorias"]) .e2-play{display:none}
 </style>
 </head>
 <body>
 <div class="flagbar" aria-hidden="true"></div>
-<div class="preview-flag">🔧 Etapa 2 en preparación — partidos de EJEMPLO. Pronto, con los equipos reales.</div>
+<div class="preview-flag e2-play">🔧 Etapa 2 en preparación — partidos de EJEMPLO. Pronto, con los equipos reales.</div>
 
 <header class="nav">
   <img class="nav__logo" src="assets/logo-stanley-horizontal.png" alt="Stanley 1913" />
@@ -70,7 +74,17 @@
   </nav>
 </header>
 
-<div class="gamebar">
+<!-- candado: se muestra mientras la fase no sea eliminatorias -->
+<section class="e2-gate">
+  <div class="locked-msg">
+    <div class="lk__ico">🔒</div>
+    <h3>Etapa 2 — Próximamente</h3>
+    <p>La quiniela en vivo se habilita cuando empiecen las eliminatorias del Mundial. Mientras tanto, armá tu fase de grupos y jugá Nostradamus.</p>
+    <a class="btn btn--lg" href="jugar.html" style="margin-top:18px;display:inline-block">Ir a mi quiniela →</a>
+  </div>
+</section>
+
+<div class="gamebar e2-play">
   <div class="gamebar__title">Etapa 2 · Predicciones en vivo<small>Adiviná cada partido real, día por día</small></div>
   <div class="gamebar__right">
     <span class="cloud" data-s="ok">✅ Guardado</span>
@@ -78,16 +92,16 @@
   </div>
 </div>
 
-<div class="progress-global" title="Avance de tus predicciones del día">
+<div class="progress-global e2-play" title="Avance de tus predicciones del día">
   <div class="pg-fill" style="width:40%"></div>
   <span class="pg-label">2/5 hoy</span>
 </div>
 
-<div class="daytabs" id="daytabs"></div>
-<main id="days"></main>
+<div class="daytabs e2-play" id="daytabs"></div>
+<main id="days" class="e2-play"></main>
 
 <!-- leyenda -->
-<section class="section section--cream">
+<section class="section section--cream e2-play">
   <h2 class="h2">¿Cómo se puntúa en Etapa 2?</h2>
   <p class="section__lead">Cada partido suma por separado y se acumula a tu puntaje general, día tras día.</p>
   <div class="score-cards" style="max-width:900px;margin:0 auto">
