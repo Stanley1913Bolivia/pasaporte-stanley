@@ -125,11 +125,17 @@ html[data-phase="eliminatorias"] .only-inscripcion{display:none}
 
 /* ---- premios ---- */
 .prizes{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:46px}
-.prize{background:var(--paper);border:1px solid var(--line-soft);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
-.prize__media{height:200px;background:var(--mist)}
-.prize__media--green{background:linear-gradient(160deg,#0c5a3a,#02402a)}
-.prize__media--bright{background:linear-gradient(160deg,#c7a888,#9c7e5f)}
-.prize__media--gray{background:linear-gradient(160deg,#d7d2ca,#abb1b4)}
+.prize{display:flex;flex-direction:column;background:var(--paper);border:1px solid var(--line-soft);
+  border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);text-decoration:none;color:inherit;
+  transition:transform .18s ease,box-shadow .18s ease}
+.prize:hover{transform:translateY(-5px);box-shadow:0 18px 40px rgba(0,0,0,.14)}
+.prize__media{position:relative;height:250px;background:#fff;overflow:hidden}
+.prize__img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:16px;
+  opacity:0;transition:opacity .8s ease}
+.prize__img.is-active{opacity:1}
+.prize__cta{margin-top:auto;padding:2px 18px 18px;font-family:'Montserrat',sans-serif;font-weight:800;
+  font-size:13px;color:var(--tan-dark);text-transform:uppercase;letter-spacing:.5px}
+.prize:hover .prize__cta{color:var(--green-2)}
 .prize .tag{display:block;background:var(--ink);color:var(--tan);font-family:'Montserrat',sans-serif;
   font-weight:800;text-transform:uppercase;letter-spacing:1px;font-size:14px;padding:10px 18px}
 .prize h3{font-family:'Montserrat',sans-serif;font-weight:800;font-size:18px;padding:16px 18px 2px;color:var(--ink)}

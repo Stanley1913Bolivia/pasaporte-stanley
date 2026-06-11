@@ -111,3 +111,18 @@ function goToQuiniela() {
   submitBtn.textContent = "¡Listo! Abriendo tu quiniela…";
   window.location.href = "jugar.html";
 }
+
+/* ====== carrusel de fotos de producto (Tu equipo Stanley) ====== */
+document.querySelectorAll("[data-carousel]").forEach(function (box, idx) {
+  var imgs = box.querySelectorAll(".prize__img");
+  if (imgs.length < 2) return;
+  var i = 0;
+  // arranque escalonado para que no roten todas a la vez
+  setTimeout(function () {
+    setInterval(function () {
+      imgs[i].classList.remove("is-active");
+      i = (i + 1) % imgs.length;
+      imgs[i].classList.add("is-active");
+    }, 3200);
+  }, idx * 900);
+});
