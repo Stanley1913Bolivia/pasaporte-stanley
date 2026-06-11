@@ -310,8 +310,25 @@ function ensureFonts(){
   const timeout = new Promise(r=>setTimeout(r,1500));   // nunca se cuelga esperando fuentes
   return Promise.race([load, timeout]);
 }
+/* caja de CTA "subí esta historia" (para las imágenes campeón / resumen) */
+function roundRectPath(ctx,x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+function drawStoryCTA(ctx, W, H){
+  const ig = (window.STANLEY||{}).IG_HANDLE || '@stanley1913.bo';
+  const bx=70, bw=W-140, bh=212, by=H-382;
+  ctx.fillStyle='rgba(181,150,119,.16)'; roundRectPath(ctx,bx,by,bw,bh,28); ctx.fill();
+  ctx.strokeStyle='rgba(181,150,119,.6)'; ctx.lineWidth=2.5; roundRectPath(ctx,bx,by,bw,bh,28); ctx.stroke();
+  ctx.textAlign='center';
+  ctx.fillStyle='#b59677'; ctx.font='800 30px Montserrat, sans-serif';
+  ctx.fillText('COMPARTÍ TU PRONÓSTICO', W/2, by+62);
+  ctx.fillStyle='#fff'; ctx.font='900 46px Montserrat, sans-serif';
+  ctx.fillText('SUBÍ ESTA HISTORIA', W/2, by+122);
+  ctx.fillStyle='rgba(255,255,255,.92)'; ctx.font='700 36px Montserrat, sans-serif';
+  ctx.fillText('y etiquetá a '+ig, W/2, by+172);
+  ctx.fillStyle='rgba(255,255,255,.6)'; ctx.font='600 27px Montserrat, sans-serif';
+  ctx.fillText('Pronosticá con Stanley · stanley1913.bo', W/2, H-58);
+}
 async function buildShareCanvas(withLogo){
-  const W=1080,H=1080;
+  const W=1080,H=1920;
   const c=document.createElement('canvas'); c.width=W; c.height=H;
   const x=c.getContext('2d');
   // fondo cancha (rayas verde oscuro)
@@ -334,40 +351,40 @@ async function buildShareCanvas(withLogo){
   }
   if(withLogo){
     try{ const logo=await loadImg('assets/logo-stanley-horizontal.png');
-      drawLogoFitted(x, logo, W/2, 56, 360, 186);
+      drawLogoFitted(x, logo, W/2, 100, 420, 232);
     }catch(e){}
   }
   x.textAlign='center';
-  x.fillStyle='#b59677'; x.font='800 30px Montserrat, sans-serif';
-  x.fillText('PRONOSTICÁ · TEMPORADA FUTBOLERA', W/2, 300);
-  x.fillStyle='rgba(255,255,255,.85)'; x.font='800 40px Montserrat, sans-serif';
-  x.fillText('MI CAMPEÓN', W/2, 432);
+  x.fillStyle='#b59677'; x.font='800 34px Montserrat, sans-serif';
+  x.fillText('PRONOSTICÁ · TEMPORADA FUTBOLERA', W/2, 470);
+  x.fillStyle='rgba(255,255,255,.9)'; x.font='800 54px Montserrat, sans-serif';
+  x.fillText('MI CAMPEÓN', W/2, 630);
   // campeón con su bandera
   const name=(champ!=null?team(champ).name:'Por definir').toUpperCase();
   const showCF = champ!=null && flags[champ];
-  let fs=132; x.font=`400 ${fs}px Anton, sans-serif`;
-  const maxW = showCF ? W-300 : W-130;
-  while(x.measureText(name).width>maxW && fs>54){ fs-=6; x.font=`400 ${fs}px Anton, sans-serif`; }
+  let fs=152; x.font=`400 ${fs}px Anton, sans-serif`;
+  const maxW = showCF ? W-320 : W-140;
+  while(x.measureText(name).width>maxW && fs>64){ fs-=6; x.font=`400 ${fs}px Anton, sans-serif`; }
   const nameW=x.measureText(name).width;
+  const cBase=810;
   if(showCF){
-    const fw=flagDims(fs).fw, gap=36, total=fw+gap+nameW, sx=(W-total)/2;
-    drawCanvasFlag(x, flags[champ], sx, 582, fs);
-    x.textAlign='left'; x.fillStyle='#fff'; x.font=`400 ${fs}px Anton, sans-serif`; x.fillText(name, sx+fw+gap, 582); x.textAlign='center';
+    const fw=flagDims(fs).fw, gap=40, total=fw+gap+nameW, sx=(W-total)/2;
+    drawCanvasFlag(x, flags[champ], sx, cBase, fs);
+    x.textAlign='left'; x.fillStyle='#fff'; x.font=`400 ${fs}px Anton, sans-serif`; x.fillText(name, sx+fw+gap, cBase); x.textAlign='center';
   } else {
-    x.fillStyle='#fff'; x.fillText(name, W/2, 582);
+    x.fillStyle='#fff'; x.fillText(name, W/2, cBase);
   }
-  x.fillStyle='#b59677'; x.fillRect(W/2-64, 626, 128, 6);
-  x.fillStyle='rgba(255,255,255,.92)'; x.font='700 34px Montserrat, sans-serif'; x.fillText('LA FINAL', W/2, 712);
-  x.font='600 31px Montserrat, sans-serif';
-  drawFlaggedPair(x, fin.A, fin.B, 758, 31, flags, 'rgba(255,255,255,.82)');
+  x.fillStyle='#b59677'; x.fillRect(W/2-80, 868, 160, 7);
+  x.fillStyle='rgba(255,255,255,.92)'; x.font='700 40px Montserrat, sans-serif'; x.fillText('LA FINAL', W/2, 1010);
+  x.font='600 38px Montserrat, sans-serif';
+  drawFlaggedPair(x, fin.A, fin.B, 1072, 38, flags, 'rgba(255,255,255,.85)');
   if(third!=null){
-    x.font='600 27px Montserrat, sans-serif';
-    drawLabeledTeam(x, '3.er puesto · ', third, team(third).name, W/2, 804, 27, flags, 'rgba(255,255,255,.65)');
+    x.font='600 32px Montserrat, sans-serif';
+    drawLabeledTeam(x, '3.er puesto · ', third, team(third).name, W/2, 1150, 32, flags, 'rgba(255,255,255,.68)');
   }
   const p=getPlayer();
-  if(p&&p.nombre){ x.fillStyle='#b59677'; x.font='700 31px Montserrat, sans-serif'; x.fillText('por '+p.nombre, W/2, 884); }
-  x.fillStyle='rgba(255,255,255,.6)'; x.font='600 24px Montserrat, sans-serif';
-  x.fillText('Pronosticá con Stanley · stanley1913.bo', W/2, 1012);
+  if(p&&p.nombre){ x.fillStyle='#b59677'; x.font='700 38px Montserrat, sans-serif'; x.fillText('por '+p.nombre, W/2, 1300); }
+  drawStoryCTA(x, W, H);
   return c;
 }
 /* genera el blob; si el canvas se contamina (file://) reintenta sin logo */
@@ -399,10 +416,12 @@ function showSharePreview(blob, opts){
   const url=URL.createObjectURL(blob);
   const file=new File([blob],filename,{type:'image/png'});
   const canShareFiles = !!(navigator.canShare && navigator.canShare({files:[file]}));
+  const ig = (window.STANLEY||{}).IG_HANDLE || '@stanley1913.bo';
   const body=document.getElementById('modal-body');
   body.innerHTML=`
     <h3 class="modal__h">${title}</h3>
     <img class="share-preview" src="${url}" alt="${title} · Pronosticá con Stanley" />
+    <p class="share-cta">📲 Subila a tu <b>historia de Instagram</b> y etiquetá a <b>${ig}</b></p>
     <div class="modal__actions">
       <button class="btn btn--sm" id="sp-dl">⬇️ Descargar</button>
       ${canShareFiles?'<button class="btn btn--sm" id="sp-share">Compartir</button>':''}
@@ -476,7 +495,7 @@ function drawFlaggedPair(ctx, idA, idB, baseline, fontH, flags, color){
   ctx.textAlign='center';
 }
 async function buildResumenCanvas(withMedia){
-  const W=1080, H=1500;
+  const W=1080, H=1920;
   const c=document.createElement('canvas'); c.width=W; c.height=H;
   const x=c.getContext('2d');
   // fondo cancha (rayas)
@@ -570,12 +589,11 @@ async function buildResumenCanvas(withMedia){
     drawTeamCell(r.b, 540, y, fw, fh, 1010);
   });
 
-  // pie
+  // pie + CTA historia
   const p=getPlayer();
   x.textAlign='center';
-  if(p&&p.nombre){ x.fillStyle='#b59677'; x.font='700 26px Montserrat, sans-serif'; x.fillText('por '+p.nombre, W/2, H-92); }
-  x.fillStyle='rgba(255,255,255,.6)'; x.font='600 22px Montserrat, sans-serif';
-  x.fillText('Pronosticá con Stanley · stanley1913.bo', W/2, H-50);
+  if(p&&p.nombre){ x.fillStyle='#b59677'; x.font='700 32px Montserrat, sans-serif'; x.fillText('por '+p.nombre, W/2, 1450); }
+  drawStoryCTA(x, W, H);
   return c;
 }
 function makeResumenBlob(withMedia){
@@ -850,6 +868,9 @@ function chooseAdv(key,slot,num){
   if(prev && prev!==slot) delete state.scores[num];   // marcador viejo pudo quedar contradictorio
   save();
   refreshCard(key,num); renderStepper();
+  // refrescar el banner del campeón si está en pantalla (se actualiza al instante al elegir la final)
+  const cb=document.querySelector('.champion-banner');
+  if(cb) cb.replaceWith(championBanner());
   const st = MATCHES[num].e==='tercer'?'final':MATCHES[num].e;
   notifyIfComplete(st);
   if(num===104) confetti();                 // ¡elegiste campeón!
