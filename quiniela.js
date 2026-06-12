@@ -1212,19 +1212,15 @@ document.getElementById('modal-x').addEventListener('click', closeModal);
 document.getElementById('modal').addEventListener('click', e=>{ if(e.target.id==='modal') closeModal(); });
 document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
 
-document.getElementById('design-mode').addEventListener('change', e=>{
-  state.design=e.target.checked; save();
-  renderStepper(); renderStage(state.active);
-});
-
 document.getElementById('btn-resumen').addEventListener('click', openResumen);
 document.getElementById('btn-share').addEventListener('click', shareImage);
 
 (function init(){
+  // modo diseño: solo vía ?design=1 (backdoor de testing; no persiste entre cargas)
+  state.design = new URLSearchParams(location.search).get('design')==='1';
   const p=getPlayer(); const nameEl=document.getElementById('player-name');
   if(p){ nameEl.textContent='Hola, '+p.nombre+' · tus pronósticos se guardan'+(APPS_URL?' en la nube':' (local)'); setCloud(APPS_URL?'ok':'local'); }
   else { nameEl.innerHTML='Modo invitado — <a href="index.html" style="color:var(--tan);font-weight:700">inscribite</a> para guardar tus pronósticos'; setCloud('local'); }
-  document.getElementById('design-mode').checked=!!state.design;
   STAGES.forEach(s=>_doneFlag[s.id]=isDone(s.id));   // evita festejar al cargar
   _allDoneShown = progressStats().pct===100;
   // antes de enviar grupos, la única etapa jugable es 'grupos' (salvo modo diseño)

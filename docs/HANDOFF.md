@@ -31,8 +31,8 @@ cd web
 python -m http.server 8000
 # abrir http://localhost:8000
 ```
-Para previsualizar fases: `?phase=eliminatorias` en la URL. Para destrabar fechas al testear: el
-toggle "Modo diseño" en la quiniela (QUITAR antes del lanzamiento — ver §7).
+Para previsualizar fases: `?phase=eliminatorias` en la URL. Para destrabar fechas al testear:
+`?design=1` en la URL de la quiniela (backdoor de testing; no persiste entre cargas).
 
 ## 4. Backend (Google Apps Script + Sheets + Drive) — lo más importante
 **Vive en una cuenta Google, NO en GitHub.** El sitio solo llama a la URL del Web App.
@@ -70,8 +70,8 @@ clasificada (máx 32), corte = Top 50% + ≥24 aciertos. Nostradamus = avanzar +
 
 ## 7. Pendientes / decisiones abiertas
 - Confirmar/poner el **link de WhatsApp** en `config.js`.
-- **Quitar el "Modo diseño"** de la quiniela antes del lanzamiento (hoy es un toggle visible en
-  `jugar.html`/`quiniela.js`; permite saltear candados de fecha — solo para testing).
+- ~~Quitar el "Modo diseño"~~ HECHO (2026-06-12): el toggle visible se eliminó; queda solo el
+  backdoor `?design=1` para testing (saltea candados de fecha, no persiste).
 - **Etapa 2** (`etapa2.html`): prototipo con datos de ejemplo, sin backend, bajo candado. Decidir si
   se reactiva (requiere desarrollo) o se maneja por comunidad. Ver `docs/PLAN-ETAPA2.md`.
 - Cargar `GOLES_REALES_GRUPOS` cuando se sepa.
