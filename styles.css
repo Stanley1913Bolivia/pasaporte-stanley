@@ -306,7 +306,7 @@ html[data-phase="eliminatorias"] .only-inscripcion{display:none}
 .prize-list{max-width:680px;margin:30px auto 0;list-style:none;padding:0;display:grid;gap:10px}
 .prize-list li{background:var(--paper);border:1px solid var(--line-soft);border-radius:10px;padding:13px 18px 13px 44px;
   font-size:15px;color:var(--ink);position:relative}
-.prize-list li::before{content:"";position:absolute;left:16px;top:18px;width:10px;height:10px;border-radius:50%;background:var(--tan)}
+.prize-list li::before{content:"";position:absolute;left:17px;top:20px;width:9px;height:9px;border-radius:50%;background:var(--tan)}
 .prizes__sub{text-align:center;font-family:'Montserrat',sans-serif;font-weight:800;text-transform:uppercase;
   letter-spacing:.5px;font-size:15px;color:var(--text-soft);margin:46px 0 6px}
 
@@ -430,3 +430,6 @@ html[data-phase="eliminatorias"] .only-inscripcion{display:none}
 .mission-card--locked::after{content:"Bloqueada";position:absolute;right:14px;top:14px;background:var(--ink);color:#fff;border-radius:999px;padding:5px 10px;font-family:'Montserrat',sans-serif;font-weight:800;font-size:10px;text-transform:uppercase;letter-spacing:.5px}
 .mission-card--legend{border-color:var(--tan);box-shadow:0 16px 36px rgba(181,150,119,.18)}
 
+
+/* FIX ICONOS ROTOS */
+.prize-list li::before{content:"" !important;position:absolute;left:17px;top:20px;width:9px;height:9px;border-radius:50%;background:var(--tan)}

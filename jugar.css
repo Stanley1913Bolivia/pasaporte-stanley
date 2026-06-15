@@ -348,9 +348,12 @@
 .stamp-grid{grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(2,minmax(112px,1fr));grid-auto-flow:column}
 .stamp--legend{border-color:var(--tan);box-shadow:0 10px 24px rgba(181,150,119,.18)}
 .passport-mission.locked .mission-instructions{filter:blur(2.5px);user-select:none}
-.passport-mission.locked h3::before{content:"[bloqueado] ";filter:none}
+.passport-mission.locked h3::before{content:"" !important}
 .passport-mission.locked .evidence-btn{opacity:.45;pointer-events:none}
 .passport-mission--legend{border-color:var(--tan);box-shadow:0 16px 36px rgba(181,150,119,.18)}
 @media(max-width:900px){.passport-sheet{grid-template-columns:1fr}.stamp-grid{grid-template-columns:repeat(3,1fr);grid-template-rows:none;grid-auto-flow:row}}
 @media(max-width:560px){.passport-sheet{grid-template-columns:1fr}.passport-sheet-panel{padding:18px;border-radius:12px}.passport-page{min-height:210px}.passport-page__stamps{grid-template-columns:1fr}.stamp-grid{grid-template-columns:repeat(2,1fr)}}
 
+
+/* FIX ICONOS ROTOS */
+.passport-mission.locked h3::before{content:"" !important}
