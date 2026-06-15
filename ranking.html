@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Ranking · Pronosticá con Stanley</title>
+<title>Comunidad · Pasaporte Stanley</title>
+<meta name="description" content="Niveles, progreso, beneficios y galería de comunidad de Pasaporte Stanley." />
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
@@ -11,6 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="jugar.css" />
 </head>
 <body>
 <div class="flagbar" aria-hidden="true"></div>
@@ -18,74 +20,71 @@
   <img class="nav__logo" src="assets/logo-stanley-horizontal.png" alt="Stanley 1913" />
   <nav class="nav__links">
     <a class="nav__link" href="index.html">Inicio</a>
-    <a class="nav__link" href="jugar.html">Mi pronóstico</a>
-    <a class="nav__link nav__link--etapa2" href="etapa2.html">Etapa 2</a>
+    <a class="nav__link" href="jugar.html">Mi Pasaporte</a>
+    <a class="nav__link nav__link--hide-mobile" href="etapa2.html">Especiales</a>
     <a class="nav__link nav__link--hide-mobile" href="https://stanley1913.bo/collections/convocados-stanley" target="_blank" rel="noopener">Tienda</a>
   </nav>
 </header>
 
 <section class="section">
-  <h2 class="h2">Rankings</h2>
-  <p class="section__lead">Dos competencias: el <strong>Ranking General Stanley</strong> y el <strong>Modo Nostradamus</strong>. Se actualizan al cerrar cada etapa.</p>
-  <div class="rank-tabs">
-    <button class="rank-tab active" data-tab="general">Ranking General Stanley</button>
-    <button class="rank-tab" data-tab="nostra">Modo Nostradamus</button>
+  <h2 class="h2">Comunidad Stanley</h2>
+  <p class="section__lead">Acá no hay ranking: hay progreso, niveles, beneficios y contenido destacado de participantes que viven la temporada con Stanley en Instagram.</p>
+  <div class="rank-preview">
+    <p class="rank-empty" id="community-progress">Abrí tu Pasaporte para ver tus sellos y nivel actual.</p>
+    <a class="btn btn--lg" href="jugar.html">Ver Mi Pasaporte</a>
   </div>
-  <p id="lb-updated" class="lb-updated"></p>
-  <div id="lb"></div>
 </section>
 
-<!-- ===== CÓMO SE PUNTÚA ===== -->
-<section class="section section--cream" id="puntajes">
-  <h2 class="h2">¿Cómo se puntúa?</h2>
-
-  <!-- Ranking General Stanley -->
-  <div class="score-block">
-    <h3 class="score-block__title">Ranking General Stanley <span class="score-block__tag score-block__tag--main">Competencia principal</span></h3>
-    <p class="score-block__note">Cada selección que clasifica suma 1 punto. El corte define quiénes avanzan.</p>
-    <div class="ptable-wrap" style="margin-top:18px">
-      <table class="ptable">
-        <thead><tr><th>Dinámica</th><th>Puntaje</th></tr></thead>
-        <tbody>
-          <tr><td>Cada selección clasificada acertada</td><td>1 punto</td></tr>
-          <tr><td>Máximo posible en fase de grupos</td><td>32 puntos</td></tr>
-          <tr><td>Corte mínimo</td><td>24 aciertos</td></tr>
-          <tr><td>Clasificación</td><td>Top 50% + ≥24</td></tr>
-          <tr><td>Desempate principal</td><td>Total de goles de grupos</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="score-block__note">El Ranking General continúa con nuevas dinámicas por etapa, comunicadas en la comunidad de Stanley Bolivia.</p>
+<section class="section section--cream">
+  <h2 class="h2">Beneficios por nivel</h2>
+  <div class="passport-levels">
+    <article class="level-card"><span>Bronze</span><strong>4 sellos</strong><p>Tu pasaporte entra en modo activo y empezás a aparecer en dinámicas de comunidad.</p></article>
+    <article class="level-card"><span>Silver</span><strong>7 sellos</strong><p>Sumás más oportunidades en activaciones y contenidos destacados.</p></article>
+    <article class="level-card level-card--gold"><span>Gold</span><strong>10 sellos</strong><p>Habilita participación en el gran sorteo de Pasaporte Stanley.</p></article>
+    <article class="level-card level-card--legend"><span>Legend</span><strong>12 sellos</strong><p>Nivel máximo, certificado especial y cierre completo del pasaporte.</p></article>
   </div>
+</section>
 
-  <!-- Modo Nostradamus -->
-  <div class="score-block">
-    <h3 class="score-block__title">Modo Nostradamus <span class="score-block__tag">Desafío opcional</span></h3>
-    <p class="score-block__note">Puntuación propia: predecí el cuadro completo. Acertar quién avanza suma; clavar el marcador exacto suma extra.</p>
-    <div class="score-table">
-      <div class="score-row score-row--head"><span>Ronda</span><span>Avanza</span><span>Marcador exacto</span></div>
-      <div class="score-row"><span>16avos</span><span class="score-v">4</span><span class="score-v score-v--x">+3</span></div>
-      <div class="score-row"><span>Octavos</span><span class="score-v">6</span><span class="score-v score-v--x">+4</span></div>
-      <div class="score-row"><span>Cuartos</span><span class="score-v">8</span><span class="score-v score-v--x">+5</span></div>
-      <div class="score-row"><span>Semifinal</span><span class="score-v">12</span><span class="score-v score-v--x">+6</span></div>
-      <div class="score-row"><span>Tercer puesto</span><span class="score-v">8</span><span class="score-v score-v--x">+5</span></div>
-      <div class="score-row score-row--final"><span>Final · Campeón</span><span class="score-v">20</span><span class="score-v score-v--x">+8</span></div>
-    </div>
+<section class="section">
+  <h2 class="h2">Galería de participantes</h2>
+  <p class="section__lead">Contenido destacado, no posiciones. La campaña celebra creatividad, comunidad y momentos Stanley.</p>
+  <div class="gallery-grid">
+    <article class="gallery-card"><span>Semana 1</span><strong>Mi Stanley va conmigo</strong><p>@participante</p></article>
+    <article class="gallery-card"><span>Semana 1</span><strong>Ritual de previa</strong><p>@participante</p></article>
+    <article class="gallery-card"><span>Semana 2</span><strong>Cábala Stanley</strong><p>@participante</p></article>
+    <article class="gallery-card"><span>Semana 3</span><strong>Set de celebración</strong><p>@participante</p></article>
+    <article class="gallery-card"><span>Semana 4</span><strong>Pasaporte completo</strong><p>@participante</p></article>
+    <article class="gallery-card"><span>Especial</span><strong>Nostradamus Stanley</strong><p>@participante</p></article>
   </div>
+</section>
 
-  <p class="section__foot">El Modo Nostradamus es opcional y paralelo: no reemplaza ni reduce la importancia del Ranking General Stanley.</p>
+<section class="section section--cream">
+  <h2 class="h2">Instagram es el eje</h2>
+  <div class="steps">
+    <article class="step"><span class="step__n">1</span><h3>Publicá</h3><p>Subí historia, post o reel correspondiente a la misión.</p></article>
+    <article class="step"><span class="step__n">2</span><h3>Etiquetá</h3><p>Mencioná a Stanley Bolivia para que la misión pueda validarse.</p></article>
+    <article class="step"><span class="step__n">3</span><h3>Capturá</h3><p>Tomá captura visible de la publicación y la etiqueta.</p></article>
+    <article class="step"><span class="step__n">4</span><h3>Subí</h3><p>Cargá la evidencia en tu Pasaporte y desbloqueá el sello.</p></article>
+  </div>
 </section>
 
 <footer class="footer pitch pitch--dark">
   <img class="footer__logo" src="assets/logo-stanley-vertical.png" alt="Stanley" />
   <div class="footer__legal">
-    <p>Promoción de Stanley Bolivia (Openbrands S.R.L.). Consultas: <a href="mailto:info@openbrands.com.bo">info@openbrands.com.bo</a></p>
+    <p class="disclaimer"><strong>Aviso legal:</strong> Esta campaña es organizada exclusivamente por Stanley Bolivia / Openbrands S.R.L. con fines promocionales y recreativos. No está afiliada, patrocinada, administrada, avalada ni asociada con ningún torneo, competición, organización deportiva, federación, selección, patrocinador oficial ni entidad relacionada.</p>
+    <p>Consultas: <a href="mailto:info@openbrands.com.bo">info@openbrands.com.bo</a></p>
     <p class="footer__copy">© 2026 Openbrands S.R.L. · Stanley 1913 Bolivia</p>
   </div>
 </footer>
 
 <script src="config.js"></script>
 <script src="phase.js"></script>
-<script src="ranking.js"></script>
+<script>
+  const data = JSON.parse(localStorage.getItem('stanley_passport') || '{}');
+  const done = Object.values(data.evidence || {}).filter(Boolean).length;
+  const level = done >= 12 ? 'Legend' : done >= 10 ? 'Gold' : done >= 7 ? 'Silver' : done >= 4 ? 'Bronze' : 'Inicial';
+  const el = document.getElementById('community-progress');
+  if (done) el.textContent = `Tu progreso actual: ${done}/12 sellos completados · Nivel ${level}.`;
+</script>
 </body>
 </html>

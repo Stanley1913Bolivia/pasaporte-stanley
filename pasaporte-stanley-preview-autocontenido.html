@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Preview · Pasaporte Stanley</title>
+<style>
+  :root{
+    --green:#01A66A;
+    --green-2:#019A63;
+    --green-dark:#03301f;
+    --green-deep:#022417;
+    --tan:#b59677;
+    --tan-dark:#9c7e5f;
+    --ink:#000;
+    --paper:#fff;
+    --mist:#f5f3ef;
+    --line:#e6e1d8;
+    --text:#4d5959;
+    --soft:#878787;
+    --red:#DA291C;
+    --yellow:#F4C300;
+    --bo-green:#007A33;
+  }
+  *{box-sizing:border-box;margin:0}
+  body{font-family:Arial,Helvetica,sans-serif;background:var(--mist);color:var(--text);line-height:1.55}
+  .flagbar{height:5px;background:linear-gradient(90deg,var(--red) 0 33.33%,var(--yellow) 33.33% 66.66%,var(--bo-green) 66.66% 100%)}
+  .pitch{
+    background:
+      radial-gradient(circle at 50% 50%,transparent 78px,rgba(255,255,255,.18) 79px 81px,transparent 82px),
+      linear-gradient(rgba(255,255,255,.16),rgba(255,255,255,.16)) 50% 0/2px 100% no-repeat,
+      repeating-linear-gradient(90deg,var(--green) 0 70px,var(--green-2) 70px 140px);
+    color:#fff;
+  }
+  .cover{min-height:72vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:64px 22px}
+  .cover-inner{max-width:920px}
+  .brand{display:inline-block;background:#000;color:var(--tan);font-weight:900;text-transform:uppercase;letter-spacing:1.4px;font-size:12px;padding:8px 16px;border-radius:4px}
+  h1{font-family:Impact,"Arial Black",Arial,sans-serif;font-weight:400;line-height:.92;letter-spacing:1px;font-size:clamp(58px,13vw,128px);margin:20px 0;text-shadow:0 4px 24px rgba(0,0,0,.25)}
+  h1 span{color:var(--tan)}
+  .lead{font-size:clamp(16px,2.4vw,21px);max-width:720px;margin:0 auto;color:rgba(255,255,255,.95)}
+  .meta{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:24px}
+  .pill{font-weight:900;font-size:12px;text-transform:uppercase;letter-spacing:.7px;background:rgba(255,255,255,.17);border:1px solid rgba(255,255,255,.28);border-radius:999px;padding:8px 13px;color:#fff}
+  main{max-width:1060px;margin:0 auto;padding:54px 22px 76px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px;margin-bottom:18px;box-shadow:0 10px 28px rgba(0,0,0,.06)}
+  h2{font-weight:900;text-transform:uppercase;color:#000;font-size:24px;line-height:1.1;margin-bottom:12px}
+  h3{font-weight:900;color:#000;font-size:18px;margin:18px 0 8px}
+  p{font-size:15px;margin-bottom:10px}
+  ul,ol{padding-left:22px;display:grid;gap:7px}
+  li{font-size:15px}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+  .status{display:inline-block;border-radius:999px;padding:5px 10px;background:rgba(1,166,106,.12);color:var(--green-2);font-weight:900;font-size:11px;text-transform:uppercase;margin-right:6px}
+  .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px;margin-top:14px}
+  table{width:100%;border-collapse:collapse;background:#fff;min-width:560px}
+  th{background:#000;color:#fff;text-align:left;font-weight:900;text-transform:uppercase;font-size:12px;padding:12px}
+  td{border-top:1px solid var(--line);padding:12px;color:#000;font-size:14px}
+  .mission-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:18px}
+  .mission{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:0 6px 20px rgba(0,0,0,.04)}
+  .week{display:inline-block;font-weight:900;font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:#fff;background:var(--green);border-radius:999px;padding:6px 11px;margin-bottom:12px}
+  .mission h3{font-size:16px;margin:0 0 8px}
+  .mission p{font-size:14px;color:var(--text);margin:0}
+  .note{background:#0b2f22;color:#fff;border-radius:14px;padding:22px;margin-top:18px}
+  .note p{color:rgba(255,255,255,.88);margin:0}
+  .legal{font-size:13px;color:var(--soft);border-top:1px solid var(--line);padding-top:14px;margin-top:14px}
+  .footer{text-align:center;padding:30px 20px 44px;color:var(--soft);font-size:13px}
+  @media(max-width:780px){
+    .grid,.mission-grid{grid-template-columns:1fr}
+    .cover{min-height:auto;padding:50px 18px}
+    .card{padding:22px 18px}
+    h1{font-size:clamp(48px,15vw,76px)}
+  }
+</style>
+</head>
+<body>
+<div class="flagbar"></div>
+
+<section class="cover pitch">
+  <div class="cover-inner">
+    <span class="brand">Preview ejecutivo</span>
+    <h1>PASAPORTE<br><span>STANLEY</span></h1>
+    <p class="lead">Reconversión de la web anterior hacia una experiencia de comunidad, Instagram, misiones, sellos y niveles.</p>
+    <div class="meta">
+      <span class="pill">Landing</span>
+      <span class="pill">Mi Pasaporte</span>
+      <span class="pill">12 misiones</span>
+      <span class="pill">Certificado Story</span>
+    </div>
+  </div>
+</section>
+
+<main>
+  <section class="card">
+    <h2>Concepto</h2>
+    <p><strong>Pasaporte Stanley</strong> permite que compradores Stanley Bolivia completen 12 misiones publicando contenido en Instagram, etiquetando a Stanley Bolivia y cargando una captura como evidencia.</p>
+    <p>Cada evidencia desbloquea un sello digital. La experiencia se enfoca en comunidad, momentos futboleros, contenido social, niveles y premios promocionales.</p>
+  </section>
+
+  <div class="grid">
+    <section class="card">
+      <h2>Páginas del proyecto</h2>
+      <ul>
+        <li><strong>Landing principal:</strong> presentación, registro, misiones, premios, bases y FAQ.</li>
+        <li><strong>Mi Pasaporte:</strong> sellos, progreso, misiones y carga de evidencias.</li>
+        <li><strong>Comunidad:</strong> niveles, beneficios y galería destacada.</li>
+        <li><strong>Misiones especiales:</strong> retos relámpago y Nostradamus lúdico.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Estado actual</h2>
+      <ul>
+        <li><span class="status">Hecho</span>Landing reconvertida a Pasaporte Stanley.</li>
+        <li><span class="status">Hecho</span>Misiones, sellos, progreso y niveles.</li>
+        <li><span class="status">Hecho</span>Certificado descargable 1080x1920 desde Gold.</li>
+        <li><span class="status">Hecho</span>Comunidad sin ranking de usuarios.</li>
+        <li><span class="status">Hecho</span>Nostradamus como misión lúdica.</li>
+      </ul>
+    </section>
+  </div>
+
+  <section class="card">
+    <h2>Flujo de usuario</h2>
+    <ol>
+      <li>El comprador registra sus datos y su respaldo válido de compra.</li>
+      <li>Ingresa a <strong>Mi Pasaporte</strong>.</li>
+      <li>Elige una misión disponible.</li>
+      <li>Publica historia, post o reel en Instagram y etiqueta a Stanley Bolivia.</li>
+      <li>Toma captura y la carga como evidencia.</li>
+      <li>Desbloquea un sello y avanza de nivel.</li>
+      <li>Al llegar a Gold o Legend puede descargar su certificado.</li>
+    </ol>
+  </section>
+
+  <section class="card">
+    <h2>Niveles</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Nivel</th><th>Sellos</th><th>Beneficio</th></tr></thead>
+        <tbody>
+          <tr><td>Bronze</td><td>4</td><td>Primer nivel del pasaporte.</td></tr>
+          <tr><td>Silver</td><td>7</td><td>Más presencia en comunidad.</td></tr>
+          <tr><td>Gold</td><td>10</td><td>Habilita participación en el gran sorteo y certificado.</td></tr>
+          <tr><td>Legend</td><td>12</td><td>Nivel máximo y certificado especial.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Misiones</h2>
+    <p>Las 12 misiones están visibles desde el inicio, con desbloqueo por semana. Todas siguen la misma regla: publicar en Instagram, etiquetar a Stanley Bolivia, tomar captura y subir evidencia.</p>
+    <div class="mission-grid">
+      <article class="mission"><span class="week">Semana 1</span><h3>Mi Stanley va conmigo</h3><p>Mostrá tu Stanley acompañando tu día futbolero.</p></article>
+      <article class="mission"><span class="week">Semana 2</span><h3>La cábala Stanley</h3><p>Contá qué no puede faltar cuando vivís fútbol.</p></article>
+      <article class="mission"><span class="week">Semana 3</span><h3>Nostradamus Stanley</h3><p>Misión secreta lúdica, sin ranking ni premio por acertar.</p></article>
+      <article class="mission"><span class="week">Semana 4</span><h3>Legend Stanley</h3><p>Cerrá el pasaporte con tu mejor momento Stanley.</p></article>
+    </div>
+  </section>
+
+  <div class="grid">
+    <section class="card">
+      <h2>Registro</h2>
+      <ul>
+        <li>Nombre completo.</li>
+        <li>Carnet de Identidad obligatorio.</li>
+        <li>Instagram, WhatsApp, correo y ciudad.</li>
+        <li>Canal de compra.</li>
+        <li>Número de factura o respaldo válido.</li>
+        <li>Carga de factura o respaldo válido.</li>
+        <li>Checkboxes legales.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Premios</h2>
+      <ul>
+        <li>1 gran premio.</li>
+        <li>3 premios grandes.</li>
+        <li>5 premios intermedios.</li>
+        <li>10 regalos de distribuidores.</li>
+      </ul>
+      <div class="note">
+        <p>“Mientras más sellos completás, más niveles desbloqueás y más oportunidades tenés de participar por premios Stanley.”</p>
+      </div>
+    </section>
+  </div>
+
+  <section class="card">
+    <h2>Legal y tono</h2>
+    <p>La campaña queda presentada como dinámica recreativa y promocional. No se comunica como plataforma de predicción, apuesta, ranking deportivo ni experiencia oficial asociada a entidades deportivas.</p>
+    <p class="legal"><strong>Disclaimer:</strong> Esta campaña es organizada exclusivamente por Stanley Bolivia / Openbrands S.R.L. con fines promocionales y recreativos. No está afiliada, patrocinada, administrada, avalada ni asociada con ningún torneo, competición, organización deportiva, federación, selección, patrocinador oficial ni entidad relacionada.</p>
+  </section>
+</main>
+
+<div class="footer">Preview autocontenido · Pasaporte Stanley · Stanley Bolivia / Openbrands S.R.L.</div>
+</body>
+</html>

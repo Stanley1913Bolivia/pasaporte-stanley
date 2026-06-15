@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Tu pronóstico · Pronosticá con Stanley</title>
-<meta name="description" content="Armá tus pronósticos etapa por etapa: fase de grupos, dieciseisavos, octavos, cuartos, semis y la final. Sumá puntos y ganá premios Stanley." />
+<title>Mi Pasaporte · Pasaporte Stanley</title>
+<meta name="description" content="Completá misiones, subí evidencias de Instagram y desbloqueá sellos en tu Pasaporte Stanley." />
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
@@ -15,57 +15,75 @@
 <link rel="stylesheet" href="jugar.css" />
 </head>
 <body>
-
-<!-- franja Bolivia -->
 <div class="flagbar" aria-hidden="true"></div>
 
-<!-- NAV -->
 <header class="nav">
   <img class="nav__logo" src="assets/logo-stanley-horizontal.png" alt="Stanley 1913" />
   <nav class="nav__links">
     <a class="nav__link" href="index.html">Inicio</a>
-    <a class="nav__link nav__link--etapa2" href="etapa2.html">Etapa 2</a>
-    <a class="nav__link" href="ranking.html">Ranking</a>
+    <a class="nav__link" href="ranking.html">Comunidad</a>
+    <a class="nav__link nav__link--hide-mobile" href="etapa2.html">Especiales</a>
     <a class="nav__link nav__link--hide-mobile" href="https://stanley1913.bo/collections/convocados-stanley" target="_blank" rel="noopener">Tienda</a>
   </nav>
 </header>
 
-<!-- BARRA DE JUEGO -->
 <div class="gamebar">
-  <div class="gamebar__title">Tu pronóstico<small id="player-name">Modo invitado · se guarda en este dispositivo</small></div>
+  <div class="gamebar__title">Mi Pasaporte<small id="player-name">Modo invitado · se guarda en este dispositivo</small></div>
   <div class="gamebar__right">
-    <span class="cloud" id="cloud"></span>
-    <span class="nextmatch" id="nextmatch"></span>
-    <button class="gb-btn" id="btn-resumen">📋 Resumen</button>
-    <button class="gb-btn" id="btn-share">📲 Compartir</button>
+    <span class="cloud" id="cloud" data-s="ok">Guardado local</span>
+    <span class="points"><b id="stamp-count">0</b>/12 sellos</span>
+    <button class="gb-btn" id="btn-certificate" disabled>Descargar certificado</button>
   </div>
 </div>
 
-<!-- PROGRESO GLOBAL -->
-<div class="progress-global" title="Avance total de tu pronóstico">
+<div class="progress-global" title="Avance de tu Pasaporte Stanley">
   <div class="pg-fill" id="pg-fill"></div>
-  <span class="pg-label" id="pg-label">0%</span>
+  <span class="pg-label" id="pg-label">0/12 sellos</span>
 </div>
 
-<!-- STEPPER -->
-<div class="stepper" id="stepper"><!-- JS --></div>
+<main class="passport-shell">
+  <section class="passport-hero">
+    <div>
+      <span class="stage__kicker">La fiesta del fútbol se vive con Stanley</span>
+      <h1>Tu Pasaporte Stanley</h1>
+      <p>Publicá cada misión en Instagram, etiquetá a Stanley Bolivia, subí la captura y desbloqueá tu sello.</p>
+    </div>
+    <div class="passport-summary">
+      <span>Nivel actual</span>
+      <strong id="current-level">Inicial</strong>
+      <p id="next-level">Te faltan 4 sellos para Bronze.</p>
+    </div>
+  </section>
 
-<!-- ETAPAS -->
-<main id="stages"><!-- JS genera cada .stage --></main>
+  <section class="stamp-panel">
+    <div class="stamp-panel__head">
+      <h2>Sellos obtenidos</h2>
+      <p id="stamp-summary">0 de 12 misiones completadas.</p>
+    </div>
+    <div class="stamp-grid" id="stamp-grid"></div>
+  </section>
 
-<!-- FOOTER -->
+  <section class="mission-board">
+    <div class="stage__head">
+      <span class="stage__kicker">Misiones</span>
+      <h2>Completá tu pasaporte</h2>
+      <p>Las misiones bloqueadas se habilitan por semana. Las disponibles aceptan captura de historia, post o reel donde etiquetes a Stanley Bolivia.</p>
+    </div>
+    <div class="mission-list" id="mission-list"></div>
+  </section>
+</main>
+
 <footer class="footer pitch pitch--dark">
   <img class="footer__logo" src="assets/logo-stanley-vertical.png" alt="Stanley" />
   <div class="footer__legal">
-    <h3>Cómo se juega</h3>
-    <p>Completá tus pronósticos en cada etapa antes del cierre. Sumás puntos por tus aciertos y subís en el ranking. Las etapas de llaves se habilitan a medida que se conocen los partidos.</p>
-    <p><strong>Aviso de marca:</strong> promoción recreativa de Stanley Bolivia (Openbrands S.R.L.). No está asociada ni avalada por ningún torneo u organización oficial. Las referencias a selecciones y fútbol son genéricas.</p>
+    <h3>Cómo funciona</h3>
+    <p>Completá la misión, publicá contenido en Instagram, etiquetá a Stanley Bolivia, tomá captura y subila a tu Pasaporte. El sello se desbloquea automáticamente al guardar la evidencia.</p>
+    <p><strong>Aviso legal:</strong> campaña recreativa y promocional de Stanley Bolivia / Openbrands S.R.L. No constituye apuesta, juego de azar, actividad de gambling ni plataforma de apuestas.</p>
     <p>Consultas: <a href="mailto:info@openbrands.com.bo">info@openbrands.com.bo</a></p>
     <p class="footer__copy">© 2026 Openbrands S.R.L. · Stanley 1913 Bolivia</p>
   </div>
 </footer>
 
-<!-- MODAL marcador (puntos extra) -->
 <div class="modal" id="modal" hidden>
   <div class="modal__card">
     <button class="modal__x" id="modal-x" aria-label="Cerrar">×</button>
@@ -75,6 +93,6 @@
 
 <script src="config.js"></script>
 <script src="phase.js"></script>
-<script src="quiniela.js"></script>
+<script src="pasaporte.js"></script>
 </body>
 </html>
