@@ -276,6 +276,20 @@
 .passport-summary strong{font-family:'Anton',sans-serif;font-size:54px;line-height:1;margin:10px 0}
 .passport-summary p{color:rgba(255,255,255,.78);font-size:14px;line-height:1.45}
 
+.my-passport-panel{background:#fff;border:1px solid var(--line-soft);border-radius:16px;padding:24px;margin-bottom:34px;box-shadow:0 6px 20px rgba(0,0,0,.04)}
+.my-passport-panel__head{display:flex;flex-direction:column;align-items:flex-start;gap:8px;margin-bottom:18px}
+.my-passport-panel__head h2{font-family:'Montserrat',sans-serif;font-weight:900;text-transform:uppercase;color:var(--ink);font-size:24px;line-height:1.1}
+.my-passport-panel__head p{color:var(--text);font-size:14px;line-height:1.5;max-width:760px}
+.my-passport-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.my-passport-card{min-width:0;background:var(--mist);border:1px solid var(--line-soft);border-radius:12px;padding:16px}
+.my-passport-card--main{background:var(--ink);border-color:var(--ink);color:#fff}
+.my-passport-card span{display:block;font-family:'Montserrat',sans-serif;font-weight:900;text-transform:uppercase;letter-spacing:.7px;font-size:11px;color:var(--tan-dark);margin-bottom:8px}
+.my-passport-card--main span{color:var(--tan)}
+.my-passport-card strong{display:block;font-family:'Montserrat',sans-serif;font-weight:900;font-size:20px;line-height:1.15;color:var(--ink);overflow-wrap:anywhere}
+.my-passport-card--main strong{color:#fff}
+.my-passport-card small{display:block;margin-top:8px;color:var(--text-soft);font-size:12.5px;line-height:1.35;overflow-wrap:anywhere}
+.my-passport-card--main small{color:rgba(255,255,255,.72)}
+
 .stamp-panel{background:var(--mist);border:1px solid var(--line-soft);border-radius:16px;padding:24px;margin-bottom:34px}
 .stamp-panel__head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:18px}
 .stamp-panel__head h2{font-family:'Montserrat',sans-serif;font-weight:900;text-transform:uppercase;color:var(--ink);font-size:22px}
@@ -311,6 +325,7 @@
 
 @media(max-width:900px){
   .passport-hero{grid-template-columns:1fr}
+  .my-passport-grid{grid-template-columns:1fr 1fr}
   .stamp-grid{grid-template-columns:repeat(3,1fr)}
   .passport-mission{grid-template-columns:1fr}
   .evidence-box{max-width:260px}
@@ -318,8 +333,9 @@
 @media(max-width:560px){
   .passport-shell{padding:24px 14px 64px}
   .stamp-panel__head{display:block}
+  .my-passport-grid{grid-template-columns:1fr}
   .stamp-grid{grid-template-columns:repeat(2,1fr)}
-  .passport-hero>div:first-child,.passport-summary,.stamp-panel,.passport-mission{border-radius:12px;padding:18px}
+  .passport-hero>div:first-child,.passport-summary,.my-passport-panel,.stamp-panel,.passport-mission{border-radius:12px;padding:18px}
   .evidence-box{max-width:none}
 }
 

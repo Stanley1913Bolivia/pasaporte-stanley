@@ -24,6 +24,7 @@ const evidenceCount = () => Object.values(passport.evidence || {}).filter(Boolea
 const isDone = mission => Boolean(passport.evidence && passport.evidence[mission.id]);
 const isLocked = mission => mission.week > CURRENT_WEEK && !isDone(mission);
 const levelFor = count => count >= 12 ? 'Legend' : count >= 10 ? 'Gold' : count >= 7 ? 'Silver' : count >= 4 ? 'Bronze' : 'Inicial';
+const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[char]));
 const nextLevel = count => {
   if (count < 4) return { name:'Bronze', missing:4-count };
   if (count < 7) return { name:'Silver', missing:7-count };
@@ -47,7 +48,59 @@ function updateHeader() {
   $('#current-level').textContent = levelFor(count);
   $('#stamp-summary').textContent = `${count} de 12 misiones completadas · Semana activa ${CURRENT_WEEK}.`;
   $('#next-level').textContent = next ? `Te faltan ${next.missing} sellos para ${next.name}.` : 'Pasaporte completo. Nivel Legend desbloqueado.';
-if (player) $('#player-name').textContent = `${player.nombre || 'Participante'} · ${player.ciudad || 'Bolivia'} · ${player.instagram || '@instagram'}`;
+  if (player) $('#player-name').textContent = `${player.nombre || 'Participante'} · ${player.ciudad || 'Bolivia'} · ${player.instagram || '@instagram'}`;
+  renderMyPassport(count, next);
+}
+
+function renderMyPassport(count, next) {
+  const grid = $('#my-passport-grid');
+  const status = $('#my-passport-status');
+  if (!grid || !status) return;
+
+  const playerName = escapeHtml(player?.nombre || 'Participante no registrado en este dispositivo');
+  const instagram = escapeHtml(player?.instagram || 'Pendiente');
+  const city = escapeHtml(player?.ciudad || 'Pendiente');
+  const documentId = escapeHtml(player?.documento || 'Pendiente');
+  const whatsapp = escapeHtml(player?.whatsapp || 'Pendiente');
+  const email = escapeHtml(player?.email || 'Pendiente');
+  const completed = MISSIONS.filter(isDone).map(mission => escapeHtml(mission.name));
+  const available = MISSIONS.filter(mission => !isDone(mission) && !isLocked(mission)).length;
+
+  status.textContent = player
+    ? 'Estos son los datos que usaremos para validar tu participacion, tus sellos y la entrega de premios.'
+    : 'No encontramos una inscripcion guardada en este navegador. Si ya te inscribiste desde otro dispositivo, volve a abrir tu pasaporte desde ese equipo o registrate nuevamente.';
+
+  grid.innerHTML = `
+    <article class="my-passport-card my-passport-card--main">
+      <span>Participante</span>
+      <strong>${playerName}</strong>
+      <small>${instagram} - ${city}</small>
+    </article>
+    <article class="my-passport-card">
+      <span>Carnet de identidad</span>
+      <strong>${documentId}</strong>
+      <small>Dato requerido para validar premios.</small>
+    </article>
+    <article class="my-passport-card">
+      <span>Contacto</span>
+      <strong>${whatsapp}</strong>
+      <small>${email}</small>
+    </article>
+    <article class="my-passport-card">
+      <span>Nivel actual</span>
+      <strong>${levelFor(count)}</strong>
+      <small>${next ? `${next.missing} sellos para ${next.name}` : 'Pasaporte completo'}</small>
+    </article>
+    <article class="my-passport-card">
+      <span>Sellos</span>
+      <strong>${count}/12</strong>
+      <small>${completed.length ? completed.join(', ') : 'Aun no hay misiones completadas.'}</small>
+    </article>
+    <article class="my-passport-card">
+      <span>Semana activa</span>
+      <strong>${CURRENT_WEEK}</strong>
+      <small>${available} misiones disponibles para cargar evidencia.</small>
+    </article>`;
 }
 
 function renderStamps() {
