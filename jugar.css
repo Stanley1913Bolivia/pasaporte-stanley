@@ -1,4 +1,4 @@
-﻿/* ===== Quiniela Stanley â€” componentes del juego ===== */
+/* ===== Quiniela Stanley — componentes del juego ===== */
 
 /* barra superior de progreso/puntos */
 .gamebar{position:sticky;top:60px;z-index:40;background:var(--ink);color:#fff;
@@ -10,7 +10,7 @@
   font-family:'Montserrat',sans-serif;font-weight:800;padding:7px 16px;border-radius:999px;font-size:14px}
 .points b{font-size:18px}
 
-/* barra de juego: prÃ³ximo partido + botones */
+/* barra de juego: próximo partido + botones */
 .cloud{font-family:'Montserrat',sans-serif;font-weight:700;font-size:12px;color:#cfcfcf;white-space:nowrap}
 .cloud[data-s="ok"]{color:#7fe0b0}
 .cloud[data-s="err"]{color:#f0b37a}
@@ -33,7 +33,7 @@
 .res-block p{font-size:14px;color:var(--text);line-height:1.55}
 .res-block p .flagimg{margin:0 5px -3px 0}
 
-/* resumen: tabla de clasificados (Grupo Â· 1.Âº Â· 2.Âº) */
+/* resumen: tabla de clasificados (Grupo · 1.º · 2.º) */
 .modal.wide .modal__card{max-width:580px}
 .res-groups{margin-top:6px;border:1px solid var(--line-soft);border-radius:12px;overflow:hidden}
 .rg-head,.rg-row{display:grid;grid-template-columns:44px 1fr 1fr;align-items:stretch}
@@ -201,7 +201,7 @@
   font-family:'Montserrat',sans-serif;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.6px;text-decoration:underline}
 .champion-banner .cb__home:hover{color:#fff}
 
-/* navegaciÃ³n inferior del wizard */
+/* navegación inferior del wizard */
 .stage__nav{display:flex;justify-content:space-between;gap:12px;margin-top:34px}
 .stage__nav .spacer{flex:1}
 
@@ -210,7 +210,7 @@
 .groups.ro .grow.ro:hover{background:none}
 .third.ro{pointer-events:none}
 
-/* pronÃ³stico base (desempate + campeÃ³n de referencia) */
+/* pronóstico base (desempate + campeón de referencia) */
 .base-pron{margin-top:30px;background:#fff;border:1px solid var(--line-soft);border-radius:14px;padding:22px}
 .base-pron__title{font-family:'Montserrat',sans-serif;font-weight:800;color:var(--ink);font-size:18px;text-transform:uppercase}
 .base-pron__lead{color:var(--text-soft);font-size:13.5px;margin:4px 0 14px;line-height:1.5}
@@ -223,7 +223,7 @@
 .base-field input:disabled,.base-field select:disabled{background:var(--mist);color:var(--text-soft)}
 @media(max-width:560px){ .base-pron__grid{grid-template-columns:1fr} }
 
-/* barra de envÃ­o (grupos / Nostradamus) */
+/* barra de envío (grupos / Nostradamus) */
 .submit-bar{display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:36px;text-align:center}
 .submit-bar .btn:disabled{opacity:.55;cursor:not-allowed}
 .submit-bar__done{background:var(--mist);border:1.5px solid var(--line-soft);border-radius:12px;
@@ -231,7 +231,7 @@
 .submit-bar__done b{color:var(--green-2)}
 .submit-bar__hint{color:var(--text-soft);font-size:13px;max-width:520px;line-height:1.5}
 
-/* definiciÃ³n por alargue / penales (modal de resultado) */
+/* definición por alargue / penales (modal de resultado) */
 .tb-block{margin:4px 0 14px;background:var(--mist);border-radius:10px;padding:12px 14px}
 .tb-q{font-size:13.5px;color:var(--ink);margin-bottom:10px;line-height:1.4}
 .tb-opts{display:flex;gap:10px}
@@ -348,7 +348,7 @@
 .stamp-grid{grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(2,minmax(112px,1fr));grid-auto-flow:column}
 .stamp--legend{border-color:var(--tan);box-shadow:0 10px 24px rgba(181,150,119,.18)}
 .passport-mission.locked .mission-instructions{filter:blur(2.5px);user-select:none}
-.passport-mission.locked h3::before{content:"ðŸ”’ ";filter:none}
+.passport-mission.locked h3::before{content:"[bloqueado] ";filter:none}
 .passport-mission.locked .evidence-btn{opacity:.45;pointer-events:none}
 .passport-mission--legend{border-color:var(--tan);box-shadow:0 16px 36px rgba(181,150,119,.18)}
 @media(max-width:900px){.passport-sheet{grid-template-columns:1fr}.stamp-grid{grid-template-columns:repeat(3,1fr);grid-template-rows:none;grid-auto-flow:row}}

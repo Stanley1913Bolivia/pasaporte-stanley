@@ -1,11 +1,11 @@
-﻿:root{
+:root{
   /* cancha (hero/registro/footer) */
   --green:#01A66A; --green-2:#019A63; --green-dark:#03301f; --green-deep:#022417;
   /* Stanley (acento de marca y neutros de la tienda) */
   --tan:#b59677; --tan-dark:#9c7e5f; --bright:#2BE08A;
   --ink:#000000; --paper:#fff; --mist:#f5f3ef; --line-soft:#e6e1d8;
   --text:#4d5959; --text-soft:#878787;
-  /* Bolivia (guiÃ±o Convocados) */
+  /* Bolivia (guiño Convocados) */
   --bo-red:#DA291C; --bo-yellow:#F4C300; --bo-green:#007A33;
   --line:rgba(255,255,255,.14); --line-strong:rgba(255,255,255,.28);
   --shadow:0 18px 50px rgba(0,0,0,.12);
@@ -19,13 +19,13 @@ img{max-width:100%;display:block}
 a{color:inherit}
 
 /* banderas por imagen (reemplazan emojis, que no renderizan en Windows)
-   tamaÃ±o FIJO + object-fit:cover â†’ todas uniformes sin importar su proporciÃ³n */
+   tamaño FIJO + object-fit:cover → todas uniformes sin importar su proporción */
 .flagimg{width:24px;height:16px;object-fit:cover;border-radius:2px;display:inline-block;flex:0 0 auto;
   vertical-align:-3px;background:#e9e9e9;box-shadow:0 0 0 1px rgba(0,0,0,.12)}
 .mname .flagimg{width:27px;height:18px;margin-right:6px;vertical-align:-4px}
 .cb__team .flagimg{width:45px;height:30px;vertical-align:-6px;box-shadow:0 0 0 1px rgba(255,255,255,.4)}
 
-/* franja bandera Bolivia (guiÃ±o Convocados) */
+/* franja bandera Bolivia (guiño Convocados) */
 .flagbar{height:5px;width:100%;
   background:linear-gradient(90deg,var(--bo-red) 0 33.33%,var(--bo-yellow) 33.33% 66.66%,var(--bo-green) 66.66% 100%)}
 
@@ -55,7 +55,7 @@ a{color:inherit}
 .nav__link{font-family:'Montserrat',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:1px;
   font-size:12.5px;color:#fff;text-decoration:none;opacity:.9;transition:color .15s,opacity .15s}
 .nav__link:hover{color:var(--tan);opacity:1}
-/* link "Etapa 2" del nav: sÃ³lo visible en fase eliminatorias */
+/* link "Etapa 2" del nav: sólo visible en fase eliminatorias */
 .nav__link--etapa2{display:none}
 [data-phase="eliminatorias"] .nav__link--etapa2{display:inline-flex;align-items:center;gap:7px;color:var(--tan)}
 .nav__link--etapa2::before{content:"";width:8px;height:8px;border-radius:50%;background:#2BE08A;
@@ -68,7 +68,7 @@ a{color:inherit}
   font-family:'Montserrat',sans-serif;font-weight:800;font-size:14px;text-align:center}
 .phase-banner__cta{background:#fff;color:var(--green-deep);border-radius:999px;padding:8px 16px;
   font-weight:900;font-size:13px;white-space:nowrap}
-/* en eliminatorias, el home oculta el foco de inscripciÃ³n y muestra el de partidos
+/* en eliminatorias, el home oculta el foco de inscripción y muestra el de partidos
    (selector con html[...] para ganarle en especificidad a .hero__cta/.countdown) */
 html:not([data-phase="eliminatorias"]) .only-eliminatorias{display:none}
 html[data-phase="eliminatorias"] .only-inscripcion{display:none}
@@ -180,7 +180,7 @@ html[data-phase="eliminatorias"] .only-inscripcion{display:none}
 .team .flag{font-size:18px;line-height:1}
 .team.disabled{opacity:.4;pointer-events:none}
 
-/* chips posiciÃ³n */
+/* chips posición */
 .chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
 .chip{font-family:'Montserrat',sans-serif;font-weight:700;font-size:14px;padding:11px 20px;border-radius:999px;
   border:1.5px solid #ddd;background:#fff;cursor:pointer;transition:.12s;color:var(--ink);text-transform:uppercase;letter-spacing:.5px}
@@ -203,7 +203,7 @@ html[data-phase="eliminatorias"] .only-inscripcion{display:none}
 .form-note b{color:var(--ink)}
 .form-error{background:#fdeaea;color:#b3261e;border:1px solid #f3c0bc;border-radius:8px;padding:12px 14px;font-size:14px;font-weight:600;margin-bottom:14px}
 
-/* confirmaciÃ³n */
+/* confirmación */
 .confirm{position:relative;z-index:2;max-width:560px;margin:0 auto}
 .confirm__card{background:var(--paper);color:var(--text);border-radius:18px;padding:46px 34px;text-align:center;box-shadow:var(--shadow)}
 .confirm__check{width:78px;height:78px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;
@@ -232,7 +232,7 @@ html[data-phase="eliminatorias"] .only-inscripcion{display:none}
 .lb-pts{font-family:'Montserrat',sans-serif;font-weight:900;color:var(--green-2);text-align:right}
 .lb-table th:nth-child(4){text-align:right}
 .lb-me{background:rgba(181,150,119,.14);outline:2px solid var(--tan)}
-.lb-me td:nth-child(2)::after{content:" â˜…";color:var(--tan-dark)}
+.lb-me td:nth-child(2)::after{content:"";color:var(--tan-dark)}
 @media(max-width:560px){ .lb-hide{display:none} }
 
 /* ---- bloques informativos de beneficios ---- */
@@ -306,7 +306,7 @@ html[data-phase="eliminatorias"] .only-inscripcion{display:none}
 .prize-list{max-width:680px;margin:30px auto 0;list-style:none;padding:0;display:grid;gap:10px}
 .prize-list li{background:var(--paper);border:1px solid var(--line-soft);border-radius:10px;padding:13px 18px 13px 44px;
   font-size:15px;color:var(--ink);position:relative}
-.prize-list li::before{content:"ðŸ†";position:absolute;left:14px}
+.prize-list li::before{content:"";position:absolute;left:16px;top:18px;width:10px;height:10px;border-radius:50%;background:var(--tan)}
 .prizes__sub{text-align:center;font-family:'Montserrat',sans-serif;font-weight:800;text-transform:uppercase;
   letter-spacing:.5px;font-size:15px;color:var(--text-soft);margin:46px 0 6px}
 
