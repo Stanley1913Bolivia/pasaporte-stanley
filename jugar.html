@@ -1,10 +1,10 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="es">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Mi Pasaporte · Pasaporte Stanley</title>
-<meta name="description" content="Completá misiones, subí evidencias de Instagram y desbloqueá sellos en tu Pasaporte Stanley." />
+<title>Mi Pasaporte Â· Pasaporte Stanley</title>
+<meta name="description" content="CompletÃ¡ misiones, subÃ­ evidencias de Instagram y desbloqueÃ¡ sellos en tu Pasaporte Stanley." />
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
@@ -28,7 +28,7 @@
 </header>
 
 <div class="gamebar">
-  <div class="gamebar__title">Mi Pasaporte<small id="player-name">Modo invitado · se guarda en este dispositivo</small></div>
+  <div class="gamebar__title">Mi Pasaporte<small id="player-name">Modo invitado Â· se guarda en este dispositivo</small></div>
   <div class="gamebar__right">
     <span class="cloud" id="cloud" data-s="ok">Guardado local</span>
     <span class="points"><b id="stamp-count">0</b>/12 sellos</span>
@@ -44,9 +44,9 @@
 <main class="passport-shell">
   <section class="passport-hero">
     <div>
-      <span class="stage__kicker">La fiesta del fútbol se vive con Stanley</span>
+      <span class="stage__kicker">La fiesta del fÃºtbol se vive con Stanley</span>
       <h1>Tu Pasaporte Stanley</h1>
-      <p>Publicá cada misión en Instagram, etiquetá a Stanley Bolivia, subí la captura y desbloqueá tu sello.</p>
+      <p>PublicÃ¡ cada misiÃ³n en Instagram, etiquetÃ¡ a Stanley Bolivia, subÃ­ la captura y desbloqueÃ¡ tu sello.</p>
     </div>
     <div class="passport-summary">
       <span>Nivel actual</span>
@@ -62,12 +62,19 @@
     </div>
     <div class="stamp-grid" id="stamp-grid"></div>
   </section>
+  <section class="passport-sheet-panel">
+    <div class="stamp-panel__head">
+      <h2>Hoja de pasaporte</h2>
+      <p>Tres sellos por semana. Las semanas futuras muestran pistas, pero no permiten cargar evidencia.</p>
+    </div>
+    <div class="passport-sheet" id="passport-sheet"></div>
+  </section>
 
   <section class="mission-board">
     <div class="stage__head">
       <span class="stage__kicker">Misiones</span>
-      <h2>Completá tu pasaporte</h2>
-      <p>Las misiones bloqueadas se habilitan por semana. Las disponibles aceptan captura de historia, post o reel donde etiquetes a Stanley Bolivia.</p>
+      <h2>CompletÃ¡ tu pasaporte</h2>
+      <p>Las semanas futuras muestran sÃ³lo el nombre de los retos. La descripciÃ³n y la carga de evidencia se habilitan semana por semana.</p>
     </div>
     <div class="mission-list" id="mission-list"></div>
   </section>
@@ -76,17 +83,17 @@
 <footer class="footer pitch pitch--dark">
   <img class="footer__logo" src="assets/logo-stanley-vertical.png" alt="Stanley" />
   <div class="footer__legal">
-    <h3>Cómo funciona</h3>
-    <p>Completá la misión, publicá contenido en Instagram, etiquetá a Stanley Bolivia, tomá captura y subila a tu Pasaporte. El sello se desbloquea automáticamente al guardar la evidencia.</p>
-    <p><strong>Aviso legal:</strong> campaña recreativa y promocional de Stanley Bolivia / Openbrands S.R.L. No constituye apuesta, juego de azar, actividad de gambling ni plataforma de apuestas.</p>
+    <h3>CÃ³mo funciona</h3>
+    <p>CompletÃ¡ la misiÃ³n, publicÃ¡ contenido en Instagram, etiquetÃ¡ a Stanley Bolivia, tomÃ¡ captura y subila a tu Pasaporte. El sello se desbloquea automÃ¡ticamente al guardar la evidencia.</p>
+    <p><strong>Aviso legal:</strong> campaÃ±a recreativa y promocional de Stanley Bolivia / Openbrands S.R.L. No constituye apuesta, juego de azar, actividad de gambling ni plataforma de apuestas.</p>
     <p>Consultas: <a href="mailto:info@openbrands.com.bo">info@openbrands.com.bo</a></p>
-    <p class="footer__copy">© 2026 Openbrands S.R.L. · Stanley 1913 Bolivia</p>
+    <p class="footer__copy">Â© 2026 Openbrands S.R.L. Â· Stanley 1913 Bolivia</p>
   </div>
 </footer>
 
 <div class="modal" id="modal" hidden>
   <div class="modal__card">
-    <button class="modal__x" id="modal-x" aria-label="Cerrar">×</button>
+    <button class="modal__x" id="modal-x" aria-label="Cerrar">Ã—</button>
     <div id="modal-body"></div>
   </div>
 </div>
@@ -96,3 +103,5 @@
 <script src="pasaporte.js"></script>
 </body>
 </html>
+
+
