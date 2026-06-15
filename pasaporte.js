@@ -47,8 +47,7 @@ function updateHeader() {
   $('#current-level').textContent = levelFor(count);
   $('#stamp-summary').textContent = `${count} de 12 misiones completadas · Semana activa ${CURRENT_WEEK}.`;
   $('#next-level').textContent = next ? `Te faltan ${next.missing} sellos para ${next.name}.` : 'Pasaporte completo. Nivel Legend desbloqueado.';
-  $('#btn-certificate').disabled = count < 10;
-  if (player) $('#player-name').textContent = `${player.nombre || 'Participante'} · ${player.ciudad || 'Bolivia'} · ${player.instagram || '@instagram'}`;
+if (player) $('#player-name').textContent = `${player.nombre || 'Participante'} · ${player.ciudad || 'Bolivia'} · ${player.instagram || '@instagram'}`;
 }
 
 function renderStamps() {
@@ -165,11 +164,8 @@ function syncEvidence(missionId, file, dataUrl) {
 function openModal(html) { $('#modal-body').innerHTML = html; $('#modal').hidden = false; }
 function closeModal() { $('#modal').hidden = true; }
 
-function drawCertificate() { return; }
-
 function renderAll() { updateHeader(); renderStamps(); renderPassportSheet(); renderMissions(); }
 
 $('#modal-x').addEventListener('click', closeModal);
 $('#modal').addEventListener('click', event => { if (event.target.id === 'modal') closeModal(); });
-$('#btn-certificate').addEventListener('click', drawCertificate);
 renderAll();
