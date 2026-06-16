@@ -484,3 +484,116 @@
     height:66px!important;
   }
 }
+/* Ajuste final miniaturas y hoja Stanley */
+.passport-hero > div{
+  position:relative;
+  min-height:190px;
+  padding-right:210px;
+}
+.passport-hero .passport-campaign-stamp{
+  position:absolute!important;
+  right:28px!important;
+  top:50%!important;
+  transform:translateY(-50%)!important;
+  width:156px!important;
+  height:156px!important;
+  max-width:156px!important;
+  object-fit:contain!important;
+  margin:0!important;
+  padding:4px!important;
+  background:#fff!important;
+  border:0!important;
+  border-radius:14px!important;
+  box-shadow:0 12px 28px rgba(0,0,0,.08)!important;
+}
+.my-passport-panel,
+.passport-summary{
+  display:none!important;
+}
+.stamp-thumb{
+  width:52px;
+  height:52px;
+  object-fit:contain;
+  display:block;
+  margin:0 auto 8px;
+  border-radius:10px;
+  background:#e7f6fb;
+  border:1px solid rgba(0,166,115,.18);
+  padding:5px;
+}
+.stamp.done .stamp-thumb,
+.stamp-thumb.is-done{
+  border-color:rgba(0,166,115,.45);
+  box-shadow:0 8px 18px rgba(0,166,115,.14);
+}
+.stamp:not(.done) .stamp-thumb{
+  opacity:.9;
+}
+.passport-stamp{
+  min-height:112px!important;
+  align-content:center!important;
+}
+.passport-stamp > strong,
+.passport-stamp > span:not(.stamp-fallback){
+  display:none!important;
+}
+.passport-stamp small{
+  margin-top:6px!important;
+}
+.passport-stamp.done small{
+  display:none!important;
+}
+.passport-stamp-art{
+  display:block;
+  width:126px;
+  height:86px;
+  max-width:100%;
+  object-fit:contain;
+  margin:0 auto;
+  border:0;
+  background:transparent;
+  box-shadow:none;
+}
+.passport-stamp.done{
+  border-color:rgba(0,166,115,.28)!important;
+  background:rgba(255,255,255,.72)!important;
+}
+.passport-stamp .stamp-fallback{
+  width:44px!important;
+  height:44px!important;
+  margin:0 auto!important;
+  border-radius:50%!important;
+  border:1px dashed rgba(151,123,91,.42)!important;
+  background:transparent!important;
+  color:rgba(151,123,91,.75)!important;
+  font-size:14px!important;
+}
+.passport-stamp.locked{
+  filter:none!important;
+}
+.mission-stamp-preview .stamp-thumb,
+.mission-stamp-preview .passport-stamp-art{
+  width:76px!important;
+  height:76px!important;
+  object-fit:contain!important;
+  border-radius:12px!important;
+}
+@media (max-width:760px){
+  .passport-hero > div{
+    min-height:0;
+    padding-right:0;
+    padding-top:110px;
+  }
+  .passport-hero .passport-campaign-stamp{
+    top:18px!important;
+    right:18px!important;
+    transform:none!important;
+    width:92px!important;
+    height:92px!important;
+    max-width:92px!important;
+  }
+  .passport-stamp-art{
+    width:96px;
+    height:70px;
+  }
+}
