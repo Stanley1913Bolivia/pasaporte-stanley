@@ -373,3 +373,14 @@
 
 /* FIX ICONOS ROTOS */
 .passport-mission.locked h3::before{content:"" !important}
+
+/* Medidor compacto del pasaporte */
+.passport-meter{position:sticky;top:110px;z-index:35;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;background:rgba(0,0,0,.92);color:#fff;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.12);box-shadow:0 10px 28px rgba(0,0,0,.18)}
+.passport-meter span,.passport-meter small{font-family:'Montserrat',sans-serif;font-weight:800;font-size:12px;letter-spacing:.4px;text-transform:uppercase}
+.passport-meter span{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:7px 12px}
+.passport-meter strong{color:var(--tan);font-weight:900}
+.passport-meter small{color:rgba(255,255,255,.72);text-transform:none;letter-spacing:0}
+.passport-hero{grid-template-columns:1fr}
+.passport-hero>div:first-child{max-width:none}
+@media(max-width:560px){.passport-meter{top:96px;align-items:stretch}.passport-meter span,.passport-meter small{font-size:11px}.passport-meter small{width:100%;text-align:center}}
+.my-passport-panel{display:none !important}

@@ -433,3 +433,10 @@ html[data-phase="eliminatorias"] .only-inscripcion{display:none}
 
 /* FIX ICONOS ROTOS */
 .prize-list li::before{content:"" !important;position:absolute;left:17px;top:20px;width:9px;height:9px;border-radius:50%;background:var(--tan)}
+/* Banda verde para alternar secciones */
+.section--green{max-width:none;background:repeating-linear-gradient(90deg,var(--green-dark) 0 70px,var(--green-deep) 70px 140px);color:#fff;position:relative;overflow:hidden}
+.section--green::before{content:"";position:absolute;inset:0;background:linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12)) 50% 0/2px 100% no-repeat;opacity:.65;pointer-events:none}
+.section--green>*{position:relative;max-width:1120px;margin-inline:auto}
+.section--green .h2,.section--green .section__lead{color:#fff}
+.section--green .step{background:#fff;color:var(--text);border-color:rgba(255,255,255,.24)}
+.section--green .step__n{background:var(--tan)}
