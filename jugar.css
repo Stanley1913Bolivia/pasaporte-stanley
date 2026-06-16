@@ -404,3 +404,83 @@
 .mission-stamp-preview .stamp-art--preview{width:74px;height:74px}
 .mission-stamp-preview .stamp-art--full{width:150px;height:150px}
 .stamp-fallback{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:var(--mist);font-family:'Montserrat',sans-serif;font-weight:900;color:var(--tan-dark);margin:0 auto 8px}
+/* Ajuste sellos miniaturas Stanley */
+.passport-hero .passport-campaign-stamp{
+  width:96px!important;
+  height:96px!important;
+  max-width:96px!important;
+  object-fit:contain!important;
+  margin:0 0 14px!important;
+  padding:6px!important;
+  border-radius:12px!important;
+  background:#fff!important;
+}
+.my-passport-panel,
+.passport-summary{
+  display:none!important;
+}
+.stamp-thumb{
+  width:48px;
+  height:48px;
+  object-fit:contain;
+  display:block;
+  margin:0 auto 8px;
+  border-radius:10px;
+  background:#fff;
+  border:1px solid var(--line-soft);
+  padding:5px;
+}
+.stamp-thumb.is-preview{
+  opacity:.82;
+  filter:saturate(.95);
+}
+.stamp.done .stamp-thumb,
+.stamp-thumb.is-done{
+  border-color:rgba(0,166,115,.45);
+  box-shadow:0 8px 18px rgba(0,166,115,.12);
+}
+.stamp:not(.done) .stamp-thumb{
+  opacity:.45;
+  filter:grayscale(.45);
+}
+.passport-stamp .stamp-art--full{
+  width:112px!important;
+  height:82px!important;
+  max-width:100%!important;
+  object-fit:contain!important;
+  border:0!important;
+  background:transparent!important;
+  padding:0!important;
+  box-shadow:none!important;
+}
+.passport-stamp.done .stamp-art--full{
+  filter:saturate(1.05);
+}
+.passport-stamp .stamp-fallback{
+  width:42px!important;
+  height:42px!important;
+  margin:0 auto 8px!important;
+  border-radius:50%!important;
+  border:1px dashed rgba(151,123,91,.42)!important;
+  background:transparent!important;
+  color:rgba(151,123,91,.75)!important;
+  font-size:14px!important;
+}
+.mission-stamp-preview .stamp-thumb,
+.mission-stamp-preview .stamp-art--full{
+  width:72px!important;
+  height:72px!important;
+  object-fit:contain!important;
+  border-radius:12px!important;
+}
+@media (max-width:700px){
+  .passport-hero .passport-campaign-stamp{
+    width:74px!important;
+    height:74px!important;
+    max-width:74px!important;
+  }
+  .passport-stamp .stamp-art--full{
+    width:88px!important;
+    height:66px!important;
+  }
+}

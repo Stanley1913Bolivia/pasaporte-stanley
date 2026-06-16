@@ -1,7 +1,7 @@
 const MISSIONS = [
   { id:'m1', week:1, name:'Mi Stanley va conmigo', desc:'Mostra tu Stanley acompanando tu dia futbolero.', instructions:'Publica una historia, post o reel con tu Stanley en un momento real de tu dia. Etiqueta a Stanley Bolivia y subi la captura.', stamp:'assets/sellos/sello-01-mi-stanley-va-conmigo.png' },
   { id:'m2', week:1, name:'Ritual de previa', desc:'Comparti tu previa con tu producto Stanley favorito.', instructions:'Mostra tu bebida, mesa o preparacion antes de vivir la temporada futbolera. La etiqueta a Stanley Bolivia debe verse en la captura.', stamp:'assets/sellos/sello-02-ritual-de-previa.png' },
-  { id:'m3', week:1, name:'Color de hinchada', desc:'Subi un momento usando colores de celebracion.', instructions:'Combina tu Stanley con colores, outfit o decoracion futbolera. Subi la captura de Instagram como evidencia.', stamp:'assets/sellos/sello-03-color-de-hinchada.png' },
+  { id:'m3', week:1, name:'Color de hinchada', desc:'Subi un momento usando colores de celebracion.', instructions:'Combina tu Stanley con colores, outfit o decoracion futbolera. Subi la captura de Instagram como evidencia.', stamp:'assets/sellos/sello-03-color-de-hinchada.png', thumb:'assets/sellos/miniatura-03-color-de-hinchada.png' },
   { id:'m4', week:2, name:'Stanley en la mesa', desc:'Mostra tu mesa, snack o bebida de temporada.', instructions:'Comparti una foto o video de tu mesa con presencia Stanley. Etiqueta a Stanley Bolivia.', stamp:'assets/sellos/sello-04-stanley-en-la-mesa.png' },
   { id:'m5', week:2, name:'La cabala Stanley', desc:'Conta que no puede faltar cuando vivis futbol.', instructions:'Publica tu cabala, rutina o detalle favorito junto a tu Stanley. Subi captura visible.' },
   { id:'m6', week:2, name:'Compartido sabe mejor', desc:'Mostra como compartis el momento con amigos o familia.', instructions:'Comparti un momento grupal, cuidando que tu Stanley sea protagonista o parte clara de la escena.' },
@@ -78,7 +78,7 @@ function renderStamps() {
     const el = document.createElement('button');
     el.className = `stamp ${done ? 'done' : ''} ${locked ? 'locked' : ''} ${mission.highlight ? 'stamp--legend' : ''}`;
     el.type = 'button';
-    el.innerHTML = `${stampMarkup(mission, done, index + 1)}<strong>${mission.name}</strong><small>${done ? 'Sello desbloqueado' : locked ? `Bloqueado - semana ${mission.week}` : 'Disponible'}</small>`;
+    el.innerHTML = `${stampMarkup(mission, done, 'thumb')}<strong>${mission.name}</strong><small>${done ? 'Sello desbloqueado' : locked ? `Bloqueado - semana ${mission.week}` : 'Disponible'}</small>`;
     el.onclick = () => document.getElementById(mission.id)?.scrollIntoView({ behavior:'smooth', block:'center' });
     wrap.appendChild(el);
   });
@@ -100,7 +100,7 @@ function renderPassportSheet() {
         ${MISSIONS.filter(m => m.week === week).map(mission => {
           const done = isDone(mission), locked = isLocked(mission);
           return `<button class="passport-stamp ${done ? 'done' : ''} ${locked ? 'locked' : ''} ${mission.highlight ? 'special' : ''}" type="button" data-target="${mission.id}">
-            ${stampMarkup(mission, done, mission.id.replace('m',''))}
+            ${stampMarkup(mission, done, 'full')}
             <strong>${mission.name}</strong>
             <small>${locked ? 'Se desbloquea luego' : done ? 'Sellado' : 'Disponible'}</small>
           </button>`;
@@ -132,7 +132,7 @@ function renderMissions() {
         <div class="mission-status">${done ? 'Sello desbloqueado' : locked ? 'Carga bloqueada hasta su semana' : 'Mision disponible'}</div>
       </div>
       <div class="evidence-box">
-        ${mission.stamp ? `<div class="mission-stamp-preview">${stampMarkup(mission, done, mission.id.replace('m',''))}</div>` : ''}
+        ${mission.stamp ? `<div class="mission-stamp-preview">${stampMarkup(mission, done, 'full')}</div>` : ''}
         ${evidence ? `<img src="${evidence.dataUrl}" alt="Evidencia cargada para ${mission.name}" />` : `<div class="evidence-empty">${locked ? 'Carga bloqueada' : 'Subi captura de Instagram'}</div>`}
         <label class="gb-btn evidence-btn ${locked ? 'disabled' : ''}">
           ${done ? 'Cambiar evidencia' : locked ? 'Bloqueado' : 'Subir evidencia'}
