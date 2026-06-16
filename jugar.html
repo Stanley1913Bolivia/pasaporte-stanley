@@ -36,13 +36,14 @@
 
 <div class="progress-global" title="Avance de tu Pasaporte Stanley">
   <div class="pg-fill" id="pg-fill"></div>
-  
+  <span class="pg-label" id="pg-label">0/12 sellos</span>
+</div>
+
 <div class="passport-meter" aria-label="Estado del pasaporte">
   <span>Semana <strong id="active-week">1</strong></span>
-  <span>Nivel <strong id="current-level">Inicial</strong></span>
+  <span>Nivel <strong id="meter-level">Inicial</strong></span>
   <span><strong id="meter-stamps">0/12</strong> sellos</span>
-  <small id="next-level">Te faltan 4 sellos para Bronze.</small>
-</div><span class="pg-label" id="pg-label">0/12 sellos</span>
+  <small id="meter-next-level">Te faltan 4 sellos para Bronze.</small>
 </div>
 
 <main class="passport-shell">
@@ -51,7 +52,22 @@
       <span class="stage__kicker">La fiesta del fútbol se vive con Stanley</span>
       <h1>Tu Pasaporte Stanley</h1>
       <p>Publicá cada misión en Instagram, etiquetá a Stanley Bolivia, subí la captura y desbloqueá tu sello.</p>
-    </div></section>
+    </div>
+    <div class="passport-summary">
+      <span>Nivel actual</span>
+      <strong id="current-level">Inicial</strong>
+      <p id="next-level">Te faltan 4 sellos para Bronze.</p>
+    </div>
+  </section>
+
+  <section class="my-passport-panel" aria-labelledby="my-passport-title">
+    <div class="my-passport-panel__head">
+      <span class="stage__kicker">Mi pasaporte</span>
+      <h2 id="my-passport-title">Información del participante</h2>
+      <p id="my-passport-status">Cargando datos guardados en este dispositivo.</p>
+    </div>
+    <div class="my-passport-grid" id="my-passport-grid"></div>
+  </section>
 
   <section class="stamp-panel">
     <div class="stamp-panel__head">

@@ -1,16 +1,16 @@
 const MISSIONS = [
-  { id:'m1', week:1, name:'Mi Stanley va conmigo', desc:'Mostr� tu Stanley acompa�ando tu d�a futbolero.', instructions:'Public� una historia, post o reel con tu Stanley en un momento real de tu d�a. Etiquet� a Stanley Bolivia y sub� la captura.' },
-  { id:'m2', week:1, name:'Ritual de previa', desc:'Compart� tu previa con tu producto Stanley favorito.', instructions:'Mostr� tu bebida, mesa o preparaci�n antes de vivir la temporada futbolera. La etiqueta a Stanley Bolivia debe verse en la captura.' },
-  { id:'m3', week:1, name:'Color de hinchada', desc:'Sub� un momento usando colores de celebraci�n.', instructions:'Combin� tu Stanley con colores, outfit o decoraci�n futbolera. Sub� la captura de Instagram como evidencia.' },
-  { id:'m4', week:2, name:'Stanley en la mesa', desc:'Mostr� tu mesa, snack o bebida de temporada.', instructions:'Compart� una foto o video de tu mesa con presencia Stanley. Etiquet� a Stanley Bolivia.' },
-  { id:'m5', week:2, name:'La c�bala Stanley', desc:'Cont� qu� no puede faltar cuando viv�s f�tbol.', instructions:'Public� tu c�bala, rutina o detalle favorito junto a tu Stanley. Sub� captura visible.' },
-  { id:'m6', week:2, name:'Compartido sabe mejor', desc:'Mostr� c�mo compart�s el momento con amigos o familia.', instructions:'Compart� un momento grupal, cuidando que tu Stanley sea protagonista o parte clara de la escena.' },
-  { id:'m7', week:3, name:'Set de celebraci�n', desc:'Arm� tu rinc�n Stanley para ver la temporada.', instructions:'Mostr� tu setup: sill�n, mesa, terraza o lugar elegido para celebrar.' },
-  { id:'m8', week:3, name:'El grito del momento', desc:'Compart� una reacci�n, festejo o emoci�n futbolera.', instructions:'Puede ser foto, historia o reel. Lo importante es la energ�a de comunidad y la etiqueta a Stanley Bolivia.' },
-  { id:'m9', week:3, name:'Misi�n Secreta: Nostradamus Stanley', desc:'Ya viste los primeros partidos. Ahora contanos c�mo imagin�s que termina esta temporada futbolera.', instructions:'Respond� en Instagram: campe�n esperado, goleador esperado, partido m�s esperado y final so�ada. No hay ranking ni premio por acertar: el sello se obtiene por participar y cargar evidencia válida.' },
-  { id:'m10', week:4, name:'Mi lugar favorito', desc:'Llev� tu Stanley a un lugar que represente tu pasi�n.', instructions:'Mostr� tu Stanley en el lugar donde m�s disfrut�s vivir esta temporada: casa, oficina, terraza, parque o reuni�n.' },
-  { id:'m11', week:4, name:'Pasaporte casi completo', desc:'Mostr� tus sellos y celebr� tu avance.', instructions:'Compart� una captura o foto de tu progreso en Pasaporte Stanley y etiquet� a Stanley Bolivia.', highlight:true },
-  { id:'m12', week:4, name:'Legend Stanley', desc:'Cerr� el pasaporte con tu mejor momento Stanley.', instructions:'Public� tu mejor contenido de campa�a. Al subir la captura desbloque�s el sello final.', highlight:true }
+  { id:'m1', week:1, name:'Mi Stanley va conmigo', desc:'Mostrá tu Stanley acompañando tu día futbolero.', instructions:'Publicá una historia, post o reel con tu Stanley en un momento real de tu día. Etiquetá a Stanley Bolivia y subí la captura.' },
+  { id:'m2', week:1, name:'Ritual de previa', desc:'Compartí tu previa con tu producto Stanley favorito.', instructions:'Mostrá tu bebida, mesa o preparación antes de vivir la temporada futbolera. La etiqueta a Stanley Bolivia debe verse en la captura.' },
+  { id:'m3', week:1, name:'Color de hinchada', desc:'Subí un momento usando colores de celebración.', instructions:'Combiná tu Stanley con colores, outfit o decoración futbolera. Subí la captura de Instagram como evidencia.' },
+  { id:'m4', week:2, name:'Stanley en la mesa', desc:'Mostrá tu mesa, snack o bebida de temporada.', instructions:'Compartí una foto o video de tu mesa con presencia Stanley. Etiquetá a Stanley Bolivia.' },
+  { id:'m5', week:2, name:'La cábala Stanley', desc:'Contá qué no puede faltar cuando vivís fútbol.', instructions:'Publicá tu cábala, rutina o detalle favorito junto a tu Stanley. Subí captura visible.' },
+  { id:'m6', week:2, name:'Compartido sabe mejor', desc:'Mostrá cómo compartís el momento con amigos o familia.', instructions:'Compartí un momento grupal, cuidando que tu Stanley sea protagonista o parte clara de la escena.' },
+  { id:'m7', week:3, name:'Set de celebración', desc:'Armá tu rincón Stanley para ver la temporada.', instructions:'Mostrá tu setup: sillón, mesa, terraza o lugar elegido para celebrar.' },
+  { id:'m8', week:3, name:'El grito del momento', desc:'Compartí una reacción, festejo o emoción futbolera.', instructions:'Puede ser foto, historia o reel. Lo importante es la energía de comunidad y la etiqueta a Stanley Bolivia.' },
+  { id:'m9', week:3, name:'Misión Secreta: Nostradamus Stanley', desc:'Ya viste los primeros partidos. Ahora contanos cómo imaginás que termina esta temporada futbolera.', instructions:'Respondé en Instagram: campeón esperado, goleador esperado, partido más esperado y final soñada. No hay ranking ni premio por acertar: el sello se obtiene por participar y cargar evidencia válida.' },
+  { id:'m10', week:4, name:'Mi lugar favorito', desc:'Llevá tu Stanley a un lugar que represente tu pasión.', instructions:'Mostrá tu Stanley en el lugar donde más disfrutás vivir esta temporada: casa, oficina, terraza, parque o reunión.' },
+  { id:'m11', week:4, name:'Pasaporte casi completo', desc:'Mostrá tus sellos y celebrá tu avance.', instructions:'Compartí una captura o foto de tu progreso en Pasaporte Stanley y etiquetá a Stanley Bolivia.', highlight:true },
+  { id:'m12', week:4, name:'Legend Stanley', desc:'Cerrá el pasaporte con tu mejor momento Stanley.', instructions:'Publicá tu mejor contenido de campaña. Al subir la captura desbloqueás el sello final.', highlight:true }
 ];
 
 const CONFIG = window.STANLEY || {};
@@ -42,21 +42,22 @@ function save() {
 function updateHeader() {
   const count = evidenceCount();
   const next = nextLevel(count);
-  const stampCountEl = #stamp-count;
-  if (stampCountEl) stampCountEl.textContent = count;
+  $('#stamp-count').textContent = count;
   $('#pg-fill').style.width = Math.round((count / MISSIONS.length) * 100) + '%';
   $('#pg-label').textContent = `${count}/12 sellos completados`;
   const level = levelFor(count);
-  const currentLevelEl = #current-level;
-  if (currentLevelEl) currentLevelEl.textContent = level;
-  const activeWeekEl = #active-week;
+  $('#current-level').textContent = level;
+  $('#stamp-summary').textContent = `${count} de 12 misiones completadas · Semana activa ${CURRENT_WEEK}.`;
+  $('#next-level').textContent = next ? `Te faltan ${next.missing} sellos para ${next.name}.` : 'Pasaporte completo. Nivel Legend desbloqueado.';
+  const activeWeekEl = $('#active-week');
+  const meterLevelEl = $('#meter-level');
+  const meterStampsEl = $('#meter-stamps');
+  const meterNextLevelEl = $('#meter-next-level');
   if (activeWeekEl) activeWeekEl.textContent = CURRENT_WEEK;
-  const meterStampsEl = #meter-stamps;
-  if (meterStampsEl) meterStampsEl.textContent = ${count}/12;
-$('#stamp-summary').textContent = `${count} de 12 misiones completadas � Semana activa ${CURRENT_WEEK}.`;
-  const nextLevelEl = #next-level;
-  if (nextLevelEl) nextLevelEl.textContent = next ? `Te faltan ${next.missing} sellos para ${next.name}.` : 'Pasaporte completo. Nivel Legend desbloqueado.';
-  if (player) $('#player-name').textContent = `${player.nombre || 'Participante'} � ${player.ciudad || 'Bolivia'} � ${player.instagram || '@instagram'}`;
+  if (meterLevelEl) meterLevelEl.textContent = level;
+  if (meterStampsEl) meterStampsEl.textContent = `${count}/12`;
+  if (meterNextLevelEl) meterNextLevelEl.textContent = next ? `Te faltan ${next.missing} sellos para ${next.name}.` : 'Pasaporte completo.';
+  if (player) $('#player-name').textContent = `${player.nombre || 'Participante'} · ${player.ciudad || 'Bolivia'} · ${player.instagram || '@instagram'}`;
   renderMyPassport(count, next);
 }
 
@@ -75,8 +76,8 @@ function renderMyPassport(count, next) {
   const available = MISSIONS.filter(mission => !isDone(mission) && !isLocked(mission)).length;
 
   status.textContent = player
-    ? 'Estos son los datos que usaremos para validar tu participacion, tus sellos y la entrega de premios.'
-    : 'No encontramos una inscripcion guardada en este navegador. Si ya te inscribiste desde otro dispositivo, volve a abrir tu pasaporte desde ese equipo o registrate nuevamente.';
+    ? 'Estos son los datos que usaremos para validar tu participación, tus sellos y la entrega de premios.'
+    : 'No encontramos una inscripción guardada en este navegador. Si ya te inscribiste desde otro dispositivo, volvé a abrir tu pasaporte desde ese equipo o registrate nuevamente.';
 
   grid.innerHTML = `
     <article class="my-passport-card my-passport-card--main">
@@ -102,7 +103,7 @@ function renderMyPassport(count, next) {
     <article class="my-passport-card">
       <span>Sellos</span>
       <strong>${count}/12</strong>
-      <small>${completed.length ? completed.join(', ') : 'Aun no hay misiones completadas.'}</small>
+      <small>${completed.length ? completed.join(', ') : 'Aún no hay misiones completadas.'}</small>
     </article>
     <article class="my-passport-card">
       <span>Semana activa</span>
@@ -119,7 +120,7 @@ function renderStamps() {
     const el = document.createElement('button');
     el.className = `stamp ${done ? 'done' : ''} ${locked ? 'locked' : ''} ${mission.highlight ? 'stamp--legend' : ''}`;
     el.type = 'button';
-    el.innerHTML = `<span>${done ? 'OK' : index + 1}</span><strong>${mission.name}</strong><small>${done ? 'Sello desbloqueado' : locked ? `Bloqueado � semana ${mission.week}` : 'Disponible'}</small>`;
+    el.innerHTML = `<span>${done ? 'OK' : index + 1}</span><strong>${mission.name}</strong><small>${done ? 'Sello desbloqueado' : locked ? `Bloqueado · semana ${mission.week}` : 'Disponible'}</small>`;
     el.onclick = () => document.getElementById(mission.id)?.scrollIntoView({ behavior:'smooth', block:'center' });
     wrap.appendChild(el);
   });
@@ -167,12 +168,12 @@ function renderMissions() {
       <div class="passport-mission__main">
         <span class="mission-card__week">Semana ${mission.week}</span>
         <h3>${mission.name}</h3>
-        <p>${locked ? 'Pista desbloqueada: nombre del reto. La descripci�n completa se revelar� en su semana.' : mission.desc}</p>
-        <div class="mission-instructions">${locked ? 'Caracter�sticas e instrucciones bloqueadas.' : mission.instructions}</div>
-        <div class="mission-status">${done ? 'Sello desbloqueado' : locked ? 'Carga bloqueada hasta su semana' : 'Misi�n disponible'}</div>
+        <p>${locked ? 'Pista desbloqueada: nombre del reto. La descripción completa se revelará en su semana.' : mission.desc}</p>
+        <div class="mission-instructions">${locked ? 'Características e instrucciones bloqueadas.' : mission.instructions}</div>
+        <div class="mission-status">${done ? 'Sello desbloqueado' : locked ? 'Carga bloqueada hasta su semana' : 'Misión disponible'}</div>
       </div>
       <div class="evidence-box">
-        ${evidence ? `<img src="${evidence.dataUrl}" alt="Evidencia cargada para ${mission.name}" />` : `<div class="evidence-empty">${locked ? 'Carga bloqueada' : 'Sub� captura de Instagram'}</div>`}
+        ${evidence ? `<img src="${evidence.dataUrl}" alt="Evidencia cargada para ${mission.name}" />` : `<div class="evidence-empty">${locked ? 'Carga bloqueada' : 'Subí captura de Instagram'}</div>`}
         <label class="gb-btn evidence-btn ${locked ? 'disabled' : ''}">
           ${done ? 'Cambiar evidencia' : locked ? 'Bloqueado' : 'Subir evidencia'}
           <input type="file" accept="image/*" ${locked ? 'disabled' : ''} data-mission="${mission.id}">
@@ -188,7 +189,7 @@ function onEvidenceUpload(event) {
   const mission = MISSIONS.find(m => m.id === missionId);
   if (!file || !mission || isLocked(mission)) return;
   if (file.size > 6 * 1024 * 1024) {
-    openModal('<h3 class="modal__h">Archivo muy pesado</h3><p class="modal__p">Sub� una captura de hasta 6 MB.</p>');
+    openModal('<h3 class="modal__h">Archivo muy pesado</h3><p class="modal__p">Subí una captura de hasta 6 MB.</p>');
     input.value = '';
     return;
   }
@@ -200,7 +201,7 @@ function onEvidenceUpload(event) {
     save();
     syncEvidence(missionId, file, dataUrl);
     renderAll();
-    openModal('<h3 class="modal__h">Sello desbloqueado</h3><p class="modal__p">Tu evidencia qued� cargada. La misi�n suma a tu Pasaporte Stanley.</p>');
+    openModal('<h3 class="modal__h">Sello desbloqueado</h3><p class="modal__p">Tu evidencia quedó cargada. La misión suma a tu Pasaporte Stanley.</p>');
   };
   reader.readAsDataURL(file);
 }
