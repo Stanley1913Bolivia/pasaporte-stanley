@@ -384,8 +384,6 @@
 .passport-hero>div:first-child{max-width:none}
 @media(max-width:560px){.passport-meter{top:96px;align-items:stretch}.passport-meter span,.passport-meter small{font-size:11px}.passport-meter small{width:100%;text-align:center}}
 
-/* FIX LIMPIEZA FINAL MI PASAPORTE */
-.passport-summary,.my-passport-panel{display:none !important}
 .passport-meter{position:sticky;top:0;z-index:60}
 .passport-hero{grid-template-columns:1fr}
 .passport-hero>div:first-child{max-width:none}
