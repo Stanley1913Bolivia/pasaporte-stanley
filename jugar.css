@@ -387,3 +387,20 @@
 .passport-meter{position:sticky;top:0;z-index:60}
 .passport-hero{grid-template-columns:1fr}
 .passport-hero>div:first-child{max-width:none}
+
+/* Sellos Stanley */
+.passport-campaign-stamp{width:74px;height:74px;object-fit:contain;margin-bottom:10px;background:#fff;border:1px solid var(--line-soft);border-radius:14px;padding:8px}
+.stamp .stamp-art,.passport-stamp .stamp-art{margin:0 auto 8px}
+.stamp-art{display:grid;place-items:center;overflow:hidden;background:#fff;border:1px solid var(--line-soft)}
+.stamp-art img{width:100%;height:100%;object-fit:contain;display:block}
+.stamp-art--preview{width:44px;height:44px;border-radius:50%;padding:6px;filter:grayscale(.25);opacity:.8}
+.stamp-art--preview img{transform:scale(1.75);object-fit:cover}
+.stamp-art--full{width:86px;height:86px;border-radius:14px;object-fit:contain;background:#fff;padding:5px;border:1px solid var(--line-soft);box-shadow:0 8px 20px rgba(0,0,0,.08)}
+.stamp.done{min-height:150px}
+.stamp.done strong{margin-top:2px}
+.passport-stamp .stamp-art--preview{width:58px;height:58px}
+.passport-stamp .stamp-art--full{width:92px;height:92px;border-radius:50%;padding:4px}
+.mission-stamp-preview{display:grid;place-items:center;background:var(--mist);border:1px solid var(--line-soft);border-radius:12px;padding:10px}
+.mission-stamp-preview .stamp-art--preview{width:74px;height:74px}
+.mission-stamp-preview .stamp-art--full{width:150px;height:150px}
+.stamp-fallback{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:var(--mist);font-family:'Montserrat',sans-serif;font-weight:900;color:var(--tan-dark);margin:0 auto 8px}

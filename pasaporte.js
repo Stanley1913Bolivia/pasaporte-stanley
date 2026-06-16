@@ -1,16 +1,16 @@
 const MISSIONS = [
-  { id:'m1', week:1, name:'Mi Stanley va conmigo', desc:'Mostrá tu Stanley acompañando tu día futbolero.', instructions:'Publicá una historia, post o reel con tu Stanley en un momento real de tu día. Etiquetá a Stanley Bolivia y subí la captura.' },
-  { id:'m2', week:1, name:'Ritual de previa', desc:'Compartí tu previa con tu producto Stanley favorito.', instructions:'Mostrá tu bebida, mesa o preparación antes de vivir la temporada futbolera. La etiqueta a Stanley Bolivia debe verse en la captura.' },
-  { id:'m3', week:1, name:'Color de hinchada', desc:'Subí un momento usando colores de celebración.', instructions:'Combiná tu Stanley con colores, outfit o decoración futbolera. Subí la captura de Instagram como evidencia.' },
-  { id:'m4', week:2, name:'Stanley en la mesa', desc:'Mostrá tu mesa, snack o bebida de temporada.', instructions:'Compartí una foto o video de tu mesa con presencia Stanley. Etiquetá a Stanley Bolivia.' },
-  { id:'m5', week:2, name:'La cábala Stanley', desc:'Contá qué no puede faltar cuando vivís fútbol.', instructions:'Publicá tu cábala, rutina o detalle favorito junto a tu Stanley. Subí captura visible.' },
-  { id:'m6', week:2, name:'Compartido sabe mejor', desc:'Mostrá cómo compartís el momento con amigos o familia.', instructions:'Compartí un momento grupal, cuidando que tu Stanley sea protagonista o parte clara de la escena.' },
-  { id:'m7', week:3, name:'Set de celebración', desc:'Armá tu rincón Stanley para ver la temporada.', instructions:'Mostrá tu setup: sillón, mesa, terraza o lugar elegido para celebrar.' },
-  { id:'m8', week:3, name:'El grito del momento', desc:'Compartí una reacción, festejo o emoción futbolera.', instructions:'Puede ser foto, historia o reel. Lo importante es la energía de comunidad y la etiqueta a Stanley Bolivia.' },
-  { id:'m9', week:3, name:'Misión Secreta: Nostradamus Stanley', desc:'Ya viste los primeros partidos. Ahora contanos cómo imaginás que termina esta temporada futbolera.', instructions:'Respondé en Instagram: campeón esperado, goleador esperado, partido más esperado y final soñada. No hay ranking ni premio por acertar: el sello se obtiene por participar y cargar evidencia válida.' },
-  { id:'m10', week:4, name:'Mi lugar favorito', desc:'Llevá tu Stanley a un lugar que represente tu pasión.', instructions:'Mostrá tu Stanley en el lugar donde más disfrutás vivir esta temporada: casa, oficina, terraza, parque o reunión.' },
-  { id:'m11', week:4, name:'Pasaporte casi completo', desc:'Mostrá tus sellos y celebrá tu avance.', instructions:'Compartí una captura o foto de tu progreso en Pasaporte Stanley y etiquetá a Stanley Bolivia.', highlight:true },
-  { id:'m12', week:4, name:'Legend Stanley', desc:'Cerrá el pasaporte con tu mejor momento Stanley.', instructions:'Publicá tu mejor contenido de campaña. Al subir la captura desbloqueás el sello final.', highlight:true }
+  { id:'m1', week:1, name:'Mi Stanley va conmigo', desc:'Mostra tu Stanley acompanando tu dia futbolero.', instructions:'Publica una historia, post o reel con tu Stanley en un momento real de tu dia. Etiqueta a Stanley Bolivia y subi la captura.', stamp:'assets/sellos/sello-01-mi-stanley-va-conmigo.png' },
+  { id:'m2', week:1, name:'Ritual de previa', desc:'Comparti tu previa con tu producto Stanley favorito.', instructions:'Mostra tu bebida, mesa o preparacion antes de vivir la temporada futbolera. La etiqueta a Stanley Bolivia debe verse en la captura.', stamp:'assets/sellos/sello-02-ritual-de-previa.png' },
+  { id:'m3', week:1, name:'Color de hinchada', desc:'Subi un momento usando colores de celebracion.', instructions:'Combina tu Stanley con colores, outfit o decoracion futbolera. Subi la captura de Instagram como evidencia.', stamp:'assets/sellos/sello-03-color-de-hinchada.png' },
+  { id:'m4', week:2, name:'Stanley en la mesa', desc:'Mostra tu mesa, snack o bebida de temporada.', instructions:'Comparti una foto o video de tu mesa con presencia Stanley. Etiqueta a Stanley Bolivia.', stamp:'assets/sellos/sello-04-stanley-en-la-mesa.png' },
+  { id:'m5', week:2, name:'La cabala Stanley', desc:'Conta que no puede faltar cuando vivis futbol.', instructions:'Publica tu cabala, rutina o detalle favorito junto a tu Stanley. Subi captura visible.' },
+  { id:'m6', week:2, name:'Compartido sabe mejor', desc:'Mostra como compartis el momento con amigos o familia.', instructions:'Comparti un momento grupal, cuidando que tu Stanley sea protagonista o parte clara de la escena.' },
+  { id:'m7', week:3, name:'Set de celebracion', desc:'Arma tu rincon Stanley para ver la temporada.', instructions:'Mostra tu setup: sillon, mesa, terraza o lugar elegido para celebrar.' },
+  { id:'m8', week:3, name:'El grito del momento', desc:'Comparti una reaccion, festejo o emocion futbolera.', instructions:'Puede ser foto, historia o reel. Lo importante es la energia de comunidad y la etiqueta a Stanley Bolivia.' },
+  { id:'m9', week:3, name:'Mision Secreta: Nostradamus Stanley', desc:'Ya viste los primeros partidos. Ahora contanos como imaginas que termina esta temporada futbolera.', instructions:'Responde en Instagram: campeon esperado, goleador esperado, partido mas esperado y final sonada. No hay ranking ni premio por acertar: el sello se obtiene por participar y cargar evidencia valida.' },
+  { id:'m10', week:4, name:'Mi lugar favorito', desc:'Lleva tu Stanley a un lugar que represente tu pasion.', instructions:'Mostra tu Stanley en el lugar donde mas disfrutas vivir esta temporada: casa, oficina, terraza, parque o reunion.' },
+  { id:'m11', week:4, name:'Pasaporte casi completo', desc:'Mostra tus sellos y celebra tu avance.', instructions:'Comparti una captura o foto de tu progreso en Pasaporte Stanley y etiqueta a Stanley Bolivia.', highlight:true },
+  { id:'m12', week:4, name:'Legend Stanley', desc:'Cerra el pasaporte con tu mejor momento Stanley.', instructions:'Publica tu mejor contenido de campana. Al subir la captura desbloqueas el sello final.', highlight:true }
 ];
 
 const CONFIG = window.STANLEY || {};
@@ -21,7 +21,6 @@ let passport = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{"evidence":{}}'
 
 const $ = sel => document.querySelector(sel);
 const setText = (sel, value) => { const el = $(sel); if (el) el.textContent = value; };
-const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[char]));
 const evidenceCount = () => Object.values(passport.evidence || {}).filter(Boolean).length;
 const isDone = mission => Boolean(passport.evidence && passport.evidence[mission.id]);
 const isLocked = mission => mission.week > CURRENT_WEEK && !isDone(mission);
@@ -34,6 +33,16 @@ const nextLevel = count => {
   return null;
 };
 
+function stampMarkup(mission, done, mode) {
+  if (mission.stamp && done) {
+    return `<img class="stamp-art stamp-art--full" src="${mission.stamp}" alt="${mission.name}">`;
+  }
+  if (mission.stamp) {
+    return `<span class="stamp-art stamp-art--preview"><img src="${mission.stamp}" alt=""></span>`;
+  }
+  return `<span class="stamp-fallback">${mode || mission.id.replace('m','')}</span>`;
+}
+
 function save() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(passport));
   const cloud = $('#cloud');
@@ -45,13 +54,11 @@ function updateHeader() {
   const next = nextLevel(count);
   const level = levelFor(count);
   const percent = Math.round((count / MISSIONS.length) * 100);
-  const nextText = next ? `Te faltan ${next.missing} sellos para ${next.name}.` : 'Pasaporte completo. Nivel Legend desbloqueado.';
+  const nextText = next ? `Te faltan ${next.missing} sellos para ${next.name}.` : 'Pasaporte completo.';
 
   setText('#stamp-count', count);
-  setText('#pg-label', `${count}/12 sellos completados`);
-  setText('#stamp-summary', `${count} de 12 misiones completadas · Semana activa ${CURRENT_WEEK}.`);
-  setText('#current-level', level);
-  setText('#next-level', nextText);
+  setText('#pg-label', `${count}/12 sellos`);
+  setText('#stamp-summary', `${count} de 12 misiones completadas.`);
   setText('#active-week', CURRENT_WEEK);
   setText('#meter-level', level);
   setText('#meter-stamps', `${count}/12`);
@@ -59,58 +66,7 @@ function updateHeader() {
 
   const fill = $('#pg-fill');
   if (fill) fill.style.width = percent + '%';
-  if (player) setText('#player-name', `${player.nombre || 'Participante'} · ${player.ciudad || 'Bolivia'} · ${player.instagram || '@instagram'}`);
-}
-
-function renderMyPassport(count, next) {
-  const grid = $('#my-passport-grid');
-  const status = $('#my-passport-status');
-  if (!grid || !status) return;
-
-  const playerName = escapeHtml(player?.nombre || 'Participante no registrado en este dispositivo');
-  const instagram = escapeHtml(player?.instagram || 'Pendiente');
-  const city = escapeHtml(player?.ciudad || 'Pendiente');
-  const documentId = escapeHtml(player?.documento || 'Pendiente');
-  const whatsapp = escapeHtml(player?.whatsapp || 'Pendiente');
-  const email = escapeHtml(player?.email || 'Pendiente');
-  const completed = MISSIONS.filter(isDone).map(mission => escapeHtml(mission.name));
-  const available = MISSIONS.filter(mission => !isDone(mission) && !isLocked(mission)).length;
-
-  status.textContent = player
-    ? 'Estos son los datos que usaremos para validar tu participación, tus sellos y la entrega de premios.'
-    : 'No encontramos una inscripción guardada en este navegador. Si ya te inscribiste desde otro dispositivo, volvé a abrir tu pasaporte desde ese equipo o registrate nuevamente.';
-
-  grid.innerHTML = `
-    <article class="my-passport-card my-passport-card--main">
-      <span>Participante</span>
-      <strong>${playerName}</strong>
-      <small>${instagram} · ${city}</small>
-    </article>
-    <article class="my-passport-card">
-      <span>Carnet de identidad</span>
-      <strong>${documentId}</strong>
-      <small>Dato requerido para validar premios.</small>
-    </article>
-    <article class="my-passport-card">
-      <span>Contacto</span>
-      <strong>${whatsapp}</strong>
-      <small>${email}</small>
-    </article>
-    <article class="my-passport-card">
-      <span>Nivel actual</span>
-      <strong>${levelFor(count)}</strong>
-      <small>${next ? `${next.missing} sellos para ${next.name}` : 'Pasaporte completo'}</small>
-    </article>
-    <article class="my-passport-card">
-      <span>Sellos</span>
-      <strong>${count}/12</strong>
-      <small>${completed.length ? completed.join(', ') : 'Aún no hay misiones completadas.'}</small>
-    </article>
-    <article class="my-passport-card">
-      <span>Semana activa</span>
-      <strong>${CURRENT_WEEK}</strong>
-      <small>${available} misiones disponibles para cargar evidencia.</small>
-    </article>`;
+  if (player) setText('#player-name', `${player.nombre || 'Participante'} - ${player.ciudad || 'Bolivia'} - ${player.instagram || '@instagram'}`);
 }
 
 function renderStamps() {
@@ -122,7 +78,7 @@ function renderStamps() {
     const el = document.createElement('button');
     el.className = `stamp ${done ? 'done' : ''} ${locked ? 'locked' : ''} ${mission.highlight ? 'stamp--legend' : ''}`;
     el.type = 'button';
-    el.innerHTML = `<span>${done ? 'OK' : index + 1}</span><strong>${mission.name}</strong><small>${done ? 'Sello desbloqueado' : locked ? `Bloqueado · semana ${mission.week}` : 'Disponible'}</small>`;
+    el.innerHTML = `${stampMarkup(mission, done, index + 1)}<strong>${mission.name}</strong><small>${done ? 'Sello desbloqueado' : locked ? `Bloqueado - semana ${mission.week}` : 'Disponible'}</small>`;
     el.onclick = () => document.getElementById(mission.id)?.scrollIntoView({ behavior:'smooth', block:'center' });
     wrap.appendChild(el);
   });
@@ -144,7 +100,7 @@ function renderPassportSheet() {
         ${MISSIONS.filter(m => m.week === week).map(mission => {
           const done = isDone(mission), locked = isLocked(mission);
           return `<button class="passport-stamp ${done ? 'done' : ''} ${locked ? 'locked' : ''} ${mission.highlight ? 'special' : ''}" type="button" data-target="${mission.id}">
-            <span>${done ? 'OK' : mission.id.replace('m','')}</span>
+            ${stampMarkup(mission, done, mission.id.replace('m',''))}
             <strong>${mission.name}</strong>
             <small>${locked ? 'Se desbloquea luego' : done ? 'Sellado' : 'Disponible'}</small>
           </button>`;
@@ -171,12 +127,13 @@ function renderMissions() {
       <div class="passport-mission__main">
         <span class="mission-card__week">Semana ${mission.week}</span>
         <h3>${mission.name}</h3>
-        <p>${locked ? 'Pista desbloqueada: nombre del reto. La descripción completa se revelará en su semana.' : mission.desc}</p>
-        <div class="mission-instructions">${locked ? 'Características e instrucciones bloqueadas.' : mission.instructions}</div>
-        <div class="mission-status">${done ? 'Sello desbloqueado' : locked ? 'Carga bloqueada hasta su semana' : 'Misión disponible'}</div>
+        <p>${locked ? 'Pista desbloqueada: nombre del reto. La descripcion completa se revelara en su semana.' : mission.desc}</p>
+        <div class="mission-instructions">${locked ? 'Caracteristicas e instrucciones bloqueadas.' : mission.instructions}</div>
+        <div class="mission-status">${done ? 'Sello desbloqueado' : locked ? 'Carga bloqueada hasta su semana' : 'Mision disponible'}</div>
       </div>
       <div class="evidence-box">
-        ${evidence ? `<img src="${evidence.dataUrl}" alt="Evidencia cargada para ${mission.name}" />` : `<div class="evidence-empty">${locked ? 'Carga bloqueada' : 'Subí captura de Instagram'}</div>`}
+        ${mission.stamp ? `<div class="mission-stamp-preview">${stampMarkup(mission, done, mission.id.replace('m',''))}</div>` : ''}
+        ${evidence ? `<img src="${evidence.dataUrl}" alt="Evidencia cargada para ${mission.name}" />` : `<div class="evidence-empty">${locked ? 'Carga bloqueada' : 'Subi captura de Instagram'}</div>`}
         <label class="gb-btn evidence-btn ${locked ? 'disabled' : ''}">
           ${done ? 'Cambiar evidencia' : locked ? 'Bloqueado' : 'Subir evidencia'}
           <input type="file" accept="image/*" ${locked ? 'disabled' : ''} data-mission="${mission.id}">
@@ -192,7 +149,7 @@ function onEvidenceUpload(event) {
   const mission = MISSIONS.find(m => m.id === missionId);
   if (!file || !mission || isLocked(mission)) return;
   if (file.size > 6 * 1024 * 1024) {
-    openModal('<h3 class="modal__h">Archivo muy pesado</h3><p class="modal__p">Subí una captura de hasta 6 MB.</p>');
+    openModal('<h3 class="modal__h">Archivo muy pesado</h3><p class="modal__p">Subi una captura de hasta 6 MB.</p>');
     input.value = '';
     return;
   }
@@ -204,7 +161,7 @@ function onEvidenceUpload(event) {
     save();
     syncEvidence(missionId, file, dataUrl);
     renderAll();
-    openModal('<h3 class="modal__h">Sello desbloqueado</h3><p class="modal__p">Tu evidencia quedó cargada. La misión suma a tu Pasaporte Stanley.</p>');
+    openModal('<h3 class="modal__h">Sello desbloqueado</h3><p class="modal__p">Tu evidencia quedo cargada. La mision suma a tu Pasaporte Stanley.</p>');
   };
   reader.readAsDataURL(file);
 }
@@ -228,15 +185,7 @@ function syncEvidence(missionId, file, dataUrl) {
 
 function openModal(html) { const body = $('#modal-body'), modal = $('#modal'); if (body && modal) { body.innerHTML = html; modal.hidden = false; } }
 function closeModal() { const modal = $('#modal'); if (modal) modal.hidden = true; }
-function renderAll() {
-  const count = evidenceCount();
-  const next = nextLevel(count);
-  updateHeader();
-  renderMyPassport(count, next);
-  renderStamps();
-  renderPassportSheet();
-  renderMissions();
-}
+function renderAll() { updateHeader(); renderStamps(); renderPassportSheet(); renderMissions(); }
 
 const closeButton = $('#modal-x');
 if (closeButton) closeButton.addEventListener('click', closeModal);
