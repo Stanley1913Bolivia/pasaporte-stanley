@@ -116,7 +116,7 @@ function renderOverview() {
     const locked = isLocked(mission);
     const el = document.createElement('button');
     el.type = 'button';
-    el.className = `mission-tile ${done ? 'done' : locked ? 'locked' : 'available'}`;
+    el.className = `mission-tile week-${mission.week} ${done ? 'done' : locked ? 'locked' : 'available'}`;
     el.innerHTML = `
       <span class="mission-tile-number">${index + 1}</span>
       <span class="mission-tile-art">${done ? stamp(mission, 'tile') : thumb(mission, 'tile')}</span>
@@ -163,7 +163,7 @@ function renderMissions() {
     const evidence = passport.evidence && passport.evidence[mission.id];
     const article = document.createElement('article');
     article.id = mission.id;
-    article.className = `mission-card ${done ? 'done' : locked ? 'locked' : 'available'}`;
+    article.className = `mission-card week-${mission.week} ${done ? 'done' : locked ? 'locked' : 'available'}`;
     article.innerHTML = `
       <div class="mission-copy">
         <div class="mission-copy-head">

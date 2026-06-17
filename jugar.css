@@ -926,3 +926,72 @@
   line-height:1!important;
   white-space:nowrap!important;
 }
+
+/* Ajuste final de misiones completadas y fondos por semana */
+.mission-tile.week-1,.mission-card.week-1{background:#fffaf1!important}
+.mission-tile.week-2,.mission-card.week-2{background:#f4fbf6!important}
+.mission-tile.week-3,.mission-card.week-3{background:#f4f8ff!important}
+.mission-tile.week-4,.mission-card.week-4{background:#fbf6ff!important}
+.mission-card.done .mission-copy{
+  justify-content:center!important;
+  align-items:center!important;
+  text-align:center!important;
+}
+.mission-card.done .mission-copy-head{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:10px!important;
+}
+.mission-card.done .mission-copy-head > div{
+  order:2!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+}
+.mission-card.done .mission-inline-art{
+  order:1!important;
+  width:100%!important;
+  min-height:72px!important;
+  display:grid!important;
+  place-items:center!important;
+}
+.mission-card.done .mission-copy-head h3{
+  text-align:center!important;
+}
+.mission-card.done .mission-state-pill{
+  align-self:center!important;
+}
+.mission-card.done .mission-completed-stamp{
+  width:100%!important;
+  min-height:150px!important;
+  display:grid!important;
+  place-items:center!important;
+  margin:12px auto 0!important;
+}
+.mission-card.done .mission-stamp--card{
+  margin:0 auto!important;
+  max-width:330px!important;
+  width:100%!important;
+  justify-self:center!important;
+}
+.mission-tile.done{
+  grid-template-rows:56px auto auto!important;
+}
+.mission-tile.done .mission-tile-art{
+  height:56px!important;
+}
+.mission-tile.done strong{
+  align-self:start!important;
+  margin-top:6px!important;
+}
+.mission-card.done .mission-evidence{
+  grid-template-rows:160px 42px!important;
+}
+.mission-card.done .mission-evidence > img{
+  width:100%!important;
+  height:160px!important;
+  object-fit:contain!important;
+  object-position:center!important;
+}
