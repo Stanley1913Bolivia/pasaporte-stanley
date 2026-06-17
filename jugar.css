@@ -880,3 +880,49 @@
   #stamp-grid,#stamps-grid,.missions-overview-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
   .passport-week-grid,.passport-week-grid-large{grid-template-columns:1fr!important}
 }
+
+/* Correccion evidencia y estado completado */
+.mission-card.done .mission-copy{
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:flex-end!important;
+}
+.mission-card.done .mission-copy-head{
+  align-items:end!important;
+}
+.mission-card.done .mission-copy-head h3{
+  margin-bottom:0!important;
+}
+.mission-card.done .mission-copy-head p,
+.mission-card.done .mission-instructions{
+  display:none!important;
+}
+.mission-card.done .mission-state-pill{
+  align-self:flex-start!important;
+  margin-top:10px!important;
+}
+.mission-card.done .mission-completed-stamp{
+  min-height:0!important;
+  margin-top:10px!important;
+}
+.mission-card.done .mission-evidence{
+  grid-template-rows:minmax(140px,170px) 42px!important;
+  align-content:start!important;
+}
+.mission-evidence > img{
+  width:100%!important;
+  height:100%!important;
+  min-height:140px!important;
+  max-height:170px!important;
+  object-fit:contain!important;
+  background:var(--mist)!important;
+}
+.mission-card.done .evidence-btn{
+  min-height:42px!important;
+  height:42px!important;
+  display:grid!important;
+  place-items:center!important;
+  padding:0 14px!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+}

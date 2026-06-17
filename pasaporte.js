@@ -3,11 +3,11 @@ const MISSIONS = [
   { id:'m2', week:1, name:'Ritual de previa', desc:'Comparti tu previa con tu producto Stanley favorito.', instructions:'Mostra tu bebida, mesa o preparacion antes de vivir la temporada futbolera. La etiqueta a Stanley Bolivia debe verse en la captura.', thumb:'assets/sellos/miniatura-02.png', stamp:'assets/sellos/sello-02.png' },
   { id:'m3', week:1, name:'Color de hinchada', desc:'Subi un momento usando colores de celebracion.', instructions:'Combina tu Stanley con colores, outfit o decoracion futbolera. Subi la captura de Instagram como evidencia.', thumb:'assets/sellos/miniatura-03.png', stamp:'assets/sellos/sello-03.png' },
   { id:'m4', week:2, name:'Stanley en la mesa', desc:'Mostra tu mesa, snack o bebida de temporada.', instructions:'Comparti una foto o video de tu mesa con presencia Stanley. Etiqueta a Stanley Bolivia.', thumb:'assets/sellos/miniatura-04.png', stamp:'assets/sellos/sello-04.png' },
-  { id:'m5', week:2, name:'La cabala Stanley', desc:'Conta que no puede faltar cuando vivis futbol.', instructions:'Publica tu cabala, rutina o detalle favorito junto a tu Stanley. Subi captura visible.' },
+  { id:'m5', week:2, name:'La Cábala Stanley', desc:'Conta que no puede faltar cuando vivis futbol.', instructions:'Publica tu cabala, rutina o detalle favorito junto a tu Stanley. Subi captura visible.' },
   { id:'m6', week:2, name:'Compartido sabe mejor', desc:'Mostra como compartis el momento con amigos o familia.', instructions:'Comparti un momento grupal, cuidando que tu Stanley sea protagonista o parte clara de la escena.' },
-  { id:'m7', week:3, name:'Set de celebracion', desc:'Arma tu rincon Stanley para ver la temporada.', instructions:'Mostra tu setup: sillon, mesa, terraza o lugar elegido para celebrar.' },
+  { id:'m7', week:3, name:'Set de Celebración', desc:'Arma tu rincon Stanley para ver la temporada.', instructions:'Mostra tu setup: sillon, mesa, terraza o lugar elegido para celebrar.' },
   { id:'m8', week:3, name:'El grito del momento', desc:'Comparti una reaccion, festejo o emocion futbolera.', instructions:'Puede ser foto, historia o reel. Lo importante es la energia de comunidad y la etiqueta a Stanley Bolivia.' },
-  { id:'m9', week:3, name:'Mision Secreta: Nostradamus Stanley', desc:'Ya viste los primeros partidos. Ahora contanos como imaginas que termina esta temporada futbolera.', instructions:'Responde en Instagram: campeon esperado, goleador esperado, partido mas esperado y final sonada. No hay ranking ni premio por acertar: el sello se obtiene por participar y cargar evidencia valida.' },
+  { id:'m9', week:3, name:'Misión Secreta: Nostradamus Stanley', desc:'Ya viste los primeros partidos. Ahora contanos como imaginas que termina esta temporada futbolera.', instructions:'Responde en Instagram: campeon esperado, goleador esperado, partido mas esperado y final sonada. No hay ranking ni premio por acertar: el sello se obtiene por participar y cargar evidencia valida.' },
   { id:'m10', week:4, name:'Mi lugar favorito', desc:'Lleva tu Stanley a un lugar que represente tu pasion.', instructions:'Mostra tu Stanley en el lugar donde mas disfrutas vivir esta temporada: casa, oficina, terraza, parque o reunion.' },
   { id:'m11', week:4, name:'Pasaporte casi completo', desc:'Mostra tus sellos y celebra tu avance.', instructions:'Comparti una captura o foto de tu progreso en Pasaporte Stanley y etiqueta a Stanley Bolivia.', highlight:true },
   { id:'m12', week:4, name:'Legend Stanley', desc:'Cerra el pasaporte con tu mejor momento Stanley.', instructions:'Publica tu mejor contenido de campana. Al subir la captura desbloqueas el sello final.', highlight:true }
@@ -92,7 +92,10 @@ function updateProgress() {
   const level = levelFor(count);
   setText('#stamp-count', count);
   setText('#progress-count', count);
+  setText('#pg-label', `${count}/12 sellos completados`);
+  setText('#stamp-summary', `${count} de 12 misiones completadas · Semana activa ${CURRENT_WEEK}.`);
   setText('#current-level', level.name);
+  setText('#next-level', level.next ? `Te faltan ${level.missing} sellos para ${level.next}.` : 'Pasaporte completo.');
   setText('#next-level-copy', level.next ? `Te faltan ${level.missing} sellos para ${level.next}.` : 'Pasaporte completo.');
   setText('#active-week', CURRENT_WEEK);
   setText('#meter-level', level.name);
