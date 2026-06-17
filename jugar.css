@@ -848,3 +848,35 @@
 .mission-evidence>.mission-miniature-box,.mission-evidence>.mission-stamp-preview{display:none!important}
 @media (max-width:900px){#stamps-grid,.missions-overview-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}.mission-card{grid-template-columns:1fr!important}.mission-copy-head{grid-template-columns:1fr 96px}.mission-evidence{min-height:260px}.passport-week-grid-large{gap:14px!important}.passport-slot-large{min-height:170px!important}.mission-stamp--sheet{height:130px!important}}
 @media (max-width:760px){.passport-hero>div{min-height:0;padding-right:0;padding-top:112px}.passport-hero .passport-campaign-stamp{top:18px!important;right:18px!important;transform:none!important;width:94px!important;height:94px!important;max-width:94px!important}#stamps-grid,.missions-overview-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}.passport-week-grid-large{grid-template-columns:1fr!important}.passport-slot-large{min-height:190px!important}}
+
+/* Correccion final manual: ids reales, hoja amplia y misiones compactas */
+.my-passport-panel,.passport-summary{display:flex!important}
+.my-passport-panel{display:block!important}
+.passport-sheet{display:grid!important;grid-template-columns:1fr!important;gap:20px!important}
+.passport-week,.passport-week-large{width:100%!important;margin:0!important}
+.passport-week-grid,.passport-week-grid-large{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:22px!important}
+.passport-slot-large,.passport-sheet-slot{min-height:220px!important;border:0!important;border-radius:0!important;background:transparent!important;padding:8px!important;box-shadow:none!important}
+.passport-slot-large small,.passport-sheet-slot small{display:none!important}
+.mission-stamp--sheet,.passport-sheet-stamp{width:100%!important;height:200px!important;object-fit:contain!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;padding:0!important;margin:0!important}
+#stamp-grid,#stamps-grid,.missions-overview-grid{display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:12px!important}
+.mission-tile{min-height:96px!important;padding:10px 8px!important;grid-template-rows:44px auto auto!important}
+.mission-tile-art{height:44px!important}
+.mission-thumb--tile,.mission-thumb-img--tile{max-width:48px!important;max-height:42px!important;object-fit:contain!important}
+.mission-card{grid-template-columns:minmax(0,1fr) 190px!important;gap:14px!important;padding:16px!important}
+.mission-copy-head{grid-template-columns:minmax(0,1fr) 112px!important;gap:12px!important}
+.mission-inline-art{min-height:72px!important}
+.mission-thumb--inline,.mission-thumb-img--inline{max-width:92px!important;max-height:70px!important;object-fit:contain!important}
+.mission-instructions{margin-top:8px!important;padding:10px 12px!important}
+.mission-state-pill{margin-top:10px!important}
+.mission-evidence{grid-template-rows:auto auto!important;gap:10px!important}
+.evidence-box img,.evidence-empty,.mission-evidence img,.mission-evidence .evidence-empty{aspect-ratio:4/3!important;min-height:120px!important;max-height:170px!important}
+@media(max-width:900px){
+  #stamp-grid,#stamps-grid,.missions-overview-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  .mission-card{grid-template-columns:1fr!important}
+  .passport-slot-large,.passport-sheet-slot{min-height:170px!important}
+  .mission-stamp--sheet,.passport-sheet-stamp{height:150px!important}
+}
+@media(max-width:760px){
+  #stamp-grid,#stamps-grid,.missions-overview-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .passport-week-grid,.passport-week-grid-large{grid-template-columns:1fr!important}
+}

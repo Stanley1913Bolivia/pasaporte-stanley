@@ -13,6 +13,12 @@ const MISSIONS = [
   { id:'m12', week:4, name:'Legend Stanley', desc:'Cerra el pasaporte con tu mejor momento Stanley.', instructions:'Publica tu mejor contenido de campana. Al subir la captura desbloqueas el sello final.', highlight:true }
 ];
 
+MISSIONS.forEach((mission, index) => {
+  const number = String(index + 1).padStart(2, '0');
+  mission.thumb = `assets/miniatura-sellos/${number}-miniatura.png`;
+  mission.stamp = `assets/sellos/${number}-sello.png`;
+});
+
 const CONFIG = window.STANLEY || {};
 const STORAGE_KEY = 'stanley_passport';
 const CURRENT_WEEK = Number(new URLSearchParams(location.search).get('week') || CONFIG.CURRENT_WEEK || 1);
@@ -30,9 +36,8 @@ function findHeading(pattern) {
 }
 
 function ensureOverviewGrid() {
-  let wrap = document.querySelector('#stamps-grid, .stamps-grid, [data-passport-missions]');
+  let wrap = document.querySelector('#stamp-grid, #stamps-grid, .stamps-grid, [data-passport-missions]');
   if (wrap) {
-    wrap.id = 'stamps-grid';
     wrap.classList.add('missions-overview-grid');
     return wrap;
   }
@@ -46,9 +51,8 @@ function ensureOverviewGrid() {
 }
 
 function ensureMissionsList() {
-  let wrap = document.querySelector('#missions-list, .missions-list, [data-passport-list]');
+  let wrap = document.querySelector('#mission-list, #missions-list, .missions-list, [data-passport-list]');
   if (wrap) {
-    wrap.id = 'missions-list';
     wrap.classList.add('missions-list');
     return wrap;
   }
@@ -94,7 +98,7 @@ function updateProgress() {
   setText('#meter-level', level.name);
   setText('#meter-stamps', `${count}/12`);
   setText('#meter-next-level', level.next ? `Te faltan ${level.missing} sellos para ${level.next}.` : 'Pasaporte completo.');
-  const bar = $('#passport-progress-bar');
+  const bar = $('#passport-progress-bar') || $('#pg-fill');
   if (bar) bar.style.width = `${level.pct}%`;
   const mini = $('#meter-progress-bar');
   if (mini) mini.style.width = `${level.pct}%`;
