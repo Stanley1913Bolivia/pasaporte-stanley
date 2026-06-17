@@ -30,9 +30,8 @@ function findHeading(pattern) {
 }
 
 function ensureOverviewGrid() {
-  let wrap = document.querySelector('#stamps-grid, .stamps-grid, [data-passport-missions]');
+  let wrap = document.querySelector('#stamp-grid, #stamps-grid, .stamps-grid, [data-passport-missions]');
   if (wrap) {
-    wrap.id = 'stamps-grid';
     wrap.classList.add('missions-overview-grid');
     return wrap;
   }
@@ -46,9 +45,8 @@ function ensureOverviewGrid() {
 }
 
 function ensureMissionsList() {
-  let wrap = document.querySelector('#missions-list, .missions-list, [data-passport-list]');
+  let wrap = document.querySelector('#mission-list, #missions-list, .missions-list, [data-passport-list]');
   if (wrap) {
-    wrap.id = 'missions-list';
     wrap.classList.add('missions-list');
     return wrap;
   }
@@ -101,7 +99,7 @@ function updateProgress() {
   setText('#meter-level', level.name);
   setText('#meter-stamps', `${count}/12`);
   setText('#meter-next-level', level.next ? `Te faltan ${level.missing} sellos para ${level.next}.` : 'Pasaporte completo.');
-  const bar = $('#passport-progress-bar');
+  const bar = $('#passport-progress-bar') || $('#pg-fill');
   if (bar) bar.style.width = `${level.pct}%`;
   const mini = $('#meter-progress-bar');
   if (mini) mini.style.width = `${level.pct}%`;

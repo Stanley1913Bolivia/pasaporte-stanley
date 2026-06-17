@@ -415,10 +415,6 @@
   border-radius:12px!important;
   background:#fff!important;
 }
-.my-passport-panel,
-.passport-summary{
-  display:none!important;
-}
 .stamp-thumb{
   width:48px;
   height:48px;
@@ -505,10 +501,6 @@
   border:0!important;
   border-radius:14px!important;
   box-shadow:0 12px 28px rgba(0,0,0,.08)!important;
-}
-.my-passport-panel,
-.passport-summary{
-  display:none!important;
 }
 .stamp-thumb{
   width:52px;
@@ -598,10 +590,6 @@
   }
 }
 /* Correccion final miniaturas hoja pasaporte */
-.my-passport-panel,
-.passport-summary{
-  display:none!important;
-}
 .passport-hero > div{
   position:relative;
   min-height:190px;
@@ -728,12 +716,10 @@
   }
 }
 /* Diseno definitivo miniaturas y sellos */
-.my-passport-panel,
-.passport-summary{display:none!important}
 .passport-hero>div{position:relative;min-height:190px;padding-right:230px}
 .passport-hero .passport-campaign-stamp{position:absolute!important;right:28px!important;top:50%!important;transform:translateY(-50%)!important;width:164px!important;height:164px!important;max-width:164px!important;object-fit:contain!important;margin:0!important;padding:4px!important;border:0!important;border-radius:12px!important;background:#fff!important;box-shadow:0 14px 30px rgba(0,0,0,.08)!important}
 
-#stamps-grid{display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:12px!important}
+#stamp-grid,#stamps-grid{display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:12px!important}
 .mission-tile{position:relative;min-height:112px;border:1px solid var(--line-soft);border-radius:10px;background:#fff;box-shadow:0 8px 20px rgba(0,0,0,.04);padding:12px 8px 10px;display:grid;grid-template-rows:52px auto auto;align-items:center;text-align:center;cursor:pointer}
 .mission-tile.locked{background:#f0ede7;color:rgba(35,48,55,.58)}
 .mission-tile.available{background:#fff}
@@ -770,7 +756,7 @@
 .passport-empty-number{width:42px;height:42px;border-radius:8px;border:1px dashed rgba(151,123,91,.42);display:grid;place-items:center;color:rgba(151,123,91,.72);font-family:'Montserrat',sans-serif;font-weight:900}
 
 @media (max-width:900px){
-  #stamps-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  #stamp-grid,#stamps-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
   .mission-card{grid-template-columns:1fr!important}
   .mission-copy-head{grid-template-columns:1fr 96px}
   .mission-evidence{min-height:260px}
@@ -778,14 +764,13 @@
 @media (max-width:760px){
   .passport-hero>div{min-height:0;padding-right:0;padding-top:112px}
   .passport-hero .passport-campaign-stamp{top:18px!important;right:18px!important;transform:none!important;width:94px!important;height:94px!important;max-width:94px!important}
-  #stamps-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  #stamp-grid,#stamps-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
   .passport-week-grid{grid-template-columns:1fr!important}
 }
 /* Reparacion render misiones */
-.my-passport-panel,.passport-summary{display:none!important}
 .passport-hero>div{position:relative;min-height:190px;padding-right:230px}
 .passport-hero .passport-campaign-stamp{position:absolute!important;right:28px!important;top:50%!important;transform:translateY(-50%)!important;width:164px!important;height:164px!important;max-width:164px!important;object-fit:contain!important;margin:0!important;padding:4px!important;border:0!important;border-radius:12px!important;background:#fff!important;box-shadow:0 14px 30px rgba(0,0,0,.08)!important}
-#stamps-grid,.missions-overview-grid{display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:12px!important;margin-top:18px!important;min-height:0!important}
+#stamp-grid,#stamps-grid,.missions-overview-grid{display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:12px!important;margin-top:18px!important;min-height:0!important}
 .mission-tile{position:relative;min-height:112px;border:1px solid var(--line-soft);border-radius:10px;background:#fff;box-shadow:0 8px 20px rgba(0,0,0,.04);padding:12px 8px 10px;display:grid;grid-template-rows:52px auto auto;align-items:center;text-align:center;cursor:pointer}
 .mission-tile.locked{background:#f0ede7;color:rgba(35,48,55,.58)}
 .mission-tile.done{background:#fff;border-color:rgba(0,166,115,.28)}
@@ -818,5 +803,5 @@
 .passport-sheet-slot small{font-size:11px;color:#9b7b55;font-weight:900;text-transform:uppercase}
 .passport-sheet-stamp{width:100%;height:126px;object-fit:contain;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;padding:0!important;margin:0!important}
 .passport-empty-number{width:42px;height:42px;border-radius:8px;border:1px dashed rgba(151,123,91,.42);display:grid;place-items:center;color:rgba(151,123,91,.72);font-family:'Montserrat',sans-serif;font-weight:900}
-@media (max-width:900px){#stamps-grid,.missions-overview-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}.mission-card{grid-template-columns:1fr!important}.mission-copy-head{grid-template-columns:1fr 96px}.mission-evidence{min-height:260px}}
-@media (max-width:760px){.passport-hero>div{min-height:0;padding-right:0;padding-top:112px}.passport-hero .passport-campaign-stamp{top:18px!important;right:18px!important;transform:none!important;width:94px!important;height:94px!important;max-width:94px!important}#stamps-grid,.missions-overview-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}.passport-week-grid{grid-template-columns:1fr!important}}
+@media (max-width:900px){#stamp-grid,#stamps-grid,.missions-overview-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}.mission-card{grid-template-columns:1fr!important}.mission-copy-head{grid-template-columns:1fr 96px}.mission-evidence{min-height:260px}}
+@media (max-width:760px){.passport-hero>div{min-height:0;padding-right:0;padding-top:112px}.passport-hero .passport-campaign-stamp{top:18px!important;right:18px!important;transform:none!important;width:94px!important;height:94px!important;max-width:94px!important}#stamp-grid,#stamps-grid,.missions-overview-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}.passport-week-grid{grid-template-columns:1fr!important}}
