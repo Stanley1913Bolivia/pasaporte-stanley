@@ -597,3 +597,133 @@
     height:70px;
   }
 }
+/* Correccion final miniaturas hoja pasaporte */
+.my-passport-panel,
+.passport-summary{
+  display:none!important;
+}
+.passport-hero > div{
+  position:relative;
+  min-height:190px;
+  padding-right:220px;
+}
+.passport-hero .passport-campaign-stamp{
+  position:absolute!important;
+  right:28px!important;
+  top:50%!important;
+  transform:translateY(-50%)!important;
+  width:164px!important;
+  height:164px!important;
+  max-width:164px!important;
+  object-fit:contain!important;
+  margin:0!important;
+  padding:4px!important;
+  border:0!important;
+  border-radius:12px!important;
+  background:#fff!important;
+  box-shadow:0 14px 30px rgba(0,0,0,.08)!important;
+}
+.mission-miniature{
+  display:block;
+  width:54px;
+  height:54px;
+  object-fit:contain;
+  margin:0 auto 8px;
+  padding:5px;
+  border-radius:10px;
+  background:#e7f6fb;
+  border:1px solid rgba(0,166,115,.18);
+}
+.mission-miniature.is-done{
+  border-color:rgba(0,166,115,.45);
+  box-shadow:0 8px 18px rgba(0,166,115,.14);
+}
+.mission-miniature--empty{
+  display:grid;
+  place-items:center;
+  color:rgba(151,123,91,.72);
+  background:#f3efe8;
+  font-family:'Montserrat',sans-serif;
+  font-weight:900;
+}
+.mission-miniature-box{
+  display:grid;
+  place-items:center;
+  min-height:82px;
+  border:1px solid var(--line-soft);
+  border-radius:12px;
+  background:#f7fbfc;
+}
+.mission-miniature-box .mission-miniature{
+  width:70px;
+  height:70px;
+  margin:0;
+}
+.passport-stamp{
+  min-height:116px!important;
+  display:grid!important;
+  place-items:center!important;
+  align-content:center!important;
+  border-radius:8px!important;
+}
+.passport-stamp > strong,
+.passport-stamp > span:not(.passport-empty-number),
+.passport-stamp.done small{
+  display:none!important;
+}
+.passport-stamp small{
+  margin-top:6px!important;
+}
+.passport-sheet-stamp{
+  display:block;
+  width:132px;
+  height:90px;
+  max-width:100%;
+  object-fit:contain;
+  margin:0 auto;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  padding:0!important;
+}
+.passport-stamp.done{
+  background:rgba(255,255,255,.78)!important;
+  border-color:rgba(0,166,115,.24)!important;
+}
+.passport-empty-number{
+  display:grid;
+  place-items:center;
+  width:42px;
+  height:42px;
+  border-radius:8px;
+  border:1px dashed rgba(151,123,91,.44);
+  color:rgba(151,123,91,.72);
+  font-family:'Montserrat',sans-serif;
+  font-weight:900;
+}
+.passport-stamp.locked{
+  filter:none!important;
+}
+.passport-stamp.locked .passport-empty-number{
+  opacity:.45;
+}
+@media (max-width:760px){
+  .passport-hero > div{
+    min-height:0;
+    padding-right:0;
+    padding-top:112px;
+  }
+  .passport-hero .passport-campaign-stamp{
+    top:18px!important;
+    right:18px!important;
+    transform:none!important;
+    width:94px!important;
+    height:94px!important;
+    max-width:94px!important;
+  }
+  .passport-sheet-stamp{
+    width:98px;
+    height:72px;
+  }
+}

@@ -16,179 +16,160 @@ const MISSIONS = [
 const CONFIG = window.STANLEY || {};
 const STORAGE_KEY = 'stanley_passport';
 const CURRENT_WEEK = Number(new URLSearchParams(location.search).get('week') || CONFIG.CURRENT_WEEK || 1);
-const player = JSON.parse(localStorage.getItem('stanley_player') || 'null');
 let passport = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{"evidence":{}}');
 
 const $ = sel => document.querySelector(sel);
 const setText = (sel, value) => { const el = $(sel); if (el) el.textContent = value; };
 const evidenceCount = () => Object.values(passport.evidence || {}).filter(Boolean).length;
 const isDone = mission => Boolean(passport.evidence && passport.evidence[mission.id]);
-const isLocked = mission => mission.week > CURRENT_WEEK && !isDone(mission);
-const levelFor = count => count >= 12 ? 'Legend' : count >= 10 ? 'Gold' : count >= 7 ? 'Silver' : count >= 4 ? 'Bronze' : 'Inicial';
-const nextLevel = count => {
-  if (count < 4) return { name:'Bronze', missing:4-count };
-  if (count < 7) return { name:'Silver', missing:7-count };
-  if (count < 10) return { name:'Gold', missing:10-count };
-  if (count < 12) return { name:'Legend', missing:12-count };
-  return null;
-};
+const isLocked = mission => mission.week > CURRENT_WEEK;
 
-function stampMarkup(mission, done, mode) {
-  if (mission.stamp && done) {
-    return `<img class="stamp-art stamp-art--full" src="${mission.stamp}" alt="${mission.name}">`;
-  }
-  if (mission.stamp) {
-    return `<span class="stamp-art stamp-art--preview"><img src="${mission.stamp}" alt=""></span>`;
-  }
-  return `<span class="stamp-fallback">${mode || mission.id.replace('m','')}</span>`;
+function levelFor(count) {
+  if (count >= 12) return { name:'Legend', next:null, missing:0, pct:100 };
+  if (count >= 10) return { name:'Gold', next:'Legend', missing:12-count, pct:Math.round(count/12*100) };
+  if (count >= 7) return { name:'Silver', next:'Gold', missing:10-count, pct:Math.round(count/12*100) };
+  if (count >= 4) return { name:'Bronze', next:'Silver', missing:7-count, pct:Math.round(count/12*100) };
+  return { name:'Inicial', next:'Bronze', missing:4-count, pct:Math.round(count/12*100) };
 }
 
-function save() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(passport));
-  const cloud = $('#cloud');
-  if (cloud) { cloud.textContent = 'Guardado local'; cloud.dataset.s = 'ok'; }
+function renderThumb(mission, done) {
+  if (mission.thumb) {
+    return `<img class="mission-miniature ${done ? 'is-done' : 'is-preview'}" src="${mission.thumb}" alt="${mission.name}">`;
+  }
+  return `<span class="mission-miniature mission-miniature--empty">${mission.id.replace('m','')}</span>`;
 }
 
-function updateHeader() {
+function renderPassportStamp(mission, done) {
+  if (done && mission.stamp) {
+    return `<img class="passport-sheet-stamp" src="${mission.stamp}" alt="${mission.name}">`;
+  }
+  return `<span class="passport-empty-number">${mission.id.replace('m','')}</span>`;
+}
+
+function updateProgress() {
   const count = evidenceCount();
-  const next = nextLevel(count);
   const level = levelFor(count);
-  const percent = Math.round((count / MISSIONS.length) * 100);
-  const nextText = next ? `Te faltan ${next.missing} sellos para ${next.name}.` : 'Pasaporte completo.';
-
   setText('#stamp-count', count);
-  setText('#pg-label', `${count}/12 sellos`);
-  setText('#stamp-summary', `${count} de 12 misiones completadas.`);
+  setText('#progress-count', count);
+  setText('#current-level', level.name);
+  setText('#next-level-copy', level.next ? `Te faltan ${level.missing} sellos para ${level.next}.` : 'Pasaporte completo.');
   setText('#active-week', CURRENT_WEEK);
-  setText('#meter-level', level);
+  setText('#meter-level', level.name);
   setText('#meter-stamps', `${count}/12`);
-  setText('#meter-next-level', nextText);
+  setText('#meter-next-level', level.next ? `Te faltan ${level.missing} sellos para ${level.next}.` : 'Pasaporte completo.');
 
-  const fill = $('#pg-fill');
-  if (fill) fill.style.width = percent + '%';
-  if (player) setText('#player-name', `${player.nombre || 'Participante'} - ${player.ciudad || 'Bolivia'} - ${player.instagram || '@instagram'}`);
+  const bar = $('#passport-progress-bar');
+  if (bar) bar.style.width = `${level.pct}%`;
+  const mini = $('#meter-progress-bar');
+  if (mini) mini.style.width = `${level.pct}%`;
 }
 
 function renderStamps() {
-  const wrap = $('#stamp-grid');
+  const wrap = $('#stamps-grid');
   if (!wrap) return;
   wrap.innerHTML = '';
-  MISSIONS.forEach((mission, index) => {
-    const done = isDone(mission), locked = isLocked(mission);
+  MISSIONS.forEach(mission => {
+    const done = isDone(mission);
+    const locked = isLocked(mission);
     const el = document.createElement('button');
-    el.className = `stamp ${done ? 'done' : ''} ${locked ? 'locked' : ''} ${mission.highlight ? 'stamp--legend' : ''}`;
     el.type = 'button';
-    el.innerHTML = `${stampMarkup(mission, done, 'thumb')}<strong>${mission.name}</strong><small>${done ? 'Sello desbloqueado' : locked ? `Bloqueado - semana ${mission.week}` : 'Disponible'}</small>`;
+    el.className = `stamp ${done ? 'done' : locked ? 'locked' : 'available'}`;
+    el.innerHTML = `
+      ${renderThumb(mission, done)}
+      <strong>${mission.name}</strong>
+      <small>${done ? 'Completada' : locked ? `Semana ${mission.week}` : 'Disponible'}</small>
+    `;
     el.onclick = () => document.getElementById(mission.id)?.scrollIntoView({ behavior:'smooth', block:'center' });
     wrap.appendChild(el);
   });
 }
 
 function renderPassportSheet() {
-  const sheet = $('#passport-sheet');
-  if (!sheet) return;
-  sheet.innerHTML = '';
-  [1,2,3,4].forEach(week => {
-    const page = document.createElement('article');
-    page.className = `passport-page ${week > CURRENT_WEEK ? 'locked' : ''} ${week === 4 ? 'passport-page--legend' : ''}`;
-    page.innerHTML = `
-      <div class="passport-page__head">
-        <span>Semana ${week}</span>
-        <strong>${week > CURRENT_WEEK ? 'Bloqueada' : week === 4 ? 'Cierre Legend' : 'Disponible'}</strong>
-      </div>
-      <div class="passport-page__stamps">
-        ${MISSIONS.filter(m => m.week === week).map(mission => {
-          const done = isDone(mission), locked = isLocked(mission);
-          return `<button class="passport-stamp ${done ? 'done' : ''} ${locked ? 'locked' : ''} ${mission.highlight ? 'special' : ''}" type="button" data-target="${mission.id}">
-            ${stampMarkup(mission, done, 'full')}
-            <strong>${mission.name}</strong>
-            <small>${locked ? 'Se desbloquea luego' : done ? 'Sellado' : 'Disponible'}</small>
-          </button>`;
-        }).join('')}
-      </div>`;
-    sheet.appendChild(page);
-  });
-  sheet.querySelectorAll('.passport-stamp').forEach(button => {
-    button.addEventListener('click', () => document.getElementById(button.dataset.target)?.scrollIntoView({ behavior:'smooth', block:'center' }));
-  });
+  const wrap = $('#passport-sheet');
+  if (!wrap) return;
+  wrap.innerHTML = [1,2,3,4].map(week => {
+    const weekMissions = MISSIONS.filter(mission => mission.week === week);
+    return `
+      <article class="passport-week ${week > CURRENT_WEEK ? 'locked' : ''}">
+        <header>
+          <span>Semana ${week}</span>
+          ${week > CURRENT_WEEK ? '<small>Bloqueada</small>' : ''}
+        </header>
+        <div class="passport-week-grid">
+          ${weekMissions.map(mission => {
+            const done = isDone(mission);
+            const locked = isLocked(mission);
+            return `
+              <div class="passport-stamp ${done ? 'done' : locked ? 'locked' : 'available'} ${mission.highlight ? 'highlight' : ''}">
+                ${renderPassportStamp(mission, done)}
+                ${locked ? '<small>Bloqueada</small>' : ''}
+              </div>`;
+          }).join('')}
+        </div>
+      </article>`;
+  }).join('');
 }
 
 function renderMissions() {
-  const list = $('#mission-list');
-  if (!list) return;
-  list.innerHTML = '';
+  const wrap = $('#missions-list');
+  if (!wrap) return;
+  wrap.innerHTML = '';
   MISSIONS.forEach(mission => {
+    const done = isDone(mission);
+    const locked = isLocked(mission);
     const evidence = passport.evidence && passport.evidence[mission.id];
-    const done = isDone(mission), locked = isLocked(mission);
-    const card = document.createElement('article');
-    card.className = `passport-mission ${done ? 'completed' : ''} ${locked ? 'locked' : ''} ${mission.highlight ? 'passport-mission--legend' : ''}`;
-    card.id = mission.id;
-    card.innerHTML = `
-      <div class="passport-mission__main">
-        <span class="mission-card__week">Semana ${mission.week}</span>
+    const article = document.createElement('article');
+    article.id = mission.id;
+    article.className = `mission-card ${done ? 'done' : locked ? 'locked' : 'available'} ${mission.highlight ? 'highlight' : ''}`;
+
+    article.innerHTML = `
+      <div class="mission-copy">
+        <span class="week-pill">Semana ${mission.week}</span>
         <h3>${mission.name}</h3>
-        <p>${locked ? 'Pista desbloqueada: nombre del reto. La descripcion completa se revelara en su semana.' : mission.desc}</p>
-        <div class="mission-instructions">${locked ? 'Caracteristicas e instrucciones bloqueadas.' : mission.instructions}</div>
-        <div class="mission-status">${done ? 'Sello desbloqueado' : locked ? 'Carga bloqueada hasta su semana' : 'Mision disponible'}</div>
+        <p>${locked ? 'Pista desbloqueada: nombre del reto. Las instrucciones se habilitan en su semana.' : mission.desc}</p>
+        <div class="mission-instructions ${locked ? 'blurred' : ''}">
+          ${locked ? 'Caracteristicas e instrucciones bloqueadas.' : mission.instructions}
+        </div>
       </div>
-      <div class="evidence-box">
-        ${mission.stamp ? `<div class="mission-stamp-preview">${stampMarkup(mission, done, 'full')}</div>` : ''}
+      <div class="mission-evidence">
+        <div class="mission-miniature-box">${renderThumb(mission, done)}</div>
         ${evidence ? `<img src="${evidence.dataUrl}" alt="Evidencia cargada para ${mission.name}" />` : `<div class="evidence-empty">${locked ? 'Carga bloqueada' : 'Subi captura de Instagram'}</div>`}
         <label class="gb-btn evidence-btn ${locked ? 'disabled' : ''}">
           ${done ? 'Cambiar evidencia' : locked ? 'Bloqueado' : 'Subir evidencia'}
-          <input type="file" accept="image/*" ${locked ? 'disabled' : ''} data-mission="${mission.id}">
+          <input type="file" accept="image/*" data-mission="${mission.id}" ${locked ? 'disabled' : ''}>
         </label>
-      </div>`;
-    list.appendChild(card);
-  });
-  list.querySelectorAll('input[type="file"]').forEach(input => input.addEventListener('change', onEvidenceUpload));
-}
+      </div>
+    `;
 
-function onEvidenceUpload(event) {
-  const input = event.currentTarget, file = input.files && input.files[0], missionId = input.dataset.mission;
-  const mission = MISSIONS.find(m => m.id === missionId);
-  if (!file || !mission || isLocked(mission)) return;
-  if (file.size > 6 * 1024 * 1024) {
-    openModal('<h3 class="modal__h">Archivo muy pesado</h3><p class="modal__p">Subi una captura de hasta 6 MB.</p>');
-    input.value = '';
-    return;
-  }
-  const reader = new FileReader();
-  reader.onload = e => {
-    const dataUrl = String(e.target.result);
-    passport.evidence = passport.evidence || {};
-    passport.evidence[missionId] = { name:file.name, dataUrl, uploadedAt:new Date().toISOString() };
-    save();
-    syncEvidence(missionId, file, dataUrl);
-    renderAll();
-    openModal('<h3 class="modal__h">Sello desbloqueado</h3><p class="modal__p">Tu evidencia quedo cargada. La mision suma a tu Pasaporte Stanley.</p>');
-  };
-  reader.readAsDataURL(file);
-}
-
-function syncEvidence(missionId, file, dataUrl) {
-  if (!CONFIG.APPS_SCRIPT_URL || !player) return;
-  const mission = MISSIONS.find(item => item.id === missionId);
-  const payload = {
-    action:'saveEvidence',
-    id:player.id,
-    documento:player.documento,
-    mission_id:missionId,
-    mission_name:mission?.name || missionId,
-    evidence:{ name:file.name, mime:file.type || 'image/png', b64:dataUrl.split(',')[1] || '' }
-  };
-  fetch(CONFIG.APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify(payload) }).catch(() => {
-    const cloud = $('#cloud');
-    if (cloud) { cloud.textContent = 'Guardado local'; cloud.dataset.s = 'err'; }
+    wrap.appendChild(article);
   });
 }
 
-function openModal(html) { const body = $('#modal-body'), modal = $('#modal'); if (body && modal) { body.innerHTML = html; modal.hidden = false; } }
-function closeModal() { const modal = $('#modal'); if (modal) modal.hidden = true; }
-function renderAll() { updateHeader(); renderStamps(); renderPassportSheet(); renderMissions(); }
+function bindUploads() {
+  document.addEventListener('change', event => {
+    const input = event.target;
+    if (!input.matches('input[type="file"][data-mission]')) return;
+    const file = input.files && input.files[0];
+    if (!file) return;
+    const mission = MISSIONS.find(item => item.id === input.dataset.mission);
+    if (!mission || isLocked(mission)) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      passport.evidence = passport.evidence || {};
+      passport.evidence[mission.id] = { name:file.name, dataUrl:reader.result, date:new Date().toISOString() };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(passport));
+      renderAll();
+    };
+    reader.readAsDataURL(file);
+  });
+}
 
-const closeButton = $('#modal-x');
-if (closeButton) closeButton.addEventListener('click', closeModal);
-const modal = $('#modal');
-if (modal) modal.addEventListener('click', event => { if (event.target.id === 'modal') closeModal(); });
+function renderAll() {
+  updateProgress();
+  renderStamps();
+  renderPassportSheet();
+  renderMissions();
+}
+
+bindUploads();
 renderAll();
