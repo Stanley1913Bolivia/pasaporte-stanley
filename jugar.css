@@ -995,3 +995,46 @@
   object-fit:contain!important;
   object-position:center!important;
 }
+
+/* Ajuste solicitado: texto izquierda, miniatura derecha, sello centrado */
+.mission-card.done .mission-copy{
+  align-items:stretch!important;
+  justify-content:center!important;
+  text-align:left!important;
+}
+.mission-card.done .mission-copy-head{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 112px!important;
+  align-items:end!important;
+  justify-content:stretch!important;
+  gap:12px!important;
+}
+.mission-card.done .mission-copy-head > div{
+  order:0!important;
+  align-items:flex-start!important;
+  text-align:left!important;
+}
+.mission-card.done .mission-inline-art{
+  order:0!important;
+  width:auto!important;
+  min-height:72px!important;
+  display:grid!important;
+  place-items:center!important;
+  justify-self:end!important;
+}
+.mission-card.done .mission-copy-head h3{
+  text-align:left!important;
+}
+.mission-card.done .mission-state-pill{
+  align-self:flex-start!important;
+}
+.mission-card.done .mission-completed-stamp{
+  width:100%!important;
+  display:grid!important;
+  place-items:center!important;
+  text-align:center!important;
+}
+.mission-card.done .mission-stamp--card{
+  margin-inline:auto!important;
+  justify-self:center!important;
+}
