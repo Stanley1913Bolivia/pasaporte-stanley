@@ -1,8 +1,8 @@
 const MISSIONS = [
-  { id:'m1', week:1, name:'Mi Stanley va conmigo', desc:'Mostra tu Stanley acompanando tu dia futbolero.', instructions:'Publica una historia, post o reel con tu Stanley en un momento real de tu dia. Etiqueta a Stanley Bolivia y subi la captura.', thumb:'assets/sellos/miniatura-01.png', stamp:'assets/sellos/sello-01.png' },
-  { id:'m2', week:1, name:'Ritual de previa', desc:'Comparti tu previa con tu producto Stanley favorito.', instructions:'Mostra tu bebida, mesa o preparacion antes de vivir la temporada futbolera. La etiqueta a Stanley Bolivia debe verse en la captura.', thumb:'assets/sellos/miniatura-02.png', stamp:'assets/sellos/sello-02.png' },
-  { id:'m3', week:1, name:'Color de hinchada', desc:'Subi un momento usando colores de celebracion.', instructions:'Combina tu Stanley con colores, outfit o decoracion futbolera. Subi la captura de Instagram como evidencia.', thumb:'assets/sellos/miniatura-03.png', stamp:'assets/sellos/sello-03.png' },
-  { id:'m4', week:2, name:'Stanley en la mesa', desc:'Mostra tu mesa, snack o bebida de temporada.', instructions:'Comparti una foto o video de tu mesa con presencia Stanley. Etiqueta a Stanley Bolivia.', thumb:'assets/sellos/miniatura-04.png', stamp:'assets/sellos/sello-04.png' },
+  { id:'m1', week:1, name:'Mi Stanley va conmigo', desc:'Mostra tu Stanley acompanando tu dia futbolero.', instructions:'Publica una historia, post o reel con tu Stanley en un momento real de tu dia. Etiqueta a Stanley Bolivia y subi la captura.', thumb:'assets/sellos/miniatura-01.png', stamp:'assets/sellos/sello-01-mi-stanley-va-conmigo.png' },
+  { id:'m2', week:1, name:'Ritual de previa', desc:'Comparti tu previa con tu producto Stanley favorito.', instructions:'Mostra tu bebida, mesa o preparacion antes de vivir la temporada futbolera. La etiqueta a Stanley Bolivia debe verse en la captura.', thumb:'assets/sellos/miniatura-02.png', stamp:'assets/sellos/sello-02-ritual-de-previa.png' },
+  { id:'m3', week:1, name:'Color de hinchada', desc:'Subi un momento usando colores de celebracion.', instructions:'Combina tu Stanley con colores, outfit o decoracion futbolera. Subi la captura de Instagram como evidencia.', thumb:'assets/sellos/miniatura-03.png', stamp:'assets/sellos/sello-03-color-de-hinchada.png' },
+  { id:'m4', week:2, name:'Stanley en la mesa', desc:'Mostra tu mesa, snack o bebida de temporada.', instructions:'Comparti una foto o video de tu mesa con presencia Stanley. Etiqueta a Stanley Bolivia.', thumb:'assets/sellos/miniatura-04.png', stamp:'assets/sellos/sello-04-stanley-en-la-mesa.png' },
   { id:'m5', week:2, name:'La cabala Stanley', desc:'Conta que no puede faltar cuando vivis futbol.', instructions:'Publica tu cabala, rutina o detalle favorito junto a tu Stanley. Subi captura visible.' },
   { id:'m6', week:2, name:'Compartido sabe mejor', desc:'Mostra como compartis el momento con amigos o familia.', instructions:'Comparti un momento grupal, cuidando que tu Stanley sea protagonista o parte clara de la escena.' },
   { id:'m7', week:3, name:'Set de celebracion', desc:'Arma tu rincon Stanley para ver la temporada.', instructions:'Mostra tu setup: sillon, mesa, terraza o lugar elegido para celebrar.' },
@@ -24,6 +24,47 @@ const evidenceCount = () => Object.values(passport.evidence || {}).filter(Boolea
 const isDone = mission => Boolean(passport.evidence && passport.evidence[mission.id]);
 const isLocked = mission => mission.week > CURRENT_WEEK;
 
+function findHeading(pattern) {
+  return Array.from(document.querySelectorAll('h1,h2,h3,.section-eyebrow,.gb-kicker'))
+    .find(el => pattern.test((el.textContent || '').trim()));
+}
+
+function ensureOverviewGrid() {
+  let wrap = document.querySelector('#stamps-grid, .stamps-grid, [data-passport-missions]');
+  if (wrap) {
+    wrap.id = 'stamps-grid';
+    wrap.classList.add('missions-overview-grid');
+    return wrap;
+  }
+  const heading = findHeading(/^misiones$/i);
+  const host = heading ? heading.closest('section, article, div') : null;
+  wrap = document.createElement('div');
+  wrap.id = 'stamps-grid';
+  wrap.className = 'missions-overview-grid';
+  if (host) host.appendChild(wrap);
+  return wrap;
+}
+
+function ensureMissionsList() {
+  let wrap = document.querySelector('#missions-list, .missions-list, [data-passport-list]');
+  if (wrap) {
+    wrap.id = 'missions-list';
+    wrap.classList.add('missions-list');
+    return wrap;
+  }
+  const heading = findHeading(/completa|complet/i);
+  const titleBlock = heading ? heading.closest('.section-heading, .gb-section-head, div') : null;
+  wrap = document.createElement('div');
+  wrap.id = 'missions-list';
+  wrap.className = 'missions-list';
+  if (titleBlock && titleBlock.parentElement) {
+    titleBlock.insertAdjacentElement('afterend', wrap);
+  } else {
+    document.body.appendChild(wrap);
+  }
+  return wrap;
+}
+
 function levelFor(count) {
   if (count >= 12) return { name:'Legend', next:null, missing:0, pct:100 };
   if (count >= 10) return { name:'Gold', next:'Legend', missing:12-count, pct:Math.round(count/12*100) };
@@ -32,7 +73,7 @@ function levelFor(count) {
   return { name:'Inicial', next:'Bronze', missing:4-count, pct:Math.round(count/12*100) };
 }
 
-function imageForMission(mission, done, context) {
+function missionImage(mission, done, context) {
   if (done && mission.stamp) {
     return `<img class="mission-stamp-img mission-stamp-img--${context}" src="${mission.stamp}" alt="${mission.name}">`;
   }
@@ -60,7 +101,6 @@ function updateProgress() {
   setText('#meter-level', level.name);
   setText('#meter-stamps', `${count}/12`);
   setText('#meter-next-level', level.next ? `Te faltan ${level.missing} sellos para ${level.next}.` : 'Pasaporte completo.');
-
   const bar = $('#passport-progress-bar');
   if (bar) bar.style.width = `${level.pct}%`;
   const mini = $('#meter-progress-bar');
@@ -68,7 +108,7 @@ function updateProgress() {
 }
 
 function renderStamps() {
-  const wrap = $('#stamps-grid');
+  const wrap = ensureOverviewGrid();
   if (!wrap) return;
   wrap.innerHTML = '';
   MISSIONS.forEach((mission, index) => {
@@ -79,7 +119,7 @@ function renderStamps() {
     el.className = `mission-tile ${done ? 'done' : locked ? 'locked' : 'available'}`;
     el.innerHTML = `
       <span class="mission-tile-number">${index + 1}</span>
-      <span class="mission-tile-art">${imageForMission(mission, done, 'tile')}</span>
+      <span class="mission-tile-art">${missionImage(mission, done, 'tile')}</span>
       <strong>${mission.name}</strong>
       <small>${done ? 'Completada' : locked ? `Bloqueado - semana ${mission.week}` : 'Disponible'}</small>
     `;
@@ -115,7 +155,7 @@ function renderPassportSheet() {
 }
 
 function renderMissions() {
-  const wrap = $('#missions-list');
+  const wrap = ensureMissionsList();
   if (!wrap) return;
   wrap.innerHTML = '';
   MISSIONS.forEach(mission => {
@@ -125,7 +165,6 @@ function renderMissions() {
     const article = document.createElement('article');
     article.id = mission.id;
     article.className = `mission-card ${done ? 'done' : locked ? 'locked' : 'available'} ${mission.highlight ? 'highlight' : ''}`;
-
     article.innerHTML = `
       <div class="mission-copy">
         <div class="mission-copy-head">
@@ -152,7 +191,6 @@ function renderMissions() {
         </label>
       </div>
     `;
-
     wrap.appendChild(article);
   });
 }
