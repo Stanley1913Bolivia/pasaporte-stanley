@@ -1364,3 +1364,127 @@ section:has(#stamps-grid) h3{
     grid-template-columns:repeat(2,minmax(0,1fr))!important;
   }
 }
+/* Reparacion final miniaturas globales */
+#daily-limit-notice,
+.daily-limit-notice{
+  display:none!important;
+}
+
+/* Misiones debe ser una tarjeta vertical: encabezado arriba, grilla debajo. */
+.missions-panel-fixed{
+  display:block!important;
+  grid-template-columns:none!important;
+  grid-auto-flow:row!important;
+  align-items:initial!important;
+  min-height:0!important;
+}
+.missions-panel-fixed > *{
+  grid-column:1 / -1!important;
+}
+.missions-panel-fixed > header,
+.missions-panel-fixed .section-head,
+.missions-panel-fixed .passport-section-head{
+  display:flex!important;
+  align-items:flex-start!important;
+  justify-content:space-between!important;
+  gap:18px!important;
+  width:100%!important;
+  margin:0 0 18px!important;
+}
+.missions-panel-fixed h2,
+.missions-panel-fixed h3{
+  margin:0!important;
+}
+#stamps-grid,
+.missions-overview-grid{
+  width:100%!important;
+  max-width:none!important;
+  display:grid!important;
+  grid-template-columns:repeat(6,minmax(0,1fr))!important;
+  gap:12px!important;
+  margin:18px 0 0!important;
+  clear:both!important;
+  justify-items:stretch!important;
+  align-items:stretch!important;
+}
+.mission-tile{
+  width:100%!important;
+  min-width:0!important;
+  min-height:112px!important;
+}
+
+/* Miniaturas: visibles, proporcionadas y usadas como apoyo visual antes de completar. */
+.mission-thumb{
+  object-fit:contain!important;
+  display:block!important;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.mission-thumb--tile{
+  width:58px!important;
+  height:48px!important;
+  max-width:58px!important;
+  max-height:48px!important;
+  margin:0 auto!important;
+}
+.mission-thumb--inline{
+  width:132px!important;
+  height:104px!important;
+  max-width:132px!important;
+  max-height:104px!important;
+  margin:0 auto!important;
+}
+.mission-tile.locked .mission-thumb--tile,
+.mission-card.locked .mission-thumb--inline{
+  opacity:.48!important;
+  filter:saturate(.45)!important;
+}
+
+/* Sellos: solo para misiones completadas. */
+.mission-stamp{
+  object-fit:contain!important;
+  display:block!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.mission-stamp--tile{
+  width:100%!important;
+  height:58px!important;
+  max-height:58px!important;
+}
+.mission-stamp--card{
+  width:330px!important;
+  height:180px!important;
+  max-width:100%!important;
+}
+.mission-stamp--sheet{
+  width:100%!important;
+  height:190px!important;
+  max-height:190px!important;
+}
+
+/* Evita que reglas viejas vuelvan a meter iconos extra dentro de evidencia. */
+.mission-evidence > .mission-miniature-box,
+.mission-evidence > .mission-stamp-preview{
+  display:none!important;
+}
+
+@media (max-width:900px){
+  #stamps-grid,
+  .missions-overview-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+}
+@media (max-width:760px){
+  #stamps-grid,
+  .missions-overview-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+  .mission-thumb--inline{
+    width:96px!important;
+    height:82px!important;
+  }
+}

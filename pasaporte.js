@@ -73,14 +73,19 @@ function ensureOverviewGrid() {
   if (wrap) {
     wrap.id = 'stamps-grid';
     wrap.classList.add('missions-overview-grid');
-    return wrap;
+const existingPanel = wrap.closest('.passport-stamps,.stamps-panel,.passport-card,.gb-card,section,article,div');
+if (existingPanel) existingPanel.classList.add('missions-panel-fixed');
+return wrap;
   }
   const heading = findHeading(/^misiones$/i);
   const host = heading ? heading.closest('section, article, div') : null;
   wrap = document.createElement('div');
   wrap.id = 'stamps-grid';
   wrap.className = 'missions-overview-grid';
-  if (host) host.appendChild(wrap);
+  if (host) {
+  host.classList.add('missions-panel-fixed');
+  host.appendChild(wrap);
+}
   return wrap;
 }
 
