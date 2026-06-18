@@ -1,17 +1,23 @@
 const MISSIONS = [
-  { id:'m1', week:1, name:'Mi Stanley va conmigo', desc:'Mostra tu Stanley acompanando tu dia futbolero.', instructions:'Publica una historia, post o reel con tu Stanley en un momento real de tu dia. Etiqueta a Stanley Bolivia y subi la captura.', thumb:'assets/sellos/miniatura-01.png', stamp:'assets/sellos/sello-01.png' },
-  { id:'m2', week:1, name:'Ritual de previa', desc:'Comparti tu previa con tu producto Stanley favorito.', instructions:'Mostra tu bebida, mesa o preparacion antes de vivir la temporada futbolera. La etiqueta a Stanley Bolivia debe verse en la captura.', thumb:'assets/sellos/miniatura-02.png', stamp:'assets/sellos/sello-02.png' },
-  { id:'m3', week:1, name:'Color de hinchada', desc:'Subi un momento usando colores de celebracion.', instructions:'Combina tu Stanley con colores, outfit o decoracion futbolera. Subi la captura de Instagram como evidencia.', thumb:'assets/sellos/miniatura-03.png', stamp:'assets/sellos/sello-03.png' },
-  { id:'m4', week:2, name:'Stanley en la mesa', desc:'Mostra tu mesa, snack o bebida de temporada.', instructions:'Comparti una foto o video de tu mesa con presencia Stanley. Etiqueta a Stanley Bolivia.', thumb:'assets/sellos/miniatura-04.png', stamp:'assets/sellos/sello-04.png' },
+  { id:'m1', week:1, name:'Mi Stanley va conmigo', desc:'Mostra tu Stanley acompanando tu dia futbolero.', instructions:'Publica una historia, post o reel con tu Stanley en un momento real de tu dia. Etiqueta a @Stanley1913_Bolivia y subi la captura.' },
+  { id:'m2', week:1, name:'Ritual de previa', desc:'Comparti tu previa con tu producto Stanley favorito.', instructions:'Mostra tu bebida, mesa o preparacion antes de vivir la temporada futbolera. La etiqueta a @Stanley1913_Bolivia debe verse en la captura.' },
+  { id:'m3', week:1, name:'Color de hinchada', desc:'Subi un momento usando colores de celebracion.', instructions:'Combina tu Stanley con colores, outfit o decoracion futbolera. Subi la captura de Instagram como evidencia.' },
+  { id:'m4', week:2, name:'Stanley en la mesa', desc:'Mostra tu mesa, snack o bebida de temporada.', instructions:'Comparti una foto o video de tu mesa con presencia Stanley. Etiqueta a @Stanley1913_Bolivia.' },
   { id:'m5', week:2, name:'La cabala Stanley', desc:'Conta que no puede faltar cuando vivis futbol.', instructions:'Publica tu cabala, rutina o detalle favorito junto a tu Stanley. Subi captura visible.' },
   { id:'m6', week:2, name:'Compartido sabe mejor', desc:'Mostra como compartis el momento con amigos o familia.', instructions:'Comparti un momento grupal, cuidando que tu Stanley sea protagonista o parte clara de la escena.' },
   { id:'m7', week:3, name:'Set de celebracion', desc:'Arma tu rincon Stanley para ver la temporada.', instructions:'Mostra tu setup: sillon, mesa, terraza o lugar elegido para celebrar.' },
-  { id:'m8', week:3, name:'El grito del momento', desc:'Comparti una reaccion, festejo o emocion futbolera.', instructions:'Puede ser foto, historia o reel. Lo importante es la energia de comunidad y la etiqueta a Stanley Bolivia.' },
+  { id:'m8', week:3, name:'El grito del momento', desc:'Comparti una reaccion, festejo o emocion futbolera.', instructions:'Puede ser foto, historia o reel. Lo importante es la energia de comunidad y la etiqueta a @Stanley1913_Bolivia.' },
   { id:'m9', week:3, name:'Mision Secreta: Nostradamus Stanley', desc:'Ya viste los primeros partidos. Ahora contanos como imaginas que termina esta temporada futbolera.', instructions:'Responde en Instagram: campeon esperado, goleador esperado, partido mas esperado y final sonada. No hay ranking ni premio por acertar: el sello se obtiene por participar y cargar evidencia valida.' },
   { id:'m10', week:4, name:'Mi lugar favorito', desc:'Lleva tu Stanley a un lugar que represente tu pasion.', instructions:'Mostra tu Stanley en el lugar donde mas disfrutas vivir esta temporada: casa, oficina, terraza, parque o reunion.' },
-  { id:'m11', week:4, name:'Pasaporte casi completo', desc:'Mostra tus sellos y celebra tu avance.', instructions:'Comparti una captura o foto de tu progreso en Pasaporte Stanley y etiqueta a Stanley Bolivia.', highlight:true },
+  { id:'m11', week:4, name:'Pasaporte casi completo', desc:'Mostra tus sellos y celebra tu avance.', instructions:'Comparti una captura o foto de tu progreso en Pasaporte Stanley y etiqueta a @Stanley1913_Bolivia.', highlight:true },
   { id:'m12', week:4, name:'Legend Stanley', desc:'Cerra el pasaporte con tu mejor momento Stanley.', instructions:'Publica tu mejor contenido de campana. Al subir la captura desbloqueas el sello final.', highlight:true }
 ];
+
+MISSIONS.forEach((mission, index) => {
+  const number = String(index + 1).padStart(2, '0');
+  mission.thumb = `assets/miniatura-sellos/${number}-miniatura.png`;
+  mission.stamp = `assets/sellos/${number}-sello.png`;
+});
 
 const CONFIG = window.STANLEY || {};
 const STORAGE_KEY = 'stanley_passport';
@@ -51,10 +57,10 @@ function dailyLimitReached() {
 
 function dailyLimitMessage() {
   const doneToday = completedTodayCount();
-  if (DAILY_LIMIT_FLEXIBLE) return 'LÃ­mite diario flexibilizado por la organizaciÃ³n durante esta etapa.';
-  if (doneToday <= 0) return 'PodÃ©s completar hasta 2 misiones por dÃ­a.';
-  if (doneToday === 1) return 'Te queda 1 misiÃ³n disponible por completar hoy.';
-  return 'Ya completaste tus 2 misiones de hoy. VolvÃ© maÃ±ana para seguir sumando sellos.';
+  if (DAILY_LIMIT_FLEXIBLE) return 'Límite diario flexibilizado por la organización durante esta etapa.';
+  if (doneToday <= 0) return 'Podés completar hasta 2 misiones por día.';
+  if (doneToday === 1) return 'Te queda 1 misión disponible por completar hoy.';
+  return 'Ya completaste tus 2 misiones de hoy. Volvé mañana para seguir sumando sellos.';
 }
 
 function ensureDailyNotice() {
@@ -69,7 +75,7 @@ function findHeading(pattern) {
 }
 
 function ensureOverviewGrid() {
-  let wrap = document.querySelector('#stamps-grid, .stamps-grid, [data-passport-missions]');
+  let wrap = document.querySelector('#stamp-grid, #stamps-grid, .stamps-grid, [data-passport-missions]');
   if (wrap) {
     wrap.id = 'stamps-grid';
     wrap.classList.add('missions-overview-grid');
@@ -218,15 +224,15 @@ function renderMissions() {
         <div class="mission-instructions ${locked ? 'blurred' : ''}">
           ${locked ? 'Caracteristicas e instrucciones bloqueadas.' : mission.instructions}
         </div>
-        <span class="mission-state-pill">${done ? 'Completado' : locked ? 'Carga bloqueada hasta su semana' : dailyBlocked ? 'VolvÃ© maÃ±ana para completar mÃ¡s misiones' : 'Sello desbloqueado'}</span>
+        <span class="mission-state-pill">${done ? 'Completado' : locked ? 'Carga bloqueada hasta su semana' : dailyBlocked ? 'Volvé mañana para completar más misiones' : 'Sello desbloqueado'}</span>
         <div class="mission-completed-stamp">
           ${done ? stamp(mission, 'card') : ''}
         </div>
       </div>
       <div class="mission-evidence">
-        ${evidence ? `<img src="${evidence.dataUrl}" alt="Evidencia cargada para ${mission.name}" />` : `<div class="evidence-empty">${locked ? 'Carga bloqueada' : dailyBlocked ? 'LÃ­mite diario alcanzado' : 'Subi captura de Instagram'}</div>`}
+        ${evidence ? `<img src="${evidence.dataUrl}" alt="Evidencia cargada para ${mission.name}" />` : `<div class="evidence-empty">${locked ? 'Carga bloqueada' : dailyBlocked ? 'Límite diario alcanzado' : 'Subi captura de Instagram'}</div>`}
         <label class="gb-btn evidence-btn ${locked || dailyBlocked ? 'disabled' : ''}">
-          ${done ? 'Cambiar evidencia' : locked ? 'Bloqueado' : dailyBlocked ? 'Disponible maÃ±ana' : 'Subir evidencia'}
+          ${done ? 'Cambiar evidencia' : locked ? 'Bloqueado' : dailyBlocked ? 'Disponible mañana' : 'Subir evidencia'}
           <input type="file" accept="image/*" data-mission="${mission.id}" ${locked || dailyBlocked ? 'disabled' : ''}>
         </label>
       </div>
@@ -245,7 +251,7 @@ function bindUploads() {
     if (!mission || isLocked(mission)) return;
     const wasDone = isDone(mission);
     if (!wasDone && dailyLimitReached()) {
-      alert('Ya completaste tus 2 misiones de hoy. VolvÃ© maÃ±ana para seguir sumando sellos.');
+      alert('Ya completaste tus 2 misiones de hoy. Volvé mañana para seguir sumando sellos.');
       input.value = '';
       renderAll();
       return;

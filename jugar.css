@@ -1082,6 +1082,86 @@
   }
 }
 
+/* Correccion: miniaturas desde carpeta real y grilla de Misiones compacta */
+#stamp-grid:empty,
+#stamps-grid:empty,
+.missions-overview-grid:empty{
+  display:none!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+}
+.stamp-panel:has(#stamps-grid),
+.stamp-panel:has(#stamp-grid),
+.missions-panel-fixed{
+  min-height:0!important;
+  padding-bottom:18px!important;
+}
+#stamp-grid,
+#stamps-grid,
+.missions-overview-grid{
+  display:grid!important;
+  grid-template-columns:repeat(6,minmax(0,1fr))!important;
+  grid-auto-rows:auto!important;
+  align-items:start!important;
+  gap:10px!important;
+  margin:14px 0 0!important;
+  min-height:0!important;
+  padding:0!important;
+}
+.mission-tile{
+  min-height:88px!important;
+  height:auto!important;
+  padding:8px 7px!important;
+  grid-template-rows:38px minmax(24px,auto) 14px!important;
+  align-content:start!important;
+}
+.mission-tile-art{
+  height:38px!important;
+  min-height:0!important;
+}
+.mission-tile strong{
+  font-size:10.5px!important;
+  line-height:1.08!important;
+  margin-top:2px!important;
+}
+.mission-tile small{
+  font-size:9.5px!important;
+  line-height:1.1!important;
+  margin-top:2px!important;
+}
+.mission-thumb--tile{
+  width:52px!important;
+  height:36px!important;
+  max-width:52px!important;
+  max-height:36px!important;
+  object-fit:contain!important;
+}
+.mission-thumb--inline{
+  width:118px!important;
+  height:86px!important;
+  max-width:118px!important;
+  max-height:86px!important;
+  object-fit:contain!important;
+}
+@media(max-width:900px){
+  #stamp-grid,
+  #stamps-grid,
+  .missions-overview-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+}
+@media(max-width:760px){
+  #stamp-grid,
+  #stamps-grid,
+  .missions-overview-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+  .mission-tile{
+    min-height:86px!important;
+  }
+}
+
 /* Hoja de pasaporte: mezcla viajes + futbol */
 .passport-sheet-panel{
   position:relative!important;
@@ -1486,5 +1566,81 @@ section:has(#stamps-grid) h3{
   .mission-thumb--inline{
     width:96px!important;
     height:82px!important;
+  }
+}
+
+/* Ajuste definitivo: Misiones compactas y miniaturas desde assets/miniatura-sellos */
+#stamp-grid,
+#stamps-grid,
+.missions-overview-grid{
+  display:grid!important;
+  grid-template-columns:repeat(6,minmax(0,1fr))!important;
+  grid-auto-rows:auto!important;
+  gap:10px!important;
+  margin:12px 0 0!important;
+  min-height:0!important;
+  align-items:start!important;
+}
+#stamp-grid:empty,
+#stamps-grid:empty,
+.missions-overview-grid:empty{
+  display:none!important;
+  min-height:0!important;
+  margin:0!important;
+}
+.stamp-panel,
+.missions-panel-fixed{
+  min-height:0!important;
+}
+.mission-tile{
+  min-height:88px!important;
+  height:auto!important;
+  padding:8px 7px!important;
+  grid-template-rows:38px minmax(24px,auto) 14px!important;
+  align-content:start!important;
+}
+.mission-tile-art{
+  height:38px!important;
+  min-height:0!important;
+}
+.mission-thumb--tile{
+  width:52px!important;
+  height:36px!important;
+  max-width:52px!important;
+  max-height:36px!important;
+  object-fit:contain!important;
+  margin:0 auto!important;
+}
+.mission-tile strong{
+  font-size:10.5px!important;
+  line-height:1.08!important;
+  margin-top:2px!important;
+}
+.mission-tile small{
+  font-size:9.5px!important;
+  line-height:1.1!important;
+}
+.mission-thumb--inline{
+  width:118px!important;
+  height:86px!important;
+  max-width:118px!important;
+  max-height:86px!important;
+  object-fit:contain!important;
+}
+@media(max-width:900px){
+  #stamp-grid,
+  #stamps-grid,
+  .missions-overview-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+}
+@media(max-width:760px){
+  #stamp-grid,
+  #stamps-grid,
+  .missions-overview-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+  .mission-tile{
+    min-height:86px!important;
   }
 }
