@@ -58,19 +58,9 @@ function dailyLimitMessage() {
 }
 
 function ensureDailyNotice() {
-  let notice = document.querySelector('#daily-limit-notice');
-  if (notice) return notice;
-  const hero = document.querySelector('.passport-hero');
-  notice = document.createElement('section');
-  notice.id = 'daily-limit-notice';
-  notice.className = 'daily-limit-notice';
-  notice.innerHTML = `
-    <strong>Ritmo diario del pasaporte</strong>
-    <span>Para que la experiencia se viva paso a paso, cada participante puede completar hasta 2 misiones por dÃ­a.</span>
-    <small id="daily-limit-message"></small>
-  `;
-  if (hero) hero.insertAdjacentElement('afterend', notice);
-  return notice;
+  const notice = document.querySelector('#daily-limit-notice');
+  if (notice) notice.remove();
+  return null;
 }
 
 function findHeading(pattern) {
@@ -143,9 +133,8 @@ function updateProgress() {
   setText('#meter-level', level.name);
   setText('#meter-stamps', `${count}/12`);
   setText('#meter-next-level', level.next ? `Te faltan ${level.missing} sellos para ${level.next}.` : 'Pasaporte completo.');
-  setText('#daily-limit-message', dailyLimitMessage());
-  const notice = ensureDailyNotice();
-  if (notice) notice.classList.toggle('is-locked', dailyLimitReached());
+  
+  
   const bar = $('#passport-progress-bar');
   if (bar) bar.style.width = `${level.pct}%`;
   const mini = $('#meter-progress-bar');
@@ -273,7 +262,6 @@ function bindUploads() {
 }
 
 function renderAll() {
-  ensureDailyNotice();
   updateProgress();
   renderOverview();
   renderPassportSheet();

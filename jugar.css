@@ -1310,3 +1310,57 @@
   opacity:.62;
   cursor:not-allowed;
 }
+/* Correccion mi pasaporte sin banner diario */
+#daily-limit-notice,
+.daily-limit-notice{
+  display:none!important;
+}
+
+/* Recupera la caja de Misiones: titulo arriba, contador a la derecha y grilla debajo. */
+.passport-stamps,
+.stamps-panel,
+section:has(#stamps-grid){
+  display:block!important;
+}
+section:has(#stamps-grid) > header,
+section:has(#stamps-grid) .section-head,
+section:has(#stamps-grid) .passport-section-head{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:16px!important;
+  width:100%!important;
+  margin-bottom:18px!important;
+}
+section:has(#stamps-grid) h2,
+section:has(#stamps-grid) h3{
+  margin:0!important;
+}
+#stamps-grid,
+.missions-overview-grid{
+  width:100%!important;
+  display:grid!important;
+  grid-template-columns:repeat(6,minmax(0,1fr))!important;
+  gap:12px!important;
+  margin:18px 0 0!important;
+  clear:both!important;
+}
+.mission-tile{
+  min-width:0!important;
+}
+.mission-thumb--inline[src$="miniatura-01.png"]{
+  max-width:138px!important;
+  max-height:104px!important;
+}
+@media (max-width:900px){
+  #stamps-grid,
+  .missions-overview-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+}
+@media (max-width:760px){
+  #stamps-grid,
+  .missions-overview-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+}
