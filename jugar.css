@@ -1263,3 +1263,50 @@
     height:76px!important;
   }
 }
+
+/* Regla diaria pasaporte */
+.daily-limit-notice{
+  display:grid;
+  gap:6px;
+  margin:18px auto;
+  max-width:1120px;
+  padding:16px 20px;
+  border:1px solid rgba(0,166,115,.22);
+  border-radius:10px;
+  background:#eef8f2;
+  color:#243137;
+}
+.daily-limit-notice strong{
+  font-family:'Montserrat',sans-serif;
+  font-weight:900;
+  text-transform:uppercase;
+  font-size:13px;
+}
+.daily-limit-notice span,
+.daily-limit-notice small{
+  font-size:14px;
+}
+.daily-limit-notice small{
+  color:#007b59;
+  font-weight:800;
+}
+.daily-limit-notice.is-locked{
+  border-color:rgba(151,123,91,.38);
+  background:#f2eadf;
+}
+.daily-limit-notice.is-locked small{
+  color:#8b6b48;
+}
+.mission-card.daily-blocked{
+  border-color:rgba(151,123,91,.28)!important;
+  background:#fbf8f2!important;
+}
+.mission-card.daily-blocked .evidence-empty{
+  color:#9b7b55;
+}
+.mission-card.daily-blocked .evidence-btn,
+.evidence-btn.disabled{
+  pointer-events:none;
+  opacity:.62;
+  cursor:not-allowed;
+}
