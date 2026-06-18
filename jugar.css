@@ -1167,6 +1167,164 @@
   .mission-tile small{font-size:8px!important}
 }
 
+/* Regla final: Misiones siempre en 6 columnas x 2 filas */
+.stamp-panel #stamp-grid,
+.stamp-panel #stamps-grid,
+.stamp-panel .missions-overview-grid{
+  display:grid!important;
+  grid-template-columns:repeat(6,minmax(0,1fr))!important;
+  grid-template-rows:repeat(2,88px)!important;
+  grid-auto-flow:row!important;
+  grid-auto-rows:88px!important;
+  gap:10px!important;
+  min-height:0!important;
+}
+.stamp-panel .mission-tile{
+  height:88px!important;
+  min-height:0!important;
+  max-height:88px!important;
+  overflow:hidden!important;
+}
+@media(max-width:760px){
+  .stamp-panel #stamp-grid,
+  .stamp-panel #stamps-grid,
+  .stamp-panel .missions-overview-grid{
+    grid-template-columns:repeat(6,minmax(0,1fr))!important;
+    grid-template-rows:repeat(2,78px)!important;
+    grid-auto-rows:78px!important;
+    gap:6px!important;
+  }
+  .stamp-panel .mission-tile{
+    height:78px!important;
+    max-height:78px!important;
+  }
+}
+
+/* Regla final: Misiones siempre en 6 columnas x 2 filas */
+.stamp-panel #stamp-grid,
+.stamp-panel #stamps-grid,
+.stamp-panel .missions-overview-grid{
+  display:grid!important;
+  grid-template-columns:repeat(6,minmax(0,1fr))!important;
+  grid-template-rows:repeat(2,88px)!important;
+  grid-auto-flow:row!important;
+  grid-auto-rows:88px!important;
+  gap:10px!important;
+  min-height:0!important;
+}
+.stamp-panel .mission-tile{
+  height:88px!important;
+  min-height:0!important;
+  max-height:88px!important;
+  overflow:hidden!important;
+}
+@media(max-width:760px){
+  .stamp-panel #stamp-grid,
+  .stamp-panel #stamps-grid,
+  .stamp-panel .missions-overview-grid{
+    grid-template-columns:repeat(6,minmax(0,1fr))!important;
+    grid-template-rows:repeat(2,78px)!important;
+    grid-auto-rows:78px!important;
+    gap:6px!important;
+  }
+  .stamp-panel .mission-tile{
+    height:78px!important;
+    max-height:78px!important;
+  }
+}
+
+/* Misiones: 6 arriba y 6 abajo, fijo en todos los tamaños */
+.stamp-panel #stamp-grid,
+.stamp-panel #stamps-grid,
+.stamp-panel .missions-overview-grid{
+  display:grid!important;
+  grid-template-columns:repeat(6,minmax(0,1fr))!important;
+  grid-template-rows:repeat(2,88px)!important;
+  grid-auto-flow:row!important;
+  grid-auto-rows:88px!important;
+  gap:10px!important;
+  align-items:stretch!important;
+  margin:14px 0 0!important;
+  min-height:0!important;
+}
+.stamp-panel .mission-tile{
+  min-height:0!important;
+  height:88px!important;
+  max-height:88px!important;
+  padding:8px 6px!important;
+  display:grid!important;
+  grid-template-rows:36px minmax(24px,1fr) 12px!important;
+  align-content:start!important;
+  overflow:hidden!important;
+}
+.stamp-panel .mission-tile-art{
+  height:36px!important;
+  min-height:0!important;
+}
+.stamp-panel .mission-thumb--tile{
+  width:50px!important;
+  height:34px!important;
+  max-width:50px!important;
+  max-height:34px!important;
+}
+.stamp-panel .mission-stamp--tile{
+  height:36px!important;
+  max-height:36px!important;
+}
+.stamp-panel .mission-tile strong{
+  font-size:10px!important;
+  line-height:1.08!important;
+  margin:1px 0 0!important;
+  overflow:hidden!important;
+}
+.stamp-panel .mission-tile small{
+  font-size:8.5px!important;
+  line-height:1!important;
+  margin:0!important;
+}
+@media(max-width:760px){
+  .stamp-panel #stamp-grid,
+  .stamp-panel #stamps-grid,
+  .stamp-panel .missions-overview-grid{
+    grid-template-columns:repeat(6,minmax(0,1fr))!important;
+    grid-template-rows:repeat(2,78px)!important;
+    grid-auto-rows:78px!important;
+    gap:6px!important;
+  }
+  .stamp-panel .mission-tile{
+    height:78px!important;
+    max-height:78px!important;
+    padding:7px 4px!important;
+    grid-template-rows:30px minmax(22px,1fr) 10px!important;
+  }
+  .stamp-panel .mission-tile-number{
+    width:18px!important;
+    height:18px!important;
+    font-size:10px!important;
+    left:-4px!important;
+    top:-5px!important;
+  }
+  .stamp-panel .mission-tile-art{
+    height:30px!important;
+  }
+  .stamp-panel .mission-thumb--tile{
+    width:38px!important;
+    height:28px!important;
+    max-width:38px!important;
+    max-height:28px!important;
+  }
+  .stamp-panel .mission-stamp--tile{
+    height:30px!important;
+    max-height:30px!important;
+  }
+  .stamp-panel .mission-tile strong{
+    font-size:8px!important;
+  }
+  .stamp-panel .mission-tile small{
+    font-size:7px!important;
+  }
+}
+
 /* Hoja de pasaporte: mezcla viajes + futbol */
 .passport-sheet-panel{
   position:relative!important;
@@ -1574,56 +1732,63 @@ section:has(#stamps-grid) h3{
   }
 }
 
-/* Ajuste definitivo: Misiones compactas y miniaturas desde assets/miniatura-sellos */
-#stamp-grid,
-#stamps-grid,
-.missions-overview-grid{
+/* Ajuste definitivo: Misiones en 6 columnas x 2 filas */
+.stamp-panel #stamp-grid,
+.stamp-panel #stamps-grid,
+.stamp-panel .missions-overview-grid{
   display:grid!important;
   grid-template-columns:repeat(6,minmax(0,1fr))!important;
-  grid-auto-rows:auto!important;
+  grid-template-rows:repeat(2,88px)!important;
+  grid-auto-flow:row!important;
+  grid-auto-rows:88px!important;
   gap:10px!important;
-  margin:12px 0 0!important;
+  margin:14px 0 0!important;
   min-height:0!important;
-  align-items:start!important;
+  align-items:stretch!important;
 }
-#stamp-grid:empty,
-#stamps-grid:empty,
-.missions-overview-grid:empty{
+.stamp-panel #stamp-grid:empty,
+.stamp-panel #stamps-grid:empty,
+.stamp-panel .missions-overview-grid:empty{
   display:none!important;
   min-height:0!important;
   margin:0!important;
 }
-.stamp-panel,
-.missions-panel-fixed{
+.stamp-panel .mission-tile{
   min-height:0!important;
-}
-.mission-tile{
-  min-height:88px!important;
-  height:auto!important;
-  padding:8px 7px!important;
-  grid-template-rows:38px minmax(24px,auto) 14px!important;
+  height:88px!important;
+  max-height:88px!important;
+  padding:8px 6px!important;
+  display:grid!important;
+  grid-template-rows:36px minmax(24px,1fr) 12px!important;
   align-content:start!important;
+  overflow:hidden!important;
 }
-.mission-tile-art{
-  height:38px!important;
+.stamp-panel .mission-tile-art{
+  height:36px!important;
   min-height:0!important;
 }
-.mission-thumb--tile{
-  width:52px!important;
-  height:36px!important;
-  max-width:52px!important;
-  max-height:36px!important;
+.stamp-panel .mission-thumb--tile{
+  width:50px!important;
+  height:34px!important;
+  max-width:50px!important;
+  max-height:34px!important;
   object-fit:contain!important;
   margin:0 auto!important;
 }
-.mission-tile strong{
-  font-size:10.5px!important;
-  line-height:1.08!important;
-  margin-top:2px!important;
+.stamp-panel .mission-stamp--tile{
+  height:36px!important;
+  max-height:36px!important;
 }
-.mission-tile small{
-  font-size:9.5px!important;
-  line-height:1.1!important;
+.stamp-panel .mission-tile strong{
+  font-size:10px!important;
+  line-height:1.08!important;
+  margin:1px 0 0!important;
+  overflow:hidden!important;
+}
+.stamp-panel .mission-tile small{
+  font-size:8.5px!important;
+  line-height:1!important;
+  margin:0!important;
 }
 .mission-thumb--inline{
   width:118px!important;
@@ -1633,24 +1798,39 @@ section:has(#stamps-grid) h3{
   object-fit:contain!important;
 }
 @media(max-width:900px){
-  #stamp-grid,
-  #stamps-grid,
-  .missions-overview-grid{
+  .stamp-panel #stamp-grid,
+  .stamp-panel #stamps-grid,
+  .stamp-panel .missions-overview-grid{
     grid-template-columns:repeat(6,minmax(0,1fr))!important;
+    grid-template-rows:repeat(2,82px)!important;
+    grid-auto-rows:82px!important;
+    gap:8px!important;
+  }
+  .stamp-panel .mission-tile{
+    height:82px!important;
+    max-height:82px!important;
+    padding:7px 5px!important;
   }
 }
 @media(max-width:760px){
-  #stamp-grid,
-  #stamps-grid,
-  .missions-overview-grid{
+  .stamp-panel #stamp-grid,
+  .stamp-panel #stamps-grid,
+  .stamp-panel .missions-overview-grid{
     grid-template-columns:repeat(6,minmax(0,1fr))!important;
+    grid-template-rows:repeat(2,78px)!important;
+    grid-auto-rows:78px!important;
+    gap:6px!important;
   }
-  .mission-tile{
-    min-height:82px!important;
-    padding:7px 5px!important;
+  .stamp-panel .mission-tile{
+    height:78px!important;
+    max-height:78px!important;
+    padding:7px 4px!important;
+    grid-template-rows:30px minmax(22px,1fr) 10px!important;
   }
-  .mission-tile-number{width:20px!important;height:20px!important;font-size:11px!important}
-  .mission-thumb--tile{width:44px!important;height:32px!important;max-width:44px!important;max-height:32px!important}
-  .mission-tile strong{font-size:9px!important}
-  .mission-tile small{font-size:8px!important}
+  .stamp-panel .mission-tile-number{width:18px!important;height:18px!important;font-size:10px!important;left:-4px!important;top:-5px!important}
+  .stamp-panel .mission-tile-art{height:30px!important}
+  .stamp-panel .mission-thumb--tile{width:38px!important;height:28px!important;max-width:38px!important;max-height:28px!important}
+  .stamp-panel .mission-stamp--tile{height:30px!important;max-height:30px!important}
+  .stamp-panel .mission-tile strong{font-size:8px!important}
+  .stamp-panel .mission-tile small{font-size:7px!important}
 }
