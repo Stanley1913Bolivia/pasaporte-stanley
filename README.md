@@ -22,7 +22,7 @@ config.js       configuración pública de campaña
 - El participante publica una misión en Instagram, etiqueta a @Stanley1913_Bolivia, toma captura y la sube a la web.
 - Cada evidencia cargada desbloquea un sello.
 - Bronze: 4 sellos.
-- Silver: 7 sellos.
+- Silver: 7 sellos y participación por premios intermedios.
 - Gold: 10 sellos y participación en el sorteo general de Pasaporte Stanley.
 - Legend: 12 sellos y participación en el sorteo del Kit especial Stanley.
 
