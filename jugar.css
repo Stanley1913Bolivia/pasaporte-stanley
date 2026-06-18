@@ -1038,3 +1038,46 @@
   margin-inline:auto!important;
   justify-self:center!important;
 }
+
+/* Ajustes mobile y cajas bloqueadas */
+.mission-card.locked .mission-evidence{
+  grid-template-rows:140px 42px!important;
+  align-content:start!important;
+}
+.mission-card.locked .evidence-empty{
+  min-height:140px!important;
+  max-height:140px!important;
+  aspect-ratio:auto!important;
+}
+@media(max-width:760px){
+  .passport-hero{
+    display:block!important;
+  }
+  .passport-hero>div:first-child{
+    min-height:0!important;
+    padding:18px!important;
+    text-align:center!important;
+  }
+  .passport-hero .passport-campaign-stamp{
+    position:static!important;
+    transform:none!important;
+    display:block!important;
+    width:118px!important;
+    height:118px!important;
+    max-width:118px!important;
+    margin:0 auto 14px!important;
+  }
+  .passport-hero h1{
+    font-size:34px!important;
+  }
+  .mission-card.locked .mission-evidence,
+  .mission-card.done .mission-evidence{
+    grid-template-rows:132px 42px!important;
+    min-height:0!important;
+  }
+  .mission-card.locked .evidence-empty,
+  .mission-card.done .mission-evidence > img{
+    min-height:132px!important;
+    max-height:132px!important;
+  }
+}

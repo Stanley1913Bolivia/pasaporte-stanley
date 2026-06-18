@@ -1,4 +1,4 @@
-const CONFIG = window.STANLEY || { APPS_SCRIPT_URL:"", DEADLINE:"2026-06-18T11:30:00-04:00" };
+const CONFIG = window.STANLEY || { APPS_SCRIPT_URL:"", DEADLINE:"2026-06-27T20:00:00-04:00" };
 const newId = () => (window.crypto && crypto.randomUUID) ? crypto.randomUUID()
   : 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2);
 
