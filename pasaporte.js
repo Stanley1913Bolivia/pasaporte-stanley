@@ -138,6 +138,8 @@ function updateProgress() {
   const level = levelFor(count);
   setText('#stamp-count', count);
   setText('#progress-count', count);
+  setText('#pg-label', `${count}/12 sellos completados`);
+  setText('#stamp-summary', `${count} de 12 misiones completadas.`);
   setText('#current-level', level.name);
   setText('#next-level-copy', level.next ? `Te faltan ${level.missing} sellos para ${level.next}.` : 'Pasaporte completo.');
   setText('#active-week', CURRENT_WEEK);
