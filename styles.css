@@ -191,9 +191,9 @@ html[data-phase="eliminatorias"] .only-inscripcion{display:none}
 .terms-group{margin:24px 0 18px;display:flex;flex-direction:column;gap:14px}
 .terms-group .terms{margin:0}
 .terms input{margin-top:2px;flex:0 0 auto;width:18px;height:18px;accent-color:var(--green)}
-.hero__deadline{margin-top:18px;display:inline-block;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);
-  border-radius:999px;padding:9px 18px;font-size:14px;color:#fff}
-.hero__deadline strong{color:var(--tan)}
+.hero__deadline{margin-top:18px;display:inline-block;background:rgba(255,255,255,.94);border:1px solid rgba(255,255,255,.78);
+  border-radius:999px;padding:10px 20px;font-size:14px;color:var(--ink);box-shadow:0 12px 28px rgba(0,0,0,.2)}
+.hero__deadline strong{color:var(--green);font-weight:900}
 .form-deadline{margin-top:10px;font-size:13.5px;color:var(--tan-dark);font-weight:700}
 .disclaimer{font-size:12px;opacity:.85;line-height:1.6;border-top:1px solid rgba(255,255,255,.15);padding-top:14px;margin-top:6px}
 .terms input{margin-top:3px;width:20px;height:20px;accent-color:var(--tan);flex-shrink:0}
@@ -348,6 +348,10 @@ html[data-phase="eliminatorias"] .only-inscripcion{display:none}
 .level-card span{display:inline-block;font-family:'Montserrat',sans-serif;font-weight:900;text-transform:uppercase;font-size:12px;letter-spacing:1px;color:var(--tan-dark)}
 .level-card strong{display:block;font-family:'Anton',sans-serif;font-size:42px;line-height:1.05;color:var(--ink);margin:12px 0 6px}
 .level-card p{font-size:14px;color:var(--text);line-height:1.5}
+.level-card--silver{background:linear-gradient(145deg,#ffffff 0%,#eef1f3 48%,#b7c0c7 100%);border-color:#b7c0c7;box-shadow:0 16px 36px rgba(91,103,112,.18)}
+.level-card--silver span{color:#57636b}
+.level-card--silver strong{color:#13281f}
+.level-card--silver p{color:#2f373d}
 .level-card--gold{background:linear-gradient(145deg,#fff7df 0%,#f6d989 52%,#c79b35 100%);border-color:#c79b35;box-shadow:0 16px 36px rgba(181,150,119,.26)}
 .level-card--gold span{color:#6f4b10}
 .level-card--gold strong{color:#13281f}
