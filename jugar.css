@@ -1839,10 +1839,10 @@ section:has(#stamps-grid) h3{
 .stamp-panel #stamp-grid.stamp-grid,
 .stamp-panel #stamp-grid.missions-overview-grid{
   display:grid!important;
-  grid-template-columns:repeat(6,112px)!important;
-  grid-template-rows:repeat(2,112px)!important;
+  grid-template-columns:repeat(6,129px)!important;
+  grid-template-rows:repeat(2,129px)!important;
   grid-auto-flow:row!important;
-  grid-auto-rows:112px!important;
+  grid-auto-rows:129px!important;
   justify-content:center!important;
   gap:10px!important;
   width:100%!important;
@@ -1851,77 +1851,84 @@ section:has(#stamps-grid) h3{
   min-height:0!important;
 }
 .stamp-panel #stamp-grid .mission-tile{
-  width:112px!important;
-  min-width:112px!important;
-  max-width:112px!important;
-  height:112px!important;
-  min-height:112px!important;
-  max-height:112px!important;
-  padding:12px 8px 10px!important;
+  width:129px!important;
+  min-width:129px!important;
+  max-width:129px!important;
+  height:129px!important;
+  min-height:129px!important;
+  max-height:129px!important;
+  padding:14px 9px 11px!important;
   display:grid!important;
-  grid-template-rows:52px auto auto!important;
+  grid-template-rows:64px minmax(34px,1fr) 14px!important;
   align-items:center!important;
   text-align:center!important;
   overflow:hidden!important;
 }
+.stamp-panel #stamp-grid .mission-tile-number{
+  left:6px!important;
+  top:6px!important;
+}
 .stamp-panel #stamp-grid .mission-tile-art{
-  height:52px!important;
+  height:64px!important;
+  align-self:start!important;
 }
 .stamp-panel #stamp-grid .mission-thumb--tile{
   width:auto!important;
   height:auto!important;
-  max-width:54px!important;
-  max-height:50px!important;
+  max-width:62px!important;
+  max-height:58px!important;
 }
 .stamp-panel #stamp-grid .mission-stamp--tile{
-  height:58px!important;
-  max-height:58px!important;
+  height:66px!important;
+  max-height:66px!important;
 }
 .stamp-panel #stamp-grid .mission-tile strong{
   font-size:11px!important;
   line-height:1.1!important;
-  margin-top:3px!important;
+  margin:0!important;
+  align-self:end!important;
 }
 .stamp-panel #stamp-grid .mission-tile small{
   font-size:10px!important;
   line-height:1.1!important;
+  align-self:end!important;
 }
 @media(max-width:760px){
   .stamp-panel #stamp-grid.stamp-grid,
   .stamp-panel #stamp-grid.missions-overview-grid{
-    grid-template-columns:repeat(6,54px)!important;
-    grid-template-rows:repeat(2,76px)!important;
-    grid-auto-rows:76px!important;
-    gap:6px!important;
+    grid-template-columns:repeat(6,60px)!important;
+    grid-template-rows:repeat(2,87px)!important;
+    grid-auto-rows:87px!important;
+    gap:4px!important;
     justify-content:center!important;
   }
   .stamp-panel #stamp-grid .mission-tile{
-    width:54px!important;
-    min-width:54px!important;
-    max-width:54px!important;
-    height:76px!important;
-    min-height:76px!important;
-    max-height:76px!important;
-    padding:6px 3px!important;
-    grid-template-rows:28px 29px 9px!important;
+    width:60px!important;
+    min-width:60px!important;
+    max-width:60px!important;
+    height:87px!important;
+    min-height:87px!important;
+    max-height:87px!important;
+    padding:7px 3px!important;
+    grid-template-rows:34px minmax(30px,1fr) 9px!important;
   }
   .stamp-panel #stamp-grid .mission-tile-number{
     width:18px!important;
     height:18px!important;
     font-size:10px!important;
-    left:-4px!important;
-    top:-5px!important;
+    left:3px!important;
+    top:3px!important;
   }
   .stamp-panel #stamp-grid .mission-tile-art{
-    height:28px!important;
+    height:34px!important;
   }
   .stamp-panel #stamp-grid .mission-thumb--tile{
-    max-width:38px!important;
-    max-height:28px!important;
+    max-width:42px!important;
+    max-height:32px!important;
   }
   .stamp-panel #stamp-grid .mission-stamp--tile{
-    height:28px!important;
-    max-height:28px!important;
+    height:34px!important;
+    max-height:34px!important;
   }
   .stamp-panel #stamp-grid .mission-tile strong{
     font-size:7.2px!important;
