@@ -1839,10 +1839,10 @@ section:has(#stamps-grid) h3{
 .stamp-panel #stamp-grid.stamp-grid,
 .stamp-panel #stamp-grid.missions-overview-grid{
   display:grid!important;
-  grid-template-columns:repeat(6,129px)!important;
-  grid-template-rows:repeat(2,129px)!important;
+  grid-template-columns:repeat(6,136px)!important;
+  grid-template-rows:repeat(2,138px)!important;
   grid-auto-flow:row!important;
-  grid-auto-rows:129px!important;
+  grid-auto-rows:138px!important;
   justify-content:center!important;
   gap:10px!important;
   width:100%!important;
@@ -1851,15 +1851,15 @@ section:has(#stamps-grid) h3{
   min-height:0!important;
 }
 .stamp-panel #stamp-grid .mission-tile{
-  width:129px!important;
-  min-width:129px!important;
-  max-width:129px!important;
-  height:129px!important;
-  min-height:129px!important;
-  max-height:129px!important;
-  padding:14px 9px 11px!important;
+  width:136px!important;
+  min-width:136px!important;
+  max-width:136px!important;
+  height:138px!important;
+  min-height:138px!important;
+  max-height:138px!important;
+  padding:14px 10px 12px!important;
   display:grid!important;
-  grid-template-rows:64px minmax(34px,1fr) 14px!important;
+  grid-template-rows:64px minmax(42px,1fr) 18px!important;
   align-items:center!important;
   text-align:center!important;
   overflow:hidden!important;
@@ -1884,33 +1884,36 @@ section:has(#stamps-grid) h3{
 }
 .stamp-panel #stamp-grid .mission-tile strong{
   font-size:11px!important;
-  line-height:1.1!important;
+  line-height:1.08!important;
   margin:0!important;
   align-self:end!important;
+  padding:0 1px!important;
 }
 .stamp-panel #stamp-grid .mission-tile small{
   font-size:10px!important;
   line-height:1.1!important;
   align-self:end!important;
+  padding-top:4px!important;
+  display:block!important;
 }
 @media(max-width:760px){
   .stamp-panel #stamp-grid.stamp-grid,
   .stamp-panel #stamp-grid.missions-overview-grid{
-    grid-template-columns:repeat(6,60px)!important;
-    grid-template-rows:repeat(2,87px)!important;
-    grid-auto-rows:87px!important;
+    grid-template-columns:repeat(6,64px)!important;
+    grid-template-rows:repeat(2,94px)!important;
+    grid-auto-rows:94px!important;
     gap:4px!important;
     justify-content:center!important;
   }
   .stamp-panel #stamp-grid .mission-tile{
-    width:60px!important;
-    min-width:60px!important;
-    max-width:60px!important;
-    height:87px!important;
-    min-height:87px!important;
-    max-height:87px!important;
+    width:64px!important;
+    min-width:64px!important;
+    max-width:64px!important;
+    height:94px!important;
+    min-height:94px!important;
+    max-height:94px!important;
     padding:7px 3px!important;
-    grid-template-rows:34px minmax(30px,1fr) 9px!important;
+    grid-template-rows:34px minmax(38px,1fr) 10px!important;
   }
   .stamp-panel #stamp-grid .mission-tile-number{
     width:18px!important;
@@ -1936,5 +1939,6 @@ section:has(#stamps-grid) h3{
   }
   .stamp-panel #stamp-grid .mission-tile small{
     font-size:6.5px!important;
+    padding-top:2px!important;
   }
 }
