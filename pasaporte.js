@@ -77,21 +77,17 @@ function findHeading(pattern) {
 function ensureOverviewGrid() {
   let wrap = document.querySelector('#stamp-grid, #stamps-grid, .stamps-grid, [data-passport-missions]');
   if (wrap) {
-    wrap.id = 'stamps-grid';
     wrap.classList.add('missions-overview-grid');
-const existingPanel = wrap.closest('.passport-stamps,.stamps-panel,.passport-card,.gb-card,section,article,div');
-if (existingPanel) existingPanel.classList.add('missions-panel-fixed');
-return wrap;
+    return wrap;
   }
   const heading = findHeading(/^misiones$/i);
   const host = heading ? heading.closest('section, article, div') : null;
   wrap = document.createElement('div');
-  wrap.id = 'stamps-grid';
-  wrap.className = 'missions-overview-grid';
+  wrap.id = 'stamp-grid';
+  wrap.className = 'stamp-grid missions-overview-grid';
   if (host) {
-  host.classList.add('missions-panel-fixed');
-  host.appendChild(wrap);
-}
+    host.appendChild(wrap);
+  }
   return wrap;
 }
 
