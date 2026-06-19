@@ -25,6 +25,7 @@ const DAILY_LIMIT = Number(CONFIG.DAILY_MISSION_LIMIT || 2);
 const DAILY_LIMIT_FLEXIBLE = Boolean(CONFIG.DAILY_LIMIT_FLEXIBLE);
 const CURRENT_WEEK = Number(new URLSearchParams(location.search).get('week') || CONFIG.CURRENT_WEEK || 1);
 let passport = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{"evidence":{}}');
+let player = JSON.parse(localStorage.getItem('stanley_player') || '{}');
 
 const $ = sel => document.querySelector(sel);
 const setText = (sel, value) => { const el = $(sel); if (el) el.textContent = value; };
@@ -127,6 +128,33 @@ function thumb(mission, context) {
 function stamp(mission, context) {
   if (mission.stamp) return `<img class="mission-stamp mission-stamp--${context}" src="${mission.stamp}" alt="${mission.name}">`;
   return `<span class="mission-thumb mission-thumb--empty mission-thumb--${context}">${mission.id.replace('m','')}</span>`;
+}
+
+async function syncMissionEvidence_(mission, file, dataUrl) {
+  if (!CONFIG.APPS_SCRIPT_URL || !player || !player.id) return;
+  try {
+    const payload = {
+      action: 'saveEvidence',
+      participant_id: player.id,
+      id: player.id,
+      documento: player.documento || '',
+      mission_id: mission.id,
+      mission_name: mission.name,
+      week: mission.week,
+      evidence: {
+        name: file.name,
+        mime: file.type || 'application/octet-stream',
+        b64: String(dataUrl).split(',')[1]
+      }
+    };
+    const saved = await fetch(CONFIG.APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    }).then(r => r.json());
+    if (!saved || saved.ok === false) console.warn('No se pudo sincronizar la evidencia.', saved);
+  } catch (err) {
+    console.warn('Evidencia guardada localmente, pero no sincronizada.', err);
+  }
 }
 
 function updateProgress() {
@@ -264,6 +292,7 @@ function bindUploads() {
         updatedAt:new Date().toISOString()
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(passport));
+      syncMissionEvidence_(mission, file, reader.result);
       renderAll();
     };
     reader.readAsDataURL(file);

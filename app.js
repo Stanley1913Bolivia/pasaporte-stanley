@@ -130,7 +130,12 @@ if (form) {
         }
 
         submitBtn.textContent = "Enviando...";
-        await fetch(CONFIG.APPS_SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
+        const saved = await fetch(CONFIG.APPS_SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) }).then(r => r.json());
+        if (!saved || saved.ok === false) {
+          resetBtn();
+          return showError((saved && saved.error) || "No pudimos registrar tu inscripción. Revisá tus datos e intentá de nuevo.");
+        }
+        player.id = saved.participant_id || saved.id || player.id;
       }
       localStorage.setItem("stanley_player", JSON.stringify(player));
       submitBtn.textContent = "¡Listo! Abriendo tu Pasaporte...";
