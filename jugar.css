@@ -1963,3 +1963,79 @@ section:has(#stamps-grid) h3{
     text-overflow:ellipsis!important;
   }
 }
+
+/* Misiones completadas: cabecera arriba, miniatura en linea y sello compacto */
+.mission-card.done{
+  align-items:start!important;
+}
+.mission-card.done .mission-copy{
+  display:grid!important;
+  grid-template-rows:auto auto auto!important;
+  align-content:start!important;
+  align-items:start!important;
+  justify-content:stretch!important;
+  text-align:left!important;
+}
+.mission-card.done .mission-copy-head{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 112px!important;
+  gap:14px!important;
+  align-items:start!important;
+  justify-content:stretch!important;
+  min-height:78px!important;
+}
+.mission-card.done .mission-copy-head > div{
+  order:0!important;
+  display:block!important;
+  align-self:start!important;
+  text-align:left!important;
+}
+.mission-card.done .mission-copy-head h3{
+  margin:4px 0 0!important;
+  text-align:left!important;
+}
+.mission-card.done .mission-inline-art{
+  order:0!important;
+  width:auto!important;
+  min-height:0!important;
+  height:78px!important;
+  display:grid!important;
+  place-items:start center!important;
+  justify-self:end!important;
+  align-self:start!important;
+}
+.mission-card.done .mission-thumb--inline{
+  max-width:92px!important;
+  max-height:72px!important;
+}
+.mission-card.done .mission-state-pill{
+  align-self:start!important;
+  justify-self:start!important;
+  margin-top:8px!important;
+}
+.mission-card.done .mission-completed-stamp{
+  width:100%!important;
+  min-height:112px!important;
+  margin:14px auto 0!important;
+  display:grid!important;
+  place-items:center!important;
+}
+.mission-card.done .mission-stamp--card{
+  width:100%!important;
+  max-width:330px!important;
+  max-height:130px!important;
+  object-fit:contain!important;
+  margin:0 auto!important;
+}
+.mission-card.done .mission-evidence{
+  grid-template-rows:160px 42px!important;
+  align-content:start!important;
+}
+@media(max-width:900px){
+  .mission-card.done .mission-copy-head{
+    grid-template-columns:minmax(0,1fr) 96px!important;
+  }
+  .mission-card.done .mission-inline-art{
+    height:70px!important;
+  }
+}
