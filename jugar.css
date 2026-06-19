@@ -1839,10 +1839,10 @@ section:has(#stamps-grid) h3{
 .stamp-panel #stamp-grid.stamp-grid,
 .stamp-panel #stamp-grid.missions-overview-grid{
   display:grid!important;
-  grid-template-columns:repeat(6,136px)!important;
-  grid-template-rows:repeat(2,138px)!important;
-  grid-auto-flow:row!important;
-  grid-auto-rows:138px!important;
+  grid-template-columns:repeat(6,minmax(0,1fr))!important;
+  grid-template-rows:repeat(2,96px)!important;
+  grid-auto-flow:column!important;
+  grid-auto-rows:96px!important;
   justify-content:center!important;
   gap:10px!important;
   width:100%!important;
@@ -1851,15 +1851,15 @@ section:has(#stamps-grid) h3{
   min-height:0!important;
 }
 .stamp-panel #stamp-grid .mission-tile{
-  width:136px!important;
-  min-width:136px!important;
-  max-width:136px!important;
-  height:138px!important;
-  min-height:138px!important;
-  max-height:138px!important;
-  padding:11px 10px 9px!important;
+  width:auto!important;
+  min-width:0!important;
+  max-width:none!important;
+  height:96px!important;
+  min-height:96px!important;
+  max-height:96px!important;
+  padding:10px 8px 8px!important;
   display:grid!important;
-  grid-template-rows:62px 36px 14px!important;
+  grid-template-rows:42px minmax(26px,1fr) 12px!important;
   align-items:center!important;
   text-align:center!important;
   overflow:hidden!important;
@@ -1869,26 +1869,26 @@ section:has(#stamps-grid) h3{
   top:6px!important;
 }
 .stamp-panel #stamp-grid .mission-tile-art{
-  height:62px!important;
-  align-self:center!important;
-  padding-top:8px!important;
+  height:42px!important;
+  align-self:start!important;
+  padding-top:2px!important;
   box-sizing:border-box!important;
 }
 .stamp-panel #stamp-grid .mission-thumb--tile{
   width:auto!important;
   height:auto!important;
-  max-width:62px!important;
-  max-height:58px!important;
+  max-width:54px!important;
+  max-height:40px!important;
 }
 .stamp-panel #stamp-grid .mission-stamp--tile{
-  height:66px!important;
-  max-height:66px!important;
+  height:42px!important;
+  max-height:42px!important;
 }
 .stamp-panel #stamp-grid .mission-tile strong{
-  font-size:11px!important;
+  font-size:10px!important;
   line-height:1.08!important;
   margin:0!important;
-  align-self:start!important;
+  align-self:end!important;
   padding:0 1px!important;
   display:-webkit-box!important;
   -webkit-line-clamp:2!important;
@@ -1896,10 +1896,10 @@ section:has(#stamps-grid) h3{
   overflow:hidden!important;
 }
 .stamp-panel #stamp-grid .mission-tile small{
-  font-size:8.5px!important;
+  font-size:8px!important;
   line-height:1!important;
-  align-self:start!important;
-  padding-top:2px!important;
+  align-self:end!important;
+  padding-top:1px!important;
   display:block!important;
   white-space:nowrap!important;
   overflow:hidden!important;
@@ -1908,21 +1908,22 @@ section:has(#stamps-grid) h3{
 @media(max-width:760px){
   .stamp-panel #stamp-grid.stamp-grid,
   .stamp-panel #stamp-grid.missions-overview-grid{
-    grid-template-columns:repeat(6,64px)!important;
-    grid-template-rows:repeat(2,94px)!important;
-    grid-auto-rows:94px!important;
+    grid-template-columns:repeat(6,58px)!important;
+    grid-template-rows:repeat(2,78px)!important;
+    grid-auto-flow:column!important;
+    grid-auto-rows:78px!important;
     gap:4px!important;
     justify-content:center!important;
   }
   .stamp-panel #stamp-grid .mission-tile{
-    width:64px!important;
-    min-width:64px!important;
-    max-width:64px!important;
-    height:94px!important;
-    min-height:94px!important;
-    max-height:94px!important;
+    width:58px!important;
+    min-width:58px!important;
+    max-width:58px!important;
+    height:78px!important;
+    min-height:78px!important;
+    max-height:78px!important;
     padding:6px 3px!important;
-    grid-template-rows:36px 36px 10px!important;
+    grid-template-rows:30px 29px 9px!important;
   }
   .stamp-panel #stamp-grid .mission-tile-number{
     width:18px!important;
@@ -1932,22 +1933,22 @@ section:has(#stamps-grid) h3{
     top:3px!important;
   }
   .stamp-panel #stamp-grid .mission-tile-art{
-    height:36px!important;
-    padding-top:6px!important;
+    height:30px!important;
+    padding-top:4px!important;
     box-sizing:border-box!important;
   }
   .stamp-panel #stamp-grid .mission-thumb--tile{
-    max-width:42px!important;
-    max-height:32px!important;
+    max-width:36px!important;
+    max-height:26px!important;
   }
   .stamp-panel #stamp-grid .mission-stamp--tile{
-    height:34px!important;
-    max-height:34px!important;
+    height:28px!important;
+    max-height:28px!important;
   }
   .stamp-panel #stamp-grid .mission-tile strong{
     font-size:7.2px!important;
     line-height:1.02!important;
-    align-self:start!important;
+    align-self:end!important;
     display:-webkit-box!important;
     -webkit-line-clamp:2!important;
     -webkit-box-orient:vertical!important;
