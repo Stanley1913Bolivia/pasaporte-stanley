@@ -24,6 +24,6 @@ config.js       configuración pública de campaña
 - Bronze: 4 sellos.
 - Silver: 7 sellos y participación por premios intermedios.
 - Gold: 10 sellos y participación en el sorteo general de Pasaporte Stanley.
-- Legend: 12 sellos y participación en el sorteo del Kit especial Stanley.
+- Legend: 12 sellos y participación en el sorteo de Ediciones Especiales Stanley.
 
 Pasaporte Stanley es una dinámica recreativa y promocional. No constituye apuesta, juego de azar, actividad de gambling, servicio de pronósticos deportivos pagados ni plataforma de apuestas.

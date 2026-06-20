@@ -1,4 +1,4 @@
-const CONFIG = window.STANLEY || { APPS_SCRIPT_URL:"", DEADLINE:"2026-06-27T20:00:00-04:00" };
+const CONFIG = window.STANLEY || { APPS_SCRIPT_URL:"", DEADLINE:"2026-07-01T12:00:00-04:00" };
 const newId = () => (window.crypto && crypto.randomUUID) ? crypto.randomUUID()
   : 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2);
 
@@ -149,7 +149,7 @@ if (form) {
 }
 
 document.querySelectorAll("[data-carousel]").forEach(function (box, idx) {
-  var imgs = box.querySelectorAll(".prize__img");
+  var imgs = box.querySelectorAll(".prize__img, .gallery-card__img");
   if (imgs.length < 2) return;
   var i = 0;
   setTimeout(function () {
