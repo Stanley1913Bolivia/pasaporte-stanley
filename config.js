@@ -1,5 +1,5 @@
 window.STANLEY = {
-  APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbxhrWDmnhCt_hw8fXrXD3MyOvSe3tNqHLdFW0OP-Hm3wGr7_4p4HtykS1bS5srLVFNd/exec",
+  APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbw-WX6zUnpZQgHMCgS1x0zPd6taYspDiL0tZizNHCnMkaYizX-XmiXWzU4lWBCnIZgOKA/exec",
   IG_HANDLE: "@stanley1913_bolivia",
   DEADLINE: "2026-06-27T20:00:00-04:00",
   PHASE: "inscripcion",
