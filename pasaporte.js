@@ -40,6 +40,63 @@ const evidenceCount = () => Object.values(passport.evidence || {}).filter(Boolea
 const isDone = mission => Boolean(passport.evidence && passport.evidence[mission.id]);
 const isLocked = mission => mission.week > CURRENT_WEEK;
 
+
+function participantId() {
+  return (player && (player.participant_id || player.id)) || localStorage.getItem('participant_id') || '';
+}
+
+function normalizedIg(value) {
+  const raw = String(value || '').trim().replace(/\s+/g, '').replace(/^@+/, '');
+  return raw ? `@${raw}` : '';
+}
+
+function evidenceUrl(item) {
+  return item && (item.evidence_url || item.dataUrl || item.url || '');
+}
+
+function isImageEvidence(url, name = '') {
+  const clean = String(url || '').split('?')[0].toLowerCase();
+  const filename = String(name || '').toLowerCase();
+  return /^data:image\//.test(String(url || '')) || /\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(clean) || /\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(filename);
+}
+
+function renderEvidenceView(mission, evidence) {
+  if (!evidence) {
+    return `<div class="evidence-empty">Subi captura de Instagram</div>`;
+  }
+  const url = evidenceUrl(evidence);
+  const fileName = evidence.name || evidence.evidence_filename || 'Evidencia cargada';
+  const type = evidence.instagram_post_type ? `<small>${evidence.instagram_post_type}</small>` : '';
+  const igLink = evidence.instagram_url ? `<a class="evidence-link evidence-link--ghost" href="${evidence.instagram_url}" target="_blank" rel="noopener">Ver publicaciÃ³n</a>` : '';
+  const preview = url && isImageEvidence(url, fileName)
+    ? `<a class="evidence-preview" href="${url}" target="_blank" rel="noopener"><img src="${url}" alt="Evidencia cargada para ${mission.name}" loading="lazy" onerror="this.closest('.evidence-preview').classList.add('is-unavailable')" /><span>Ver evidencia cargada</span></a>`
+    : `<div class="evidence-empty evidence-empty--uploaded">Evidencia cargada</div>`;
+  const button = url ? `<a class="gb-btn evidence-open" href="${url}" target="_blank" rel="noopener">Ver evidencia cargada</a>` : '';
+  return `
+    ${preview}
+    <div class="evidence-meta">
+      <strong>${fileName || 'Evidencia cargada'}</strong>
+      ${type}
+      <div class="evidence-actions">${button}${igLink}</div>
+    </div>
+  `;
+}
+
+function updateSessionIndicator() {
+  const id = participantId();
+  const ig = normalizedIg(player && player.instagram);
+  const label = $('#player-name');
+  const cloud = $('#cloud');
+  if (label) {
+    if (id && ig) label.textContent = `${ig} Â· Progreso sincronizado`;
+    else if (id) label.textContent = 'Pasaporte activo';
+    else label.textContent = 'Modo invitado Â· se guarda en este dispositivo';
+  }
+  if (cloud) {
+    cloud.textContent = id ? 'Progreso sincronizado' : 'Guardado local';
+    cloud.dataset.s = id ? 'sync' : 'ok';
+  }
+}
 function localDay(value = new Date()) {
   const date = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(date.getTime())) return '';
@@ -172,10 +229,16 @@ function missionRowsToEvidence(rows) {
   (rows || []).forEach(row => {
     const mission = MISSIONS.find(item => item.id === row.mission_id);
     if (!mission) return;
+    const url = row.evidence_url || row.url || '';
     evidence[mission.id] = {
-      name: row.evidence_filename || row.mission_name || mission.name,
-      dataUrl: row.evidence_url || '',
+      name: row.evidence_filename || row.mission_name || mission.name || 'Evidencia cargada',
+      evidence_filename: row.evidence_filename || '',
+      dataUrl: url,
+      evidence_url: url,
+      instagram_url: row.instagram_url || '',
+      instagram_post_type: row.instagram_post_type || '',
       date: row.completed_at || row.submitted_at || new Date().toISOString(),
+      completed_at: row.completed_at || '',
       updatedAt: row.submitted_at || row.completed_at || new Date().toISOString(),
       source: 'backend'
     };
@@ -297,19 +360,12 @@ function renderMissions() {
         <div class="mission-instructions ${locked ? 'blurred' : ''}">
           ${locked ? 'Caracteristicas e instrucciones bloqueadas.' : mission.instructions}
         </div>
-        <span class="mission-state-pill">${done ? 'Completado' : locked ? 'Carga bloqueada hasta su semana' : dailyBlocked ? 'Volvé mañana para completar más misiones' : 'Sello desbloqueado'}</span>
+        <span class="mission-state-pill">${done ? '✓ SELLO OBTENIDO' : locked ? 'Carga bloqueada hasta su semana' : dailyBlocked ? 'Volvé mañana para completar más misiones' : 'Sello desbloqueado'}</span>
         <div class="mission-completed-stamp">
           ${done ? stamp(mission, 'card') : ''}
         </div>
       </div>
-      <div class="mission-evidence">
-        ${evidence ? `<img src="${evidence.dataUrl}" alt="Evidencia cargada para ${mission.name}" />` : `<div class="evidence-empty">${locked ? 'Carga bloqueada' : dailyBlocked ? 'Límite diario alcanzado' : 'Subi captura de Instagram'}</div>`}
-        <label class="gb-btn evidence-btn ${locked || dailyBlocked ? 'disabled' : ''}">
-          ${done ? 'Cambiar evidencia' : locked ? 'Bloqueado' : dailyBlocked ? 'Disponible mañana' : 'Subir evidencia'}
-          <input type="file" accept="image/*" data-mission="${mission.id}" ${locked || dailyBlocked ? 'disabled' : ''}>
-        </label>
-      </div>
-    `;
+      <div class="mission-evidence"></div>`;
     wrap.appendChild(article);
   });
 }
@@ -323,6 +379,11 @@ function bindUploads() {
     const mission = MISSIONS.find(item => item.id === input.dataset.mission);
     if (!mission || isLocked(mission)) return;
     const wasDone = isDone(mission);
+    if (wasDone) {
+      input.value = '';
+      renderAll();
+      return;
+    }
     if (!wasDone && dailyLimitReached()) {
       alert('Ya completaste tus 2 misiones de hoy. Volvé mañana para seguir sumando sellos.');
       input.value = '';
@@ -347,6 +408,7 @@ function bindUploads() {
 }
 
 function renderAll() {
+  updateSessionIndicator();
   updateProgress();
   renderOverview();
   renderPassportSheet();
