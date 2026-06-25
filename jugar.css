@@ -2147,3 +2147,18 @@ section:has(#stamps-grid) h3{
 .evidence-empty--uploaded{
   min-height:92px;
 }
+/* Barra superior fija limpia */
+.gamebar{
+  position:sticky!important;
+  top:0!important;
+  z-index:80!important;
+}
+.passport-meter{
+  position:sticky!important;
+  top:52px!important;
+  z-index:70!important;
+}
+@media(max-width:560px){
+  .gamebar{top:0!important}
+  .passport-meter{top:50px!important}
+}

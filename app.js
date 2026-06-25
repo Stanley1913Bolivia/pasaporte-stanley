@@ -191,6 +191,44 @@ document.addEventListener("keydown", event => {
 });
 if (location.hash === "#recuperar") openRecoverModal();
 
+
+function hasParticipantSession() {
+  return Boolean(localStorage.getItem("participant_id"));
+}
+
+function updatePassportNavigation() {
+  const hasSession = hasParticipantSession();
+  document.querySelectorAll("[data-auth-passport]").forEach(el => {
+    el.hidden = !hasSession;
+    el.setAttribute("aria-hidden", String(!hasSession));
+  });
+  document.querySelectorAll("[data-auth-recover]").forEach(el => {
+    el.hidden = hasSession;
+    el.setAttribute("aria-hidden", String(hasSession));
+  });
+
+  document.querySelectorAll("[data-floating-passport]").forEach(btn => {
+    const label = btn.querySelector("[data-floating-passport-label]");
+    btn.dataset.mode = hasSession ? "passport" : "recover";
+    btn.setAttribute("aria-label", hasSession ? "Mi Pasaporte" : "Ya tengo Pasaporte");
+    btn.title = hasSession ? "Mi Pasaporte" : "Ya tengo Pasaporte";
+    if (label) label.textContent = hasSession ? "Mi Pasaporte" : "Ya tengo Pasaporte";
+  });
+}
+
+document.addEventListener("click", event => {
+  const floating = event.target.closest("[data-floating-passport]");
+  if (!floating) return;
+  event.preventDefault();
+  if (hasParticipantSession()) {
+    window.location.href = "jugar.html";
+  } else {
+    openRecoverModal();
+  }
+});
+
+updatePassportNavigation();
+
 const recoverForm = document.getElementById("recover-form");
 const recoverErrorEl = document.getElementById("recover-error");
 const recoverSubmitBtn = document.getElementById("recover-submit");

@@ -514,3 +514,45 @@ html[data-phase="eliminatorias"] .only-inscripcion{display:none}
     max-height:none;
   }
 }
+/* Navegacion fija y acceso flotante */
+.nav{
+  position:sticky;
+  top:0;
+  z-index:70;
+}
+[hidden]{
+  display:none!important;
+}
+.passport-floating-access{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  z-index:75;
+  border:0;
+  border-radius:999px;
+  background:var(--ink);
+  color:#fff;
+  box-shadow:0 14px 34px rgba(0,0,0,.22);
+  padding:12px 16px;
+  font-family:'Montserrat',sans-serif;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.4px;
+  font-size:12px;
+  cursor:pointer;
+}
+.passport-floating-access[data-mode="passport"]{
+  background:var(--green);
+}
+.passport-floating-access:hover{
+  transform:translateY(-1px);
+}
+@media(max-width:700px){
+  .passport-floating-access{
+    right:12px;
+    bottom:12px;
+    max-width:calc(100vw - 24px);
+    padding:11px 13px;
+    font-size:11px;
+  }
+}
