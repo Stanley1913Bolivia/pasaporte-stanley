@@ -315,6 +315,31 @@ html[data-phase="eliminatorias"] .only-inscripcion{display:none}
   border-radius:16px;padding:34px 24px;display:flex;flex-direction:column;align-items:center;gap:18px}
 .rank-empty{color:var(--text-soft);font-size:15px;margin:0}
 
+.community-strip{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:24px;
+  max-width:1080px;
+  margin:0 auto;
+  padding:30px 36px;
+  border:1px solid rgba(0,115,73,.22);
+  border-radius:16px;
+  background:linear-gradient(135deg,#f8fbf6 0%,#eef7f0 100%);
+  box-shadow:0 18px 42px rgba(21,39,31,.08);
+}
+.community-strip__copy{max-width:700px}
+.community-strip .h2{
+  text-align:left;
+  font-size:clamp(28px,4vw,46px);
+  margin:8px 0 8px;
+}
+.community-strip p{
+  color:var(--text);
+  line-height:1.55;
+  font-size:16px;
+}
+
 .bases-list{max-width:820px;margin:30px auto 24px;padding-left:20px;display:grid;gap:10px}
 .bases-list li{font-size:14.5px;color:var(--text);line-height:1.55}
 .bases-list strong{color:var(--ink)}
@@ -499,6 +524,13 @@ html[data-phase="eliminatorias"] .only-inscripcion{display:none}
   line-height:1;
   cursor:pointer;
 }
+.modal-actions{
+  display:grid;
+  gap:12px;
+}
+.registration-success-modal .recover-modal__panel{
+  max-width:620px;
+}
 @media (max-width:700px){
   .nav__link--recover{
     display:inline-flex;
@@ -512,6 +544,17 @@ html[data-phase="eliminatorias"] .only-inscripcion{display:none}
     margin:18px 0;
     width:100%;
     max-height:none;
+  }
+  .community-strip{
+    align-items:flex-start;
+    flex-direction:column;
+    padding:24px 22px;
+  }
+  .community-strip .h2{
+    font-size:30px;
+  }
+  .community-strip .btn{
+    width:100%;
   }
 }
 /* Navegacion fija y acceso flotante */

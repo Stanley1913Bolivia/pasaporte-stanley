@@ -1,4 +1,5 @@
 const CONFIG = window.STANLEY || { APPS_SCRIPT_URL:"", DEADLINE:"2026-07-01T12:00:00-04:00" };
+const INSTAGRAM_COMMUNITY_URL = CONFIG.INSTAGRAM_COMMUNITY_URL || "https://www.instagram.com/channel/AbbX7p2jNimxBq8g/";
 const newId = () => (window.crypto && crypto.randomUUID) ? crypto.randomUUID()
   : 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2);
 const normalizeInstagram = value => String(value || "").trim().replace(/\s+/g, "").replace(/^@+/, "").toLowerCase();
@@ -52,6 +53,15 @@ setInterval(tick, 1000);
 const form = document.getElementById("form");
 const errorEl = document.getElementById("form-error");
 const submitBtn = document.getElementById("submit");
+const registrationSuccessModal = document.getElementById("registro-activo");
+
+function applyCommunityLinks() {
+  document.querySelectorAll("[data-community-link]").forEach(link => {
+    link.href = INSTAGRAM_COMMUNITY_URL;
+    link.target = "_blank";
+    link.rel = "noopener";
+  });
+}
 
 function showError(msg) {
   if (!errorEl) return;
@@ -63,6 +73,17 @@ function showError(msg) {
 function resetBtn() {
   submitBtn.disabled = false;
   submitBtn.textContent = "Inscribirme y abrir mi Pasaporte";
+}
+
+function showRegistrationSuccess() {
+  if (!registrationSuccessModal) {
+    window.location.href = "jugar.html";
+    return;
+  }
+  registrationSuccessModal.classList.add("is-open");
+  registrationSuccessModal.setAttribute("aria-hidden", "false");
+  submitBtn.disabled = false;
+  submitBtn.textContent = "Pasaporte activo";
 }
 
 function safePlayer(data) {
@@ -152,8 +173,9 @@ if (form) {
       }
       localStorage.setItem("stanley_player", JSON.stringify(player));
       localStorage.setItem("participant_id", player.id);
-      submitBtn.textContent = "¡Listo! Abriendo tu Pasaporte...";
-      window.location.href = "jugar.html";
+      submitBtn.textContent = "¡Listo! Pasaporte activo";
+      updatePassportNavigation();
+      showRegistrationSuccess();
     } catch (err) {
       resetBtn();
       showError("No pudimos registrar tu inscripción. Revisá tu conexión e intentá de nuevo.");
@@ -228,6 +250,7 @@ document.addEventListener("click", event => {
 });
 
 updatePassportNavigation();
+applyCommunityLinks();
 
 const recoverForm = document.getElementById("recover-form");
 const recoverErrorEl = document.getElementById("recover-error");

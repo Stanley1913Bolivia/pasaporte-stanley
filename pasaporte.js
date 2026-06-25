@@ -20,6 +20,7 @@ MISSIONS.forEach((mission, index) => {
 });
 
 const CONFIG = window.STANLEY || {};
+const INSTAGRAM_COMMUNITY_URL = CONFIG.INSTAGRAM_COMMUNITY_URL || 'https://www.instagram.com/channel/AbbX7p2jNimxBq8g/';
 const STORAGE_KEY = 'stanley_passport';
 const DAILY_LIMIT = Number(CONFIG.DAILY_MISSION_LIMIT || 2);
 const DAILY_LIMIT_FLEXIBLE = Boolean(CONFIG.DAILY_LIMIT_FLEXIBLE);
@@ -29,6 +30,12 @@ let player = JSON.parse(localStorage.getItem('stanley_player') || '{}');
 if (!player.id && localStorage.getItem('participant_id')) player.id = localStorage.getItem('participant_id');
 if (player && player.participant_id && !player.id) player.id = player.participant_id;
 if (player && player.id && !player.participant_id) player.participant_id = player.id;
+
+document.querySelectorAll('[data-community-link]').forEach(link => {
+  link.href = INSTAGRAM_COMMUNITY_URL;
+  link.target = '_blank';
+  link.rel = 'noopener';
+});
 if (player && Object.prototype.hasOwnProperty.call(player, 'documento')) {
   delete player.documento;
   localStorage.setItem('stanley_player', JSON.stringify(player));
