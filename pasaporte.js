@@ -125,7 +125,7 @@ function dailyLimitMessage() {
   if (DAILY_LIMIT_FLEXIBLE) return 'L?mite diario flexibilizado por la organizaci?n durante esta etapa.';
   if (doneToday <= 0) return 'Pod?s completar hasta 2 misiones por d?a.';
   if (doneToday === 1) return 'Te queda 1 misi?n disponible por completar hoy.';
-  return 'Ya completaste tus 2 misiones de hoy. Volv? ma?ana para seguir sumando sellos.';
+  return 'Ya completaste tus 2 misiones de hoy. Volvé mañana para seguir sumando sellos.';
 }
 
 function ensureDailyNotice() {
@@ -387,7 +387,7 @@ function bindUploads() {
     if (!mission || isLocked(mission)) return;
     const wasDone = isDone(mission);
     if (!wasDone && dailyLimitReached()) {
-      alert('Ya completaste tus 2 misiones de hoy. Volv? ma?ana para seguir sumando sellos.');
+      alert('Ya completaste tus 2 misiones de hoy. Volvé mañana para seguir sumando sellos.');
       input.value = '';
       renderAll();
       return;
