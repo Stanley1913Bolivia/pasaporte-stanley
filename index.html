@@ -30,6 +30,7 @@
     <a class="nav__link nav__link--hide-mobile" href="#como-participar">Cómo participar</a>
     <a class="nav__link nav__link--hide-mobile" href="#misiones">Misiones</a>
     <a class="nav__link" href="jugar.html">Mi Pasaporte</a>
+    <a class="nav__link nav__link--recover" href="#recuperar" data-recover-open>Ya tengo Pasaporte</a>
     <a class="nav__link" href="ranking.html">Comunidad</a>
     <a class="nav__link nav__link--hide-mobile" href="https://stanley1913.bo/collections/convocados-stanley" target="_blank" rel="noopener">Tienda</a>
     <a href="#registro" class="btn btn--sm">Participar</a>
@@ -51,6 +52,7 @@
     <p class="countdown__label">Cierre de inscripciones</p>
     <div class="hero__cta">
       <a href="#registro" class="btn btn--lg">Activar mi pasaporte</a>
+      <a href="#recuperar" class="btn btn--lg btn--ghost" data-recover-open>Ya tengo Pasaporte</a>
       <a href="#misiones" class="btn btn--lg btn--ghost">Ver misiones</a>
     </div>
     <p class="hero__legal">Válido para compras Stanley desde el <strong>1 de mayo de 2026</strong> en tienda Stanley Bolivia, web Stanley Bolivia y distribuidores autorizados.</p>
@@ -150,9 +152,32 @@
   </div>
 </section>
 
+<section class="section recover-modal" id="recuperar" aria-hidden="true">
+  <div class="recover-modal__backdrop" data-recover-close></div>
+  <div class="form-card form-card--recover recover-modal__panel" role="dialog" aria-modal="true" aria-labelledby="recover-title">
+    <header class="form-card__head">
+      <button type="button" class="recover-modal__close" aria-label="Cerrar recuperacion" data-recover-close>&times;</button>
+      <span class="kicker kicker--dark">Recuperaci&oacute;n</span>
+      <h2 class="h2" id="recover-title">Recuperar mi Pasaporte</h2>
+      <p>Ingres&aacute; el Instagram y Carnet de Identidad usados en tu inscripci&oacute;n. Si coinciden, abriremos tu Pasaporte Stanley.</p>
+    </header>
+
+    <form id="recover-form" novalidate>
+      <div class="grid2">
+        <label class="field"><span>Instagram*</span><input name="instagram" required placeholder="@tuusuario" autocomplete="off" /></label>
+        <label class="field"><span>Carnet de Identidad*</span><input name="documento" required inputmode="numeric" autocomplete="off" /></label>
+      </div>
+      <p class="form-note">El CI se usa solo para validar la recuperaci&oacute;n. No se guardar&aacute; en este dispositivo.</p>
+      <p class="form-error" id="recover-error" hidden></p>
+      <button type="submit" class="btn btn--lg btn--full" id="recover-submit">Recuperar y abrir mi Pasaporte</button>
+    </form>
+  </div>
+</section>
+
 <section class="section pitch pitch--dark" id="registro">
   <div class="form-card">
     <header class="form-card__head">
+      <button type="button" class="recover-modal__close" aria-label="Cerrar recuperacion" data-recover-close>&times;</button>
       <span class="kicker kicker--dark">Inscripción</span>
       <h2 class="h2">Activá tu Pasaporte</h2>
       <p>Completá tus datos y subí tu factura o respaldo válido. Después vas directo a Mi Pasaporte para empezar tus misiones.</p>

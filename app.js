@@ -1,6 +1,7 @@
 const CONFIG = window.STANLEY || { APPS_SCRIPT_URL:"", DEADLINE:"2026-07-01T12:00:00-04:00" };
 const newId = () => (window.crypto && crypto.randomUUID) ? crypto.randomUUID()
   : 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+const normalizeInstagram = value => String(value || "").trim().replace(/\s+/g, "").replace(/^@+/, "").toLowerCase();
 
 const fileInput = document.getElementById("comprobante");
 const fileHint = document.getElementById("file-hint");
@@ -64,6 +65,18 @@ function resetBtn() {
   submitBtn.textContent = "Inscribirme y abrir mi Pasaporte";
 }
 
+function safePlayer(data) {
+  return {
+    id: data.participant_id || data.id || "",
+    participant_id: data.participant_id || data.id || "",
+    nombre: data.nombre || "",
+    instagram: data.instagram || "",
+    whatsapp: data.whatsapp || "",
+    email: data.email || "",
+    ciudad: data.ciudad || ""
+  };
+}
+
 if (form) {
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -89,7 +102,6 @@ if (form) {
     const player = {
       id: newId(),
       nombre: fullName,
-      documento: form.documento.value.trim(),
       instagram: form.instagram.value.trim(),
       whatsapp: form.whatsapp.value.trim(),
       email: form.email.value.trim(),
@@ -102,7 +114,7 @@ if (form) {
       id: player.id,
       nombre: player.nombre,
       apellido: "",
-      documento: player.documento,
+      documento: form.documento.value.trim(),
       instagram: player.instagram,
       whatsapp: player.whatsapp,
       email: player.email,
@@ -121,7 +133,7 @@ if (form) {
         console.warn("APPS_SCRIPT_URL vacío: registro NO enviado a la nube (modo demo).", payload);
       } else {
         try {
-          const q = new URLSearchParams({ action: "existe", ci: player.documento, comp: comprobanteNro });
+          const q = new URLSearchParams({ action: "existe", ci: form.documento.value.trim(), comp: comprobanteNro });
           const chk = await fetch(CONFIG.APPS_SCRIPT_URL + "?" + q.toString()).then(r => r.json());
           if (chk && chk.ci) { resetBtn(); return showError("Ese documento (CI) ya está inscrito. Si ya participaste, entrá a Mi Pasaporte desde el menú."); }
           if (chk && chk.comp) { resetBtn(); return showError("Ese número de comprobante ya fue registrado. Cada compra puede inscribirse una sola vez."); }
@@ -136,13 +148,109 @@ if (form) {
           return showError((saved && saved.error) || "No pudimos registrar tu inscripción. Revisá tus datos e intentá de nuevo.");
         }
         player.id = saved.participant_id || saved.id || player.id;
+        player.participant_id = player.id;
       }
       localStorage.setItem("stanley_player", JSON.stringify(player));
+      localStorage.setItem("participant_id", player.id);
       submitBtn.textContent = "¡Listo! Abriendo tu Pasaporte...";
       window.location.href = "jugar.html";
     } catch (err) {
       resetBtn();
       showError("No pudimos registrar tu inscripción. Revisá tu conexión e intentá de nuevo.");
+      console.error(err);
+    }
+  });
+}
+
+
+const recoverModal = document.getElementById("recuperar");
+function openRecoverModal() {
+  if (!recoverModal) return;
+  recoverModal.classList.add("is-open");
+  recoverModal.setAttribute("aria-hidden", "false");
+  if (location.hash !== "#recuperar") history.replaceState(null, "", "#recuperar");
+  setTimeout(() => recoverModal.querySelector("input[name='instagram']")?.focus(), 80);
+}
+function closeRecoverModal() {
+  if (!recoverModal) return;
+  recoverModal.classList.remove("is-open");
+  recoverModal.setAttribute("aria-hidden", "true");
+  if (location.hash === "#recuperar") history.replaceState(null, "", location.pathname + location.search);
+}
+document.querySelectorAll("[data-recover-open]").forEach(btn => {
+  btn.addEventListener("click", event => {
+    event.preventDefault();
+    openRecoverModal();
+  });
+});
+document.querySelectorAll("[data-recover-close]").forEach(btn => {
+  btn.addEventListener("click", closeRecoverModal);
+});
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape") closeRecoverModal();
+});
+if (location.hash === "#recuperar") openRecoverModal();
+
+const recoverForm = document.getElementById("recover-form");
+const recoverErrorEl = document.getElementById("recover-error");
+const recoverSubmitBtn = document.getElementById("recover-submit");
+
+function showRecoverError(msg) {
+  if (!recoverErrorEl) return;
+  recoverErrorEl.textContent = msg;
+  recoverErrorEl.hidden = false;
+  recoverErrorEl.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+function resetRecoverBtn() {
+  if (!recoverSubmitBtn) return;
+  recoverSubmitBtn.disabled = false;
+  recoverSubmitBtn.textContent = "Recuperar y abrir mi Pasaporte";
+}
+
+if (recoverForm) {
+  recoverForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    recoverErrorEl.hidden = true;
+
+    const instagram = normalizeInstagram(recoverForm.instagram.value);
+    const documento = recoverForm.documento.value.trim();
+    if (!instagram || !documento) {
+      showRecoverError("Completá Instagram y Carnet de Identidad para recuperar tu pasaporte.");
+      return;
+    }
+    if (!CONFIG.APPS_SCRIPT_URL) {
+      showRecoverError("La recuperación necesita conexión con Apps Script.");
+      return;
+    }
+
+    recoverSubmitBtn.disabled = true;
+    recoverSubmitBtn.textContent = "Verificando...";
+    try {
+      const payload = {
+        action: "recoverParticipant",
+        instagram,
+        documento
+      };
+      const saved = await fetch(CONFIG.APPS_SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify(payload)
+      }).then(r => r.json());
+
+      if (!saved || saved.ok === false || !saved.participant_id) {
+        resetRecoverBtn();
+        return showRecoverError((saved && saved.error) || "No encontramos un pasaporte con esos datos. Revisá Instagram y CI.");
+      }
+
+      const recoveredPlayer = safePlayer(saved.participant || saved);
+      localStorage.setItem("stanley_player", JSON.stringify(recoveredPlayer));
+      localStorage.setItem("participant_id", recoveredPlayer.id);
+      localStorage.setItem("stanley_recovered_at", new Date().toISOString());
+      recoverSubmitBtn.textContent = "Pasaporte recuperado...";
+      window.location.href = "jugar.html";
+    } catch (err) {
+      resetRecoverBtn();
+      showRecoverError("No pudimos recuperar tu pasaporte. Revisá tu conexión e intentá de nuevo.");
       console.error(err);
     }
   });

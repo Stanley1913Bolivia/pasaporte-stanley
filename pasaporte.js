@@ -26,6 +26,13 @@ const DAILY_LIMIT_FLEXIBLE = Boolean(CONFIG.DAILY_LIMIT_FLEXIBLE);
 const CURRENT_WEEK = Number(new URLSearchParams(location.search).get('week') || CONFIG.CURRENT_WEEK || 1);
 let passport = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{"evidence":{}}');
 let player = JSON.parse(localStorage.getItem('stanley_player') || '{}');
+if (!player.id && localStorage.getItem('participant_id')) player.id = localStorage.getItem('participant_id');
+if (player && player.participant_id && !player.id) player.id = player.participant_id;
+if (player && player.id && !player.participant_id) player.participant_id = player.id;
+if (player && Object.prototype.hasOwnProperty.call(player, 'documento')) {
+  delete player.documento;
+  localStorage.setItem('stanley_player', JSON.stringify(player));
+}
 
 const $ = sel => document.querySelector(sel);
 const setText = (sel, value) => { const el = $(sel); if (el) el.textContent = value; };
@@ -137,7 +144,6 @@ async function syncMissionEvidence_(mission, file, dataUrl) {
       action: 'saveEvidence',
       participant_id: player.id,
       id: player.id,
-      documento: player.documento || '',
       mission_id: mission.id,
       mission_name: mission.name,
       week: mission.week,
@@ -154,6 +160,47 @@ async function syncMissionEvidence_(mission, file, dataUrl) {
     if (!saved || saved.ok === false) console.warn('No se pudo sincronizar la evidencia.', saved);
   } catch (err) {
     console.warn('Evidencia guardada localmente, pero no sincronizada.', err);
+  }
+}
+
+function hasLocalEvidence() {
+  return Object.values(passport.evidence || {}).some(Boolean);
+}
+
+function missionRowsToEvidence(rows) {
+  const evidence = {};
+  (rows || []).forEach(row => {
+    const mission = MISSIONS.find(item => item.id === row.mission_id);
+    if (!mission) return;
+    evidence[mission.id] = {
+      name: row.evidence_filename || row.mission_name || mission.name,
+      dataUrl: row.evidence_url || '',
+      date: row.completed_at || row.submitted_at || new Date().toISOString(),
+      updatedAt: row.submitted_at || row.completed_at || new Date().toISOString(),
+      source: 'backend'
+    };
+  });
+  return evidence;
+}
+
+async function hydratePassportFromBackend() {
+  if (hasLocalEvidence() || !CONFIG.APPS_SCRIPT_URL || !player || !player.id) return;
+  try {
+    const payload = { action: 'getParticipantMissions', participant_id: player.id };
+    const saved = await fetch(CONFIG.APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    }).then(r => r.json());
+    if (!saved || saved.ok === false) {
+      console.warn('No se pudo recuperar el progreso desde el backend.', saved);
+      return;
+    }
+    const evidence = missionRowsToEvidence(saved.missions || []);
+    if (!Object.keys(evidence).length) return;
+    passport.evidence = evidence;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(passport));
+  } catch (err) {
+    console.warn('No se pudo reconstruir el progreso desde el backend.', err);
   }
 }
 
@@ -308,3 +355,4 @@ function renderAll() {
 
 bindUploads();
 renderAll();
+hydratePassportFromBackend().then(renderAll);
