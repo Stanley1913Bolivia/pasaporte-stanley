@@ -67,10 +67,10 @@ function renderEvidenceView(mission, evidence) {
   const url = evidenceUrl(evidence);
   const fileName = evidence.name || evidence.evidence_filename || 'Evidencia cargada';
   const type = evidence.instagram_post_type ? `<small>${evidence.instagram_post_type}</small>` : '';
-  const igLink = evidence.instagram_url ? `<a class="evidence-link evidence-link--ghost" href="${evidence.instagram_url}" target="_blank" rel="noopener">Ver publicaciÃ³n</a>` : '';
+  const igLink = evidence.instagram_url ? `<a class="evidence-link evidence-link--ghost" href="${evidence.instagram_url}" target="_blank" rel="noopener">Ver publicacion</a>` : '';
   const preview = url && isImageEvidence(url, fileName)
     ? `<a class="evidence-preview" href="${url}" target="_blank" rel="noopener"><img src="${url}" alt="Evidencia cargada para ${mission.name}" loading="lazy" onerror="this.closest('.evidence-preview').classList.add('is-unavailable')" /><span>Ver evidencia cargada</span></a>`
-    : `<div class="evidence-empty evidence-empty--uploaded">Evidencia cargada</div>`;
+    : `<div class="evidence-empty evidence-empty--uploaded">${url ? 'Evidencia cargada' : 'Evidencia no disponible en este dispositivo.'}</div>`;
   const button = url ? `<a class="gb-btn evidence-open" href="${url}" target="_blank" rel="noopener">Ver evidencia cargada</a>` : '';
   return `
     ${preview}
@@ -365,7 +365,14 @@ function renderMissions() {
           ${done ? stamp(mission, 'card') : ''}
         </div>
       </div>
-      <div class="mission-evidence"></div>`;
+      <div class="mission-evidence">
+        ${done ? renderEvidenceView(mission, evidence) : `<div class="evidence-empty">${locked ? 'Carga bloqueada' : dailyBlocked ? 'Limite diario alcanzado' : 'Subi captura de Instagram'}</div>`}
+        ${locked ? `<span class="gb-btn evidence-btn disabled">Bloqueado</span>` : `<label class="gb-btn evidence-btn ${dailyBlocked ? 'disabled' : ''}">
+          ${done ? (evidenceUrl(evidence) ? 'Cambiar evidencia' : 'Subir evidencia nuevamente') : dailyBlocked ? 'Disponible maÃ±ana' : 'Subir evidencia'}
+          <input type="file" accept="image/*" data-mission="${mission.id}" ${dailyBlocked ? 'disabled' : ''}>
+        </label>`}
+      </div>
+    `;
     wrap.appendChild(article);
   });
 }
@@ -379,11 +386,6 @@ function bindUploads() {
     const mission = MISSIONS.find(item => item.id === input.dataset.mission);
     if (!mission || isLocked(mission)) return;
     const wasDone = isDone(mission);
-    if (wasDone) {
-      input.value = '';
-      renderAll();
-      return;
-    }
     if (!wasDone && dailyLimitReached()) {
       alert('Ya completaste tus 2 misiones de hoy. Volvé mañana para seguir sumando sellos.');
       input.value = '';
@@ -395,7 +397,9 @@ function bindUploads() {
       passport.evidence = passport.evidence || {};
       passport.evidence[mission.id] = {
         name:file.name,
+        evidence_filename:file.name,
         dataUrl:reader.result,
+        evidence_url:reader.result,
         date: wasDone && passport.evidence[mission.id] ? passport.evidence[mission.id].date : new Date().toISOString(),
         updatedAt:new Date().toISOString()
       };

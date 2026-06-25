@@ -2128,3 +2128,22 @@ section:has(#stamps-grid) h3{
   background:rgba(1,166,106,.14);
   color:var(--green-2);
 }
+/* Restaurar cambio de evidencias */
+.mission-card.done .evidence-btn{
+  pointer-events:auto!important;
+  opacity:1!important;
+  cursor:pointer!important;
+}
+.mission-card.done .evidence-btn input{
+  pointer-events:auto!important;
+  cursor:pointer!important;
+}
+.mission-card.done .evidence-btn.disabled,
+.mission-card.locked .evidence-btn{
+  pointer-events:none!important;
+  opacity:.62!important;
+  cursor:not-allowed!important;
+}
+.evidence-empty--uploaded{
+  min-height:92px;
+}
