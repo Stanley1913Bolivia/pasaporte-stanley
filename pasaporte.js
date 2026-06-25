@@ -360,7 +360,7 @@ function renderMissions() {
         <div class="mission-instructions ${locked ? 'blurred' : ''}">
           ${locked ? 'CaracterÃ­sticas e instrucciones bloqueadas.' : mission.instructions}
         </div>
-        <span class="mission-state-pill">${done ? '? SELLO OBTENIDO' : locked ? 'Carga bloqueada hasta su semana' : dailyBlocked ? 'Volv? ma?ana para completar m?s misiones' : 'Sello desbloqueado'}</span>
+        <span class="mission-state-pill">${done ? 'âœ“ SELLO OBTENIDO' : locked ? 'Carga bloqueada hasta su semana' : dailyBlocked ? 'VolvÃ© maÃ±ana para completar mÃ¡s misiones' : 'Sello desbloqueado'}</span>
         <div class="mission-completed-stamp">
           ${done ? stamp(mission, 'card') : ''}
         </div>
