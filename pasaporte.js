@@ -62,12 +62,12 @@ function isImageEvidence(url, name = '') {
 
 function renderEvidenceView(mission, evidence) {
   if (!evidence) {
-    return `<div class="evidence-empty">Sub� captura de Instagram</div>`;
+    return `<div class="evidence-empty">SubÃ­ captura de Instagram</div>`;
   }
   const url = evidenceUrl(evidence);
   const fileName = evidence.name || evidence.evidence_filename || 'Evidencia cargada';
   const type = evidence.instagram_post_type ? `<small>${evidence.instagram_post_type}</small>` : '';
-  const igLink = evidence.instagram_url ? `<a class="evidence-link evidence-link--ghost" href="${evidence.instagram_url}" target="_blank" rel="noopener">Ver publicaci�n</a>` : '';
+  const igLink = evidence.instagram_url ? `<a class="evidence-link evidence-link--ghost" href="${evidence.instagram_url}" target="_blank" rel="noopener">Ver publicaciÃ³n</a>` : '';
   const preview = url && isImageEvidence(url, fileName)
     ? `<a class="evidence-preview" href="${url}" target="_blank" rel="noopener"><img src="${url}" alt="Evidencia cargada para ${mission.name}" loading="lazy" onerror="this.closest('.evidence-preview').classList.add('is-unavailable')" /><span>Ver evidencia cargada</span></a>`
     : `<div class="evidence-empty evidence-empty--uploaded">${url ? 'Evidencia cargada' : 'Evidencia no disponible en este dispositivo.'}</div>`;
@@ -88,9 +88,9 @@ function updateSessionIndicator() {
   const label = $('#player-name');
   const cloud = $('#cloud');
   if (label) {
-    if (id && ig) label.textContent = `${ig} � Progreso sincronizado`;
+    if (id && ig) label.textContent = `${ig} · Progreso sincronizado`;
     else if (id) label.textContent = 'Pasaporte activo';
-    else label.textContent = 'Modo invitado � se guarda en este dispositivo';
+    else label.textContent = 'Modo invitado · se guarda en este dispositivo';
   }
   if (cloud) {
     cloud.textContent = id ? 'Progreso sincronizado' : 'Guardado local';
@@ -353,12 +353,12 @@ function renderMissions() {
           <div>
             <span class="week-pill">Semana ${mission.week}</span>
             <h3>${mission.name}</h3>
-            <p>${locked ? 'Pista desbloqueada: nombre del reto. La descripci�n completa se revelar� en su semana.' : mission.desc}</p>
+            <p>${locked ? 'Pista desbloqueada: nombre del reto. La descripciÃ³n completa se revelarÃ¡ en su semana.' : mission.desc}</p>
           </div>
           <span class="mission-inline-art">${thumb(mission, 'inline')}</span>
         </div>
         <div class="mission-instructions ${locked ? 'blurred' : ''}">
-          ${locked ? 'Caracter�sticas e instrucciones bloqueadas.' : mission.instructions}
+          ${locked ? 'CaracterÃ­sticas e instrucciones bloqueadas.' : mission.instructions}
         </div>
         <span class="mission-state-pill">${done ? '? SELLO OBTENIDO' : locked ? 'Carga bloqueada hasta su semana' : dailyBlocked ? 'Volv? ma?ana para completar m?s misiones' : 'Sello desbloqueado'}</span>
         <div class="mission-completed-stamp">
@@ -366,9 +366,9 @@ function renderMissions() {
         </div>
       </div>
       <div class="mission-evidence">
-        ${done ? renderEvidenceView(mission, evidence) : `<div class="evidence-empty">${locked ? 'Carga bloqueada' : dailyBlocked ? 'L�mite diario alcanzado' : 'Sub� captura de Instagram'}</div>`}
+        ${done ? renderEvidenceView(mission, evidence) : `<div class="evidence-empty">${locked ? 'Carga bloqueada' : dailyBlocked ? 'LÃ­mite diario alcanzado' : 'SubÃ­ captura de Instagram'}</div>`}
         ${locked ? `<span class="gb-btn evidence-btn disabled">Bloqueado</span>` : `<label class="gb-btn evidence-btn ${dailyBlocked ? 'disabled' : ''}">
-          ${done ? (evidenceUrl(evidence) ? 'Cambiar evidencia' : 'Subir evidencia nuevamente') : dailyBlocked ? 'Disponible ma�ana' : 'Subir evidencia'}
+          ${done ? (evidenceUrl(evidence) ? 'Cambiar evidencia' : 'Subir evidencia nuevamente') : dailyBlocked ? 'Disponible maÃ±ana' : 'Subir evidencia'}
           <input type="file" accept="image/*" data-mission="${mission.id}" ${dailyBlocked ? 'disabled' : ''}>
         </label>`}
       </div>

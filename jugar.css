@@ -1337,7 +1337,7 @@
   box-shadow:0 16px 42px rgba(21,39,31,.10)!important;
 }
 .passport-sheet-panel::before{
-  content:"PASAPORTE  ⚽  VIAJE  ✈  STANLEY";
+  content:"PASAPORTE STANLEY";
   position:absolute;
   top:18px;
   right:-58px;
