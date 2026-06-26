@@ -2193,6 +2193,29 @@ section:has(#stamps-grid) h3{
   color:var(--text);
   line-height:1.5;
 }
+.upload-status{
+  width:100%;
+  margin:10px 0 0;
+  padding:9px 12px;
+  border-radius:10px;
+  background:#f3eee6;
+  color:#7f6748;
+  font-family:'Montserrat',sans-serif;
+  font-size:12px;
+  font-weight:800;
+  text-align:center;
+}
+.upload-status[data-state="success"]{
+  background:#e8f7ef;
+  color:#007349;
+}
+.upload-status[data-state="error"]{
+  background:#fdebea;
+  color:#a7352b;
+}
+.upload-status[hidden]{
+  display:none!important;
+}
 @media(max-width:560px){
   .gamebar{top:0!important}
   .passport-meter{top:50px!important}

@@ -7,9 +7,105 @@ const normalizeInstagram = value => String(value || "").trim().replace(/\s+/g, "
 const fileInput = document.getElementById("comprobante");
 const fileHint = document.getElementById("file-hint");
 let fileData = null;
+const MAX_IMAGE_SIDE = 1600;
+const JPEG_QUALITY = 0.80;
+const MAX_UPLOAD_BYTES = 6 * 1024 * 1024;
+
+function dataUrlToPayload(dataUrl, fallbackName, fallbackMime) {
+  const match = String(dataUrl || "").match(/^data:([^;]+);base64,(.*)$/);
+  if (!match) throw new Error("No pudimos leer el archivo seleccionado.");
+  return {
+    name: fallbackName,
+    mime: match[1] || fallbackMime || "application/octet-stream",
+    b64: match[2] || ""
+  };
+}
+
+function payloadSizeBytes(payload) {
+  return Math.ceil(String(payload.b64 || "").length * 3 / 4);
+}
+
+function readFileAsDataURL(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ""));
+    reader.onerror = () => reject(reader.error || new Error("Safari no pudo leer el archivo seleccionado."));
+    reader.onabort = () => reject(new Error("La lectura del archivo fue cancelada."));
+    reader.readAsDataURL(file);
+  });
+}
+
+function loadImage(dataUrl) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error("No pudimos procesar la imagen. Probá guardarla como JPG o PNG y volvé a subirla."));
+    img.src = dataUrl;
+  });
+}
+
+function canvasToJpegDataUrl(canvas) {
+  return new Promise((resolve, reject) => {
+    if (canvas.toBlob) {
+      canvas.toBlob(blob => {
+        if (!blob) {
+          reject(new Error("No pudimos comprimir la imagen."));
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || ""));
+        reader.onerror = () => reject(reader.error || new Error("No pudimos leer la imagen comprimida."));
+        reader.readAsDataURL(blob);
+      }, "image/jpeg", JPEG_QUALITY);
+      return;
+    }
+    try {
+      resolve(canvas.toDataURL("image/jpeg", JPEG_QUALITY));
+    } catch (err) {
+      reject(err);
+    }
+  });
+}
+
+function jpegName(fileName) {
+  const clean = String(fileName || "imagen").replace(/\.[^.]+$/, "");
+  return `${clean || "imagen"}.jpg`;
+}
+
+async function prepareUploadFile(file) {
+  if (!file) throw new Error("No encontramos el archivo seleccionado.");
+  const sourceDataUrl = await readFileAsDataURL(file);
+  if (!String(file.type || "").startsWith("image/")) {
+    const payload = dataUrlToPayload(sourceDataUrl, file.name, file.type || "application/octet-stream");
+    if (payloadSizeBytes(payload) > MAX_UPLOAD_BYTES) {
+      throw new Error("El archivo supera los 6 MB luego de procesarlo. Subí una imagen más liviana.");
+    }
+    return { payload, dataUrl: sourceDataUrl, fileName: file.name, mime: payload.mime };
+  }
+
+  const img = await loadImage(sourceDataUrl);
+  const scale = Math.min(1, MAX_IMAGE_SIDE / Math.max(img.naturalWidth || img.width, img.naturalHeight || img.height));
+  const width = Math.max(1, Math.round((img.naturalWidth || img.width) * scale));
+  const height = Math.max(1, Math.round((img.naturalHeight || img.height) * scale));
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("El navegador no permitió preparar la imagen.");
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(0, 0, width, height);
+  ctx.drawImage(img, 0, 0, width, height);
+  const compressedDataUrl = await canvasToJpegDataUrl(canvas);
+  const name = jpegName(file.name);
+  const payload = dataUrlToPayload(compressedDataUrl, name, "image/jpeg");
+  if (payloadSizeBytes(payload) > MAX_UPLOAD_BYTES) {
+    throw new Error("La imagen sigue superando los 6 MB después de comprimirla. Probá con una captura más liviana.");
+  }
+  return { payload, dataUrl: compressedDataUrl, fileName: name, mime: "image/jpeg" };
+}
 
 if (fileInput && fileHint) {
-  fileInput.addEventListener("change", () => {
+  fileInput.addEventListener("change", async () => {
     const f = fileInput.files[0];
     if (!f) {
       fileData = null;
@@ -17,18 +113,22 @@ if (fileInput && fileHint) {
       fileHint.classList.remove("ok");
       return;
     }
-    if (f.size > 6 * 1024 * 1024) {
-      showError("El archivo supera los 6 MB. Subí una imagen más liviana.");
-      fileInput.value = "";
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = e => {
-      fileData = { name: f.name, mime: f.type || "application/octet-stream", b64: String(e.target.result).split(",")[1] };
-      fileHint.textContent = "✓ " + f.name;
+    fileData = null;
+    fileHint.textContent = "Procesando imagen...";
+    fileHint.classList.remove("ok");
+    try {
+      const prepared = await prepareUploadFile(f);
+      fileData = prepared.payload;
+      fileHint.textContent = "✓ " + prepared.fileName;
       fileHint.classList.add("ok");
-    };
-    reader.readAsDataURL(f);
+    } catch (err) {
+      console.error("Error completo al procesar comprobante:", err);
+      fileInput.value = "";
+      fileData = null;
+      fileHint.textContent = "Tocá para subir tu factura o respaldo";
+      fileHint.classList.remove("ok");
+      showError(err && err.message ? err.message : "No pudimos procesar la imagen. Probá con otra captura.");
+    }
   });
 }
 
@@ -162,7 +262,7 @@ if (form) {
           console.warn("Chequeo de duplicado no disponible; continúo (el servidor deduplica igual).", err);
         }
 
-        submitBtn.textContent = "Enviando...";
+        submitBtn.textContent = "Subiendo evidencia...";
         const saved = await fetch(CONFIG.APPS_SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) }).then(r => r.json());
         if (!saved || saved.ok === false) {
           resetBtn();

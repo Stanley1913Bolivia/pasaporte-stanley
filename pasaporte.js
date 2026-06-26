@@ -25,6 +25,9 @@ const STORAGE_KEY = 'stanley_passport';
 const DAILY_LIMIT = Number(CONFIG.DAILY_MISSION_LIMIT || 2);
 const DAILY_LIMIT_FLEXIBLE = Boolean(CONFIG.DAILY_LIMIT_FLEXIBLE);
 const CURRENT_WEEK = Number(new URLSearchParams(location.search).get('week') || CONFIG.CURRENT_WEEK || 1);
+const MAX_IMAGE_SIDE = 1600;
+const JPEG_QUALITY = 0.80;
+const MAX_UPLOAD_BYTES = 6 * 1024 * 1024;
 let passport = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{"evidence":{}}');
 let player = JSON.parse(localStorage.getItem('stanley_player') || '{}');
 if (!player.id && localStorage.getItem('participant_id')) player.id = localStorage.getItem('participant_id');
@@ -65,6 +68,107 @@ function isImageEvidence(url, name = '') {
   const clean = String(url || '').split('?')[0].toLowerCase();
   const filename = String(name || '').toLowerCase();
   return /^data:image\//.test(String(url || '')) || /\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(clean) || /\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(filename);
+}
+
+function dataUrlToPayload(dataUrl, fallbackName, fallbackMime) {
+  const match = String(dataUrl || '').match(/^data:([^;]+);base64,(.*)$/);
+  if (!match) throw new Error('No pudimos leer el archivo seleccionado.');
+  return {
+    name: fallbackName,
+    mime: match[1] || fallbackMime || 'application/octet-stream',
+    b64: match[2] || ''
+  };
+}
+
+function payloadSizeBytes(payload) {
+  return Math.ceil(String(payload.b64 || '').length * 3 / 4);
+}
+
+function readFileAsDataURL(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ''));
+    reader.onerror = () => reject(reader.error || new Error('Safari no pudo leer el archivo seleccionado.'));
+    reader.onabort = () => reject(new Error('La lectura del archivo fue cancelada.'));
+    reader.readAsDataURL(file);
+  });
+}
+
+function loadImage(dataUrl) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error('No pudimos procesar la imagen. Probá guardarla como JPG o PNG y volvé a subirla.'));
+    img.src = dataUrl;
+  });
+}
+
+function canvasToJpegDataUrl(canvas) {
+  return new Promise((resolve, reject) => {
+    if (canvas.toBlob) {
+      canvas.toBlob(blob => {
+        if (!blob) {
+          reject(new Error('No pudimos comprimir la imagen.'));
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || ''));
+        reader.onerror = () => reject(reader.error || new Error('No pudimos leer la imagen comprimida.'));
+        reader.readAsDataURL(blob);
+      }, 'image/jpeg', JPEG_QUALITY);
+      return;
+    }
+    try {
+      resolve(canvas.toDataURL('image/jpeg', JPEG_QUALITY));
+    } catch (err) {
+      reject(err);
+    }
+  });
+}
+
+function jpegName(fileName) {
+  const clean = String(fileName || 'evidencia').replace(/\.[^.]+$/, '');
+  return `${clean || 'evidencia'}.jpg`;
+}
+
+async function prepareUploadFile(file) {
+  if (!file) throw new Error('No encontramos el archivo seleccionado.');
+  const sourceDataUrl = await readFileAsDataURL(file);
+  if (!String(file.type || '').startsWith('image/')) {
+    const payload = dataUrlToPayload(sourceDataUrl, file.name, file.type || 'application/octet-stream');
+    if (payloadSizeBytes(payload) > MAX_UPLOAD_BYTES) {
+      throw new Error('El archivo supera los 6 MB luego de procesarlo. Subí una imagen más liviana.');
+    }
+    return { payload, dataUrl: sourceDataUrl, fileName: file.name, mime: payload.mime };
+  }
+
+  const img = await loadImage(sourceDataUrl);
+  const scale = Math.min(1, MAX_IMAGE_SIDE / Math.max(img.naturalWidth || img.width, img.naturalHeight || img.height));
+  const width = Math.max(1, Math.round((img.naturalWidth || img.width) * scale));
+  const height = Math.max(1, Math.round((img.naturalHeight || img.height) * scale));
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('El navegador no permitió preparar la imagen.');
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, width, height);
+  ctx.drawImage(img, 0, 0, width, height);
+  const compressedDataUrl = await canvasToJpegDataUrl(canvas);
+  const name = jpegName(file.name);
+  const payload = dataUrlToPayload(compressedDataUrl, name, 'image/jpeg');
+  if (payloadSizeBytes(payload) > MAX_UPLOAD_BYTES) {
+    throw new Error('La imagen sigue superando los 6 MB después de comprimirla. Probá con una captura más liviana.');
+  }
+  return { payload, dataUrl: compressedDataUrl, fileName: name, mime: 'image/jpeg' };
+}
+
+function setMissionUploadStatus(missionId, message, state = 'info') {
+  const el = document.querySelector(`[data-upload-status="${missionId}"]`);
+  if (!el) return;
+  el.textContent = message || '';
+  el.dataset.state = state;
+  el.hidden = !message;
 }
 
 function renderEvidenceView(mission, evidence) {
@@ -129,9 +233,9 @@ function dailyLimitReached() {
 
 function dailyLimitMessage() {
   const doneToday = completedTodayCount();
-  if (DAILY_LIMIT_FLEXIBLE) return 'L?mite diario flexibilizado por la organizaci?n durante esta etapa.';
-  if (doneToday <= 0) return 'Pod?s completar hasta 2 misiones por d?a.';
-  if (doneToday === 1) return 'Te queda 1 misi?n disponible por completar hoy.';
+  if (DAILY_LIMIT_FLEXIBLE) return 'Límite diario flexibilizado por la organización durante esta etapa.';
+  if (doneToday <= 0) return 'Podés completar hasta 2 misiones por día.';
+  if (doneToday === 1) return 'Te queda 1 misión disponible por completar hoy.';
   return 'Ya completaste tus 2 misiones de hoy. Volvé mañana para seguir sumando sellos.';
 }
 
@@ -201,8 +305,8 @@ function stamp(mission, context) {
   return `<span class="mission-thumb mission-thumb--empty mission-thumb--${context}">${mission.id.replace('m','')}</span>`;
 }
 
-async function syncMissionEvidence_(mission, file, dataUrl) {
-  if (!CONFIG.APPS_SCRIPT_URL || !player || !player.id) return;
+async function syncMissionEvidence_(mission, prepared) {
+  if (!CONFIG.APPS_SCRIPT_URL || !player || !player.id) return null;
   try {
     const payload = {
       action: 'saveEvidence',
@@ -211,19 +315,20 @@ async function syncMissionEvidence_(mission, file, dataUrl) {
       mission_id: mission.id,
       mission_name: mission.name,
       week: mission.week,
-      evidence: {
-        name: file.name,
-        mime: file.type || 'application/octet-stream',
-        b64: String(dataUrl).split(',')[1]
-      }
+      evidence: prepared.payload
     };
     const saved = await fetch(CONFIG.APPS_SCRIPT_URL, {
       method: 'POST',
       body: JSON.stringify(payload)
     }).then(r => r.json());
-    if (!saved || saved.ok === false) console.warn('No se pudo sincronizar la evidencia.', saved);
+    if (!saved || saved.ok === false) {
+      console.error('No se pudo sincronizar la evidencia.', saved);
+      throw new Error((saved && saved.error) || 'No pudimos subir la evidencia. Intentá nuevamente.');
+    }
+    return saved;
   } catch (err) {
-    console.warn('Evidencia guardada localmente, pero no sincronizada.', err);
+    console.error('Error completo al subir evidencia:', err);
+    throw err;
   }
 }
 
@@ -374,6 +479,7 @@ function renderMissions() {
       </div>
       <div class="mission-evidence">
         ${done ? renderEvidenceView(mission, evidence) : `<div class="evidence-empty">${locked ? 'Carga bloqueada' : dailyBlocked ? 'Límite diario alcanzado' : 'Subí captura de Instagram'}</div>`}
+        <p class="upload-status" data-upload-status="${mission.id}" hidden></p>
         ${locked ? `<span class="gb-btn evidence-btn disabled">Bloqueado</span>` : `<label class="gb-btn evidence-btn ${dailyBlocked ? 'disabled' : ''}">
           ${done ? (evidenceUrl(evidence) ? 'Cambiar evidencia' : 'Subir evidencia nuevamente') : dailyBlocked ? 'Disponible mañana' : 'Subir evidencia'}
           <input type="file" accept="image/*" data-mission="${mission.id}" ${dailyBlocked ? 'disabled' : ''}>
@@ -385,7 +491,7 @@ function renderMissions() {
 }
 
 function bindUploads() {
-  document.addEventListener('change', event => {
+  document.addEventListener('change', async event => {
     const input = event.target;
     if (!input.matches('input[type="file"][data-mission]')) return;
     const file = input.files && input.files[0];
@@ -399,22 +505,34 @@ function bindUploads() {
       renderAll();
       return;
     }
-    const reader = new FileReader();
-    reader.onload = () => {
+    input.disabled = true;
+    setMissionUploadStatus(mission.id, 'Procesando imagen...', 'info');
+    try {
+      const prepared = await prepareUploadFile(file);
+      setMissionUploadStatus(mission.id, 'Subiendo evidencia...', 'info');
+      const saved = await syncMissionEvidence_(mission, prepared);
       passport.evidence = passport.evidence || {};
       passport.evidence[mission.id] = {
-        name:file.name,
-        evidence_filename:file.name,
-        dataUrl:reader.result,
-        evidence_url:reader.result,
+        name:prepared.fileName,
+        evidence_filename:prepared.fileName,
+        dataUrl:(saved && saved.evidence_url) || prepared.dataUrl,
+        evidence_url:(saved && saved.evidence_url) || prepared.dataUrl,
         date: wasDone && passport.evidence[mission.id] ? passport.evidence[mission.id].date : new Date().toISOString(),
-        updatedAt:new Date().toISOString()
+        updatedAt:new Date().toISOString(),
+        completed_at:(saved && saved.completed_at) || new Date().toISOString()
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(passport));
-      syncMissionEvidence_(mission, file, reader.result);
       renderAll();
-    };
-    reader.readAsDataURL(file);
+      setMissionUploadStatus(mission.id, 'Evidencia enviada correctamente.', 'success');
+      setTimeout(() => setMissionUploadStatus(mission.id, '', 'info'), 1200);
+    } catch (err) {
+      console.error('Error completo al procesar o subir evidencia:', err);
+      setMissionUploadStatus(mission.id, err && err.message ? err.message : 'No pudimos procesar o subir la evidencia. Intentá nuevamente.', 'error');
+      alert(err && err.message ? err.message : 'No pudimos procesar o subir la evidencia. Intentá nuevamente.');
+    } finally {
+      input.disabled = false;
+      input.value = '';
+    }
   });
 }
 
