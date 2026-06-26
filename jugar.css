@@ -2343,3 +2343,129 @@ section:has(#stamps-grid) h3{
     text-align:center;
   }
 }
+
+/* Corrección visual final: evidencia compacta dentro de la tarjeta */
+.mission-board .mission-list .mission-card{
+  grid-template-columns:minmax(0,1fr) 210px!important;
+  min-height:280px!important;
+  height:280px!important;
+  align-items:stretch!important;
+  gap:20px!important;
+  padding:18px!important;
+  overflow:hidden!important;
+}
+.mission-board .mission-list .mission-copy{
+  min-height:0!important;
+  overflow:hidden!important;
+}
+.mission-board .mission-list .mission-card.done .mission-copy{
+  justify-content:start!important;
+}
+.mission-board .mission-list .mission-card.done .mission-completed-stamp{
+  min-height:0!important;
+  height:116px!important;
+  margin:14px auto 0!important;
+  overflow:hidden!important;
+}
+.mission-board .mission-list .mission-card.done .mission-stamp--card{
+  max-height:112px!important;
+  max-width:330px!important;
+  object-fit:contain!important;
+}
+.mission-board .mission-list .mission-card.done .mission-inline-art{
+  height:72px!important;
+}
+.mission-board .mission-list .mission-evidence{
+  align-self:start!important;
+  justify-self:end!important;
+  width:210px!important;
+  max-width:210px!important;
+  min-height:0!important;
+  height:auto!important;
+  display:flex!important;
+  flex-direction:column!important;
+  gap:8px!important;
+  padding:0!important;
+  overflow:visible!important;
+  background:transparent!important;
+}
+.mission-board .mission-list .mission-evidence .evidence-preview,
+.mission-board .mission-list .mission-evidence .evidence-empty{
+  width:100%!important;
+  height:148px!important;
+  min-height:148px!important;
+  max-height:148px!important;
+  aspect-ratio:auto!important;
+  flex:0 0 148px!important;
+  border-radius:10px!important;
+  overflow:hidden!important;
+}
+.mission-board .mission-list .mission-evidence .evidence-preview img{
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  object-position:center!important;
+}
+.mission-board .mission-list .mission-evidence .evidence-btn,
+.mission-board .mission-list .mission-evidence .evidence-open{
+  display:grid!important;
+  place-items:center!important;
+  width:100%!important;
+  height:36px!important;
+  min-height:36px!important;
+  max-height:36px!important;
+  padding:0 12px!important;
+  border-radius:999px!important;
+  font-size:11px!important;
+  line-height:1.05!important;
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+}
+.mission-board .mission-list .mission-evidence .upload-status{
+  margin:0!important;
+  padding:7px 9px!important;
+  font-size:11px!important;
+  line-height:1.15!important;
+}
+@media(max-width:900px){
+  .mission-board .mission-list .mission-card{
+    grid-template-columns:minmax(0,1fr) 190px!important;
+    min-height:270px!important;
+    height:270px!important;
+  }
+  .mission-board .mission-list .mission-evidence{
+    width:190px!important;
+    max-width:190px!important;
+  }
+  .mission-board .mission-list .mission-evidence .evidence-preview,
+  .mission-board .mission-list .mission-evidence .evidence-empty{
+    height:136px!important;
+    min-height:136px!important;
+    max-height:136px!important;
+    flex-basis:136px!important;
+  }
+}
+@media(max-width:760px){
+  .mission-board .mission-list .mission-card{
+    grid-template-columns:1fr!important;
+    height:auto!important;
+    min-height:0!important;
+    gap:14px!important;
+  }
+  .mission-board .mission-list .mission-evidence{
+    justify-self:stretch!important;
+    width:100%!important;
+    max-width:100%!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:9px!important;
+  }
+  .mission-board .mission-list .mission-evidence .evidence-preview,
+  .mission-board .mission-list .mission-evidence .evidence-empty{
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    aspect-ratio:1/1!important;
+    flex-basis:auto!important;
+  }
+}
