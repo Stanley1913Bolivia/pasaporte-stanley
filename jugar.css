@@ -2216,6 +2216,11 @@ section:has(#stamps-grid) h3{
 .upload-status[hidden]{
   display:none!important;
 }
+.evidence-btn.is-uploading{
+  opacity:.72;
+  cursor:wait;
+  pointer-events:none;
+}
 @media(max-width:560px){
   .gamebar{top:0!important}
   .passport-meter{top:50px!important}

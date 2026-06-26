@@ -27,11 +27,15 @@ function payloadSizeBytes(payload) {
 
 function readFileAsDataURL(file) {
   return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result || ""));
-    reader.onerror = () => reject(reader.error || new Error("Safari no pudo leer el archivo seleccionado."));
-    reader.onabort = () => reject(new Error("La lectura del archivo fue cancelada."));
-    reader.readAsDataURL(file);
+    try {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result || ""));
+      reader.onerror = () => reject(reader.error || new Error("Safari no pudo leer el archivo seleccionado."));
+      reader.onabort = () => reject(new Error("La lectura del archivo fue cancelada."));
+      reader.readAsDataURL(file);
+    } catch (err) {
+      reject(err);
+    }
   });
 }
 
@@ -46,25 +50,64 @@ function loadImage(dataUrl) {
 
 function canvasToJpegDataUrl(canvas) {
   return new Promise((resolve, reject) => {
-    if (canvas.toBlob) {
-      canvas.toBlob(blob => {
-        if (!blob) {
-          reject(new Error("No pudimos comprimir la imagen."));
-          return;
-        }
-        const reader = new FileReader();
-        reader.onload = () => resolve(String(reader.result || ""));
-        reader.onerror = () => reject(reader.error || new Error("No pudimos leer la imagen comprimida."));
-        reader.readAsDataURL(blob);
-      }, "image/jpeg", JPEG_QUALITY);
-      return;
-    }
     try {
+      if (canvas.toBlob) {
+        canvas.toBlob(blob => {
+          try {
+            if (!blob) {
+              reject(new Error("No pudimos comprimir la imagen."));
+              return;
+            }
+            const reader = new FileReader();
+            reader.onload = () => resolve(String(reader.result || ""));
+            reader.onerror = () => reject(reader.error || new Error("No pudimos leer la imagen comprimida."));
+            reader.readAsDataURL(blob);
+          } catch (err) {
+            reject(err);
+          }
+        }, "image/jpeg", JPEG_QUALITY);
+        return;
+      }
       resolve(canvas.toDataURL("image/jpeg", JPEG_QUALITY));
     } catch (err) {
       reject(err);
     }
   });
+}
+
+function originalFilePayload(sourceDataUrl, file) {
+  const payload = dataUrlToPayload(sourceDataUrl, file.name, file.type || "application/octet-stream");
+  if (payloadSizeBytes(payload) > MAX_UPLOAD_BYTES) {
+    throw new Error("No pudimos cargar la imagen. Intentá con una captura de pantalla o una imagen más liviana.");
+  }
+  return { payload, dataUrl: sourceDataUrl, fileName: file.name, mime: payload.mime, compressed: false };
+}
+
+async function tryCompressImage(sourceDataUrl, file) {
+  try {
+    const img = await loadImage(sourceDataUrl);
+    const scale = Math.min(1, MAX_IMAGE_SIDE / Math.max(img.naturalWidth || img.width, img.naturalHeight || img.height));
+    const width = Math.max(1, Math.round((img.naturalWidth || img.width) * scale));
+    const height = Math.max(1, Math.round((img.naturalHeight || img.height) * scale));
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw new Error("El navegador no permitió preparar la imagen.");
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(0, 0, width, height);
+    ctx.drawImage(img, 0, 0, width, height);
+    const compressedDataUrl = await canvasToJpegDataUrl(canvas);
+    const name = jpegName(file.name);
+    const payload = dataUrlToPayload(compressedDataUrl, name, "image/jpeg");
+    if (payloadSizeBytes(payload) > MAX_UPLOAD_BYTES) {
+      throw new Error("La imagen sigue superando los 6 MB después de comprimirla.");
+    }
+    return { payload, dataUrl: compressedDataUrl, fileName: name, mime: "image/jpeg", compressed: true };
+  } catch (err) {
+    console.error("Falló la compresión de imagen; intento enviar original:", err);
+    return originalFilePayload(sourceDataUrl, file);
+  }
 }
 
 function jpegName(fileName) {
@@ -74,34 +117,22 @@ function jpegName(fileName) {
 
 async function prepareUploadFile(file) {
   if (!file) throw new Error("No encontramos el archivo seleccionado.");
-  const sourceDataUrl = await readFileAsDataURL(file);
+  let sourceDataUrl = "";
+  try {
+    sourceDataUrl = await readFileAsDataURL(file);
+  } catch (err) {
+    console.error("Error completo al leer archivo:", err);
+    throw new Error("No pudimos cargar la imagen. Intentá con una captura de pantalla o una imagen más liviana.");
+  }
   if (!String(file.type || "").startsWith("image/")) {
-    const payload = dataUrlToPayload(sourceDataUrl, file.name, file.type || "application/octet-stream");
-    if (payloadSizeBytes(payload) > MAX_UPLOAD_BYTES) {
-      throw new Error("El archivo supera los 6 MB luego de procesarlo. Subí una imagen más liviana.");
+    try {
+      return originalFilePayload(sourceDataUrl, file);
+    } catch (err) {
+      console.error("Error completo al preparar archivo original:", err);
+      throw err;
     }
-    return { payload, dataUrl: sourceDataUrl, fileName: file.name, mime: payload.mime };
   }
-
-  const img = await loadImage(sourceDataUrl);
-  const scale = Math.min(1, MAX_IMAGE_SIDE / Math.max(img.naturalWidth || img.width, img.naturalHeight || img.height));
-  const width = Math.max(1, Math.round((img.naturalWidth || img.width) * scale));
-  const height = Math.max(1, Math.round((img.naturalHeight || img.height) * scale));
-  const canvas = document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = height;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) throw new Error("El navegador no permitió preparar la imagen.");
-  ctx.fillStyle = "#fff";
-  ctx.fillRect(0, 0, width, height);
-  ctx.drawImage(img, 0, 0, width, height);
-  const compressedDataUrl = await canvasToJpegDataUrl(canvas);
-  const name = jpegName(file.name);
-  const payload = dataUrlToPayload(compressedDataUrl, name, "image/jpeg");
-  if (payloadSizeBytes(payload) > MAX_UPLOAD_BYTES) {
-    throw new Error("La imagen sigue superando los 6 MB después de comprimirla. Probá con una captura más liviana.");
-  }
-  return { payload, dataUrl: compressedDataUrl, fileName: name, mime: "image/jpeg" };
+  return tryCompressImage(sourceDataUrl, file);
 }
 
 if (fileInput && fileHint) {
@@ -116,6 +147,7 @@ if (fileInput && fileHint) {
     fileData = null;
     fileHint.textContent = "Procesando imagen...";
     fileHint.classList.remove("ok");
+    fileInput.disabled = true;
     try {
       const prepared = await prepareUploadFile(f);
       fileData = prepared.payload;
@@ -128,6 +160,8 @@ if (fileInput && fileHint) {
       fileHint.textContent = "Tocá para subir tu factura o respaldo";
       fileHint.classList.remove("ok");
       showError(err && err.message ? err.message : "No pudimos procesar la imagen. Probá con otra captura.");
+    } finally {
+      fileInput.disabled = false;
     }
   });
 }
@@ -183,7 +217,6 @@ function showRegistrationSuccess() {
   registrationSuccessModal.classList.add("is-open");
   registrationSuccessModal.setAttribute("aria-hidden", "false");
   submitBtn.disabled = false;
-  submitBtn.textContent = "Pasaporte activo";
 }
 
 function safePlayer(data) {
@@ -273,7 +306,7 @@ if (form) {
       }
       localStorage.setItem("stanley_player", JSON.stringify(player));
       localStorage.setItem("participant_id", player.id);
-      submitBtn.textContent = "¡Listo! Pasaporte activo";
+      submitBtn.textContent = "Evidencia enviada correctamente.";
       updatePassportNavigation();
       showRegistrationSuccess();
     } catch (err) {
