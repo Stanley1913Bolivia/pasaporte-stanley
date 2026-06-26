@@ -2221,6 +2221,115 @@ section:has(#stamps-grid) h3{
   cursor:wait;
   pointer-events:none;
 }
+
+/* Evidencias limpias y estables en Completá tu Pasaporte */
+.mission-list .mission-card{
+  min-height:360px!important;
+  overflow:hidden!important;
+}
+.mission-list .mission-evidence{
+  width:100%!important;
+  max-width:230px!important;
+  min-width:0!important;
+  height:100%!important;
+  min-height:320px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  justify-content:flex-start!important;
+  gap:10px!important;
+  padding:0!important;
+  overflow:hidden!important;
+}
+.mission-list .mission-evidence .evidence-preview,
+.mission-list .mission-evidence .evidence-empty{
+  width:100%!important;
+  aspect-ratio:1/1!important;
+  min-height:0!important;
+  max-height:none!important;
+  flex:0 0 auto!important;
+  border-radius:14px!important;
+  overflow:hidden!important;
+}
+.mission-list .mission-evidence .evidence-preview{
+  display:block!important;
+  border:1px solid var(--line-soft)!important;
+  background:var(--mist)!important;
+  text-decoration:none!important;
+}
+.mission-list .mission-evidence .evidence-preview img{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  object-position:center!important;
+  border:0!important;
+  border-radius:0!important;
+  aspect-ratio:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+}
+.mission-list .mission-evidence .evidence-empty{
+  display:grid!important;
+  place-items:center!important;
+  padding:16px!important;
+  text-align:center!important;
+  background:var(--mist)!important;
+  border:1px solid var(--line-soft)!important;
+  color:var(--text-soft)!important;
+  line-height:1.35!important;
+}
+.mission-list .mission-evidence .evidence-empty--uploaded{
+  gap:6px!important;
+  color:var(--text)!important;
+}
+.mission-list .mission-evidence .evidence-empty--uploaded strong{
+  display:block!important;
+  color:var(--green)!important;
+  font-family:'Montserrat',sans-serif!important;
+  font-weight:900!important;
+}
+.mission-list .mission-evidence .evidence-empty--uploaded span{
+  display:block!important;
+  color:var(--text-soft)!important;
+  font-size:12px!important;
+}
+.mission-list .mission-evidence .evidence-btn,
+.mission-list .mission-evidence .evidence-open,
+.mission-list .mission-evidence .gb-btn{
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  flex:0 0 auto!important;
+  box-sizing:border-box!important;
+  margin:0!important;
+  white-space:normal!important;
+  overflow:hidden!important;
+  text-align:center!important;
+}
+.mission-list .mission-evidence .upload-status{
+  flex:0 0 auto!important;
+  box-sizing:border-box!important;
+}
+@media(max-width:900px){
+  .mission-list .mission-card{
+    min-height:0!important;
+  }
+  .mission-list .mission-evidence{
+    max-width:100%!important;
+    min-height:0!important;
+  }
+}
+@media(max-width:760px){
+  .mission-list .mission-evidence{
+    gap:9px!important;
+    overflow:hidden!important;
+  }
+  .mission-list .mission-evidence .evidence-preview,
+  .mission-list .mission-evidence .evidence-empty{
+    max-height:220px!important;
+  }
+}
 @media(max-width:560px){
   .gamebar{top:0!important}
   .passport-meter{top:50px!important}

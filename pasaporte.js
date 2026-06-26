@@ -64,6 +64,10 @@ function evidenceUrl(item) {
   return item && (item.evidence_url || item.dataUrl || item.url || '');
 }
 
+function hasLocalEvidencePreview(item) {
+  return Boolean(item && item.dataUrl && /^data:image\//.test(String(item.dataUrl)));
+}
+
 function isImageEvidence(url, name = '') {
   const clean = String(url || '').split('?')[0].toLowerCase();
   const filename = String(name || '').toLowerCase();
@@ -207,21 +211,11 @@ function renderEvidenceView(mission, evidence) {
     return `<div class="evidence-empty">Subí captura de Instagram</div>`;
   }
   const url = evidenceUrl(evidence);
-  const fileName = evidence.name || evidence.evidence_filename || 'Evidencia cargada';
-  const type = evidence.instagram_post_type ? `<small>${evidence.instagram_post_type}</small>` : '';
-  const igLink = evidence.instagram_url ? `<a class="evidence-link evidence-link--ghost" href="${evidence.instagram_url}" target="_blank" rel="noopener">Ver publicación</a>` : '';
-  const preview = url && isImageEvidence(url, fileName)
-    ? `<a class="evidence-preview" href="${url}" target="_blank" rel="noopener"><img src="${url}" alt="Evidencia cargada para ${mission.name}" loading="lazy" onerror="this.closest('.evidence-preview').classList.add('is-unavailable')" /><span>Ver evidencia cargada</span></a>`
-    : `<div class="evidence-empty evidence-empty--uploaded">${url ? 'Evidencia cargada' : 'Evidencia no disponible en este dispositivo.'}</div>`;
-  const button = url ? `<a class="gb-btn evidence-open" href="${url}" target="_blank" rel="noopener">Ver evidencia cargada</a>` : '';
-  return `
-    ${preview}
-    <div class="evidence-meta">
-      <strong>${fileName || 'Evidencia cargada'}</strong>
-      ${type}
-      <div class="evidence-actions">${button}${igLink}</div>
-    </div>
-  `;
+  const localPreview = hasLocalEvidencePreview(evidence);
+  const preview = localPreview
+    ? `<a class="evidence-preview" href="${evidence.dataUrl}" target="_blank" rel="noopener" aria-label="Abrir evidencia completa de ${mission.name}"><img src="${evidence.dataUrl}" alt="Evidencia cargada para ${mission.name}" loading="lazy" /></a>`
+    : `<div class="evidence-empty evidence-empty--uploaded"><strong>Evidencia registrada</strong><span>Vista previa no disponible en este dispositivo.</span></div>`;
+  return preview;
 }
 
 function updateSessionIndicator() {
@@ -487,6 +481,7 @@ function renderMissions() {
     const locked = isLocked(mission);
     const dailyBlocked = noMoreToday && !done && !locked;
     const evidence = passport.evidence && passport.evidence[mission.id];
+    const openEvidenceButton = done && evidenceUrl(evidence) ? `<a class="gb-btn evidence-open" href="${evidenceUrl(evidence)}" target="_blank" rel="noopener">Ver evidencia cargada</a>` : '';
     const article = document.createElement('article');
     article.id = mission.id;
     article.className = `mission-card ${done ? 'done' : locked ? 'locked' : dailyBlocked ? 'daily-blocked' : 'available'}`;
@@ -515,6 +510,7 @@ function renderMissions() {
           ${done ? (evidenceUrl(evidence) ? 'Cambiar evidencia' : 'Subir evidencia nuevamente') : dailyBlocked ? 'Disponible mañana' : 'Subir evidencia'}
           <input type="file" accept="image/*,.jpg,.jpeg,.png,.heic,.heif,.pdf" data-mission="${mission.id}" ${dailyBlocked ? 'disabled' : ''}>
         </label>`}
+        ${openEvidenceButton}
       </div>
     `;
     wrap.appendChild(article);
@@ -548,7 +544,7 @@ function bindUploads() {
       passport.evidence[mission.id] = {
         name:prepared.fileName,
         evidence_filename:prepared.fileName,
-        dataUrl:(saved && saved.evidence_url) || prepared.dataUrl,
+        dataUrl:prepared.dataUrl,
         evidence_url:(saved && saved.evidence_url) || prepared.dataUrl,
         date: wasDone && passport.evidence[mission.id] ? passport.evidence[mission.id].date : new Date().toISOString(),
         updatedAt:new Date().toISOString(),
