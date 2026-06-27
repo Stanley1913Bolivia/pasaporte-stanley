@@ -2734,3 +2734,25 @@ section:has(#stamps-grid) h3{
     max-height:132px!important;
   }
 }
+
+/* Ajuste fino: sello completado más chico y más arriba */
+.mission-board :is(.mission-list,.missions-list) .mission-card.done .mission-completed-stamp{
+  height:118px!important;
+  min-height:118px!important;
+  margin:2px 0 0!important;
+  align-items:start!important;
+}
+.mission-board :is(.mission-list,.missions-list) .mission-card.done .mission-stamp--card{
+  max-width:300px!important;
+  max-height:112px!important;
+}
+@media(max-width:760px){
+  .mission-board :is(.mission-list,.missions-list) .mission-card.done .mission-completed-stamp{
+    height:112px!important;
+    min-height:112px!important;
+    margin-top:4px!important;
+  }
+  .mission-board :is(.mission-list,.missions-list) .mission-card.done .mission-stamp--card{
+    max-height:108px!important;
+  }
+}
