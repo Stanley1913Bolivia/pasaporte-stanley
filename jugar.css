@@ -2451,21 +2451,33 @@ section:has(#stamps-grid) h3{
     height:auto!important;
     min-height:0!important;
     gap:14px!important;
+    overflow:hidden!important;
   }
   .mission-board .mission-list .mission-evidence{
-    justify-self:stretch!important;
-    width:100%!important;
-    max-width:100%!important;
-    display:grid!important;
-    grid-template-columns:minmax(0,1fr)!important;
+    justify-self:center!important;
+    width:min(100%,260px)!important;
+    max-width:260px!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:stretch!important;
     gap:9px!important;
+    overflow:hidden!important;
   }
   .mission-board .mission-list .mission-evidence .evidence-preview,
   .mission-board .mission-list .mission-evidence .evidence-empty{
-    height:auto!important;
-    min-height:0!important;
-    max-height:none!important;
-    aspect-ratio:1/1!important;
-    flex-basis:auto!important;
+    width:100%!important;
+    height:180px!important;
+    min-height:180px!important;
+    max-height:180px!important;
+    aspect-ratio:auto!important;
+    flex:0 0 180px!important;
+  }
+  .mission-board .mission-list .mission-evidence .evidence-btn,
+  .mission-board .mission-list .mission-evidence .evidence-open{
+    width:100%!important;
+    max-width:100%!important;
+    height:38px!important;
+    min-height:38px!important;
+    max-height:38px!important;
   }
 }

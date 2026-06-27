@@ -530,6 +530,30 @@ html[data-phase="eliminatorias"] .only-inscripcion{display:none}
 }
 .registration-success-modal .recover-modal__panel{
   max-width:620px;
+  padding-top:34px;
+}
+.registration-success-modal__close{
+  display:grid;
+  place-items:center;
+  text-decoration:none;
+}
+.registration-success-modal__note{
+  margin-top:10px;
+  padding:10px 12px;
+  border-radius:10px;
+  background:#f3eee6;
+  color:var(--text);
+  font-weight:700;
+}
+.registration-success-modal .btn--secondary{
+  border:2px solid var(--green);
+  background:#fff;
+  color:var(--green);
+  box-shadow:none;
+}
+.registration-success-modal .btn--secondary:hover{
+  background:#e9f7f0;
+  color:var(--green);
 }
 @media (max-width:700px){
   .nav__link--recover{
@@ -555,6 +579,19 @@ html[data-phase="eliminatorias"] .only-inscripcion{display:none}
   }
   .community-strip .btn{
     width:100%;
+  }
+  .registration-success-modal .recover-modal__panel{
+    padding:30px 18px 22px;
+  }
+  .registration-success-modal .h2{
+    font-size:30px;
+    padding-right:30px;
+  }
+  .registration-success-modal .btn{
+    min-height:48px;
+    display:grid;
+    place-items:center;
+    text-align:center;
   }
 }
 /* Navegacion fija y acceso flotante */
