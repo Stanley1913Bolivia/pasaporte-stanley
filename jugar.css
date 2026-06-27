@@ -2481,3 +2481,91 @@ section:has(#stamps-grid) h3{
     max-height:38px!important;
   }
 }
+
+/* Evidencias: cubrir mission-list y missions-list sin sobreposiciones */
+.mission-board :is(.mission-list,.missions-list) .mission-card{
+  grid-template-columns:minmax(0,1fr) 220px!important;
+  align-items:start!important;
+  overflow:hidden!important;
+}
+.mission-board :is(.mission-list,.missions-list) .mission-evidence{
+  align-self:start!important;
+  justify-self:end!important;
+  width:220px!important;
+  max-width:220px!important;
+  min-height:0!important;
+  height:auto!important;
+  display:flex!important;
+  flex-direction:column!important;
+  gap:10px!important;
+  overflow:hidden!important;
+  background:transparent!important;
+}
+.mission-board :is(.mission-list,.missions-list) .mission-evidence .evidence-preview,
+.mission-board :is(.mission-list,.missions-list) .mission-evidence .evidence-empty{
+  display:block!important;
+  width:100%!important;
+  height:150px!important;
+  min-height:150px!important;
+  max-height:150px!important;
+  aspect-ratio:auto!important;
+  flex:0 0 150px!important;
+  margin:0!important;
+  border-radius:12px!important;
+  overflow:hidden!important;
+}
+.mission-board :is(.mission-list,.missions-list) .mission-evidence .evidence-empty{
+  display:grid!important;
+  place-items:center!important;
+}
+.mission-board :is(.mission-list,.missions-list) .mission-evidence .evidence-preview img{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  max-height:none!important;
+  aspect-ratio:auto!important;
+  object-fit:cover!important;
+  object-position:center!important;
+  border-radius:0!important;
+}
+.mission-board :is(.mission-list,.missions-list) .mission-evidence .evidence-btn,
+.mission-board :is(.mission-list,.missions-list) .mission-evidence .evidence-open{
+  position:relative!important;
+  inset:auto!important;
+  transform:none!important;
+  display:grid!important;
+  place-items:center!important;
+  width:100%!important;
+  height:38px!important;
+  min-height:38px!important;
+  max-height:38px!important;
+  margin:0!important;
+  padding:0 12px!important;
+  box-sizing:border-box!important;
+  border-radius:999px!important;
+  line-height:1.05!important;
+  text-align:center!important;
+  z-index:1!important;
+}
+@media(max-width:760px){
+  .mission-board :is(.mission-list,.missions-list) .mission-card{
+    grid-template-columns:1fr!important;
+    height:auto!important;
+    min-height:0!important;
+    overflow:hidden!important;
+  }
+  .mission-board :is(.mission-list,.missions-list) .mission-evidence{
+    justify-self:center!important;
+    width:min(100%,280px)!important;
+    max-width:280px!important;
+    gap:10px!important;
+  }
+  .mission-board :is(.mission-list,.missions-list) .mission-evidence .evidence-preview,
+  .mission-board :is(.mission-list,.missions-list) .mission-evidence .evidence-empty{
+    height:180px!important;
+    min-height:180px!important;
+    max-height:180px!important;
+    flex:0 0 180px!important;
+  }
+}

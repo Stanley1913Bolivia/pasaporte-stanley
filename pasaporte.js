@@ -293,10 +293,10 @@ function ensureOverviewGrid() {
 }
 
 function ensureMissionsList() {
-  let wrap = document.querySelector('#missions-list, .missions-list, [data-passport-list]');
+  let wrap = document.querySelector('#mission-list, #missions-list, .mission-list, .missions-list, [data-passport-list]');
   if (wrap) {
-    wrap.id = 'missions-list';
-    wrap.classList.add('missions-list');
+    wrap.id = 'mission-list';
+    wrap.classList.add('mission-list', 'missions-list');
     return wrap;
   }
   const heading = findHeading(/completa|complet/i);
