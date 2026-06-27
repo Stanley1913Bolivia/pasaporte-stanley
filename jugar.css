@@ -2569,3 +2569,80 @@ section:has(#stamps-grid) h3{
     flex:0 0 180px!important;
   }
 }
+
+/* Misiones completadas: miniatura fija arriba derecha y sello centrado */
+.mission-board :is(.mission-list,.missions-list) .mission-card.done .mission-copy{
+  display:grid!important;
+  grid-template-rows:auto auto 1fr!important;
+  align-content:start!important;
+  position:relative!important;
+  min-height:0!important;
+}
+.mission-board :is(.mission-list,.missions-list) .mission-card.done .mission-copy-head{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 96px!important;
+  align-items:start!important;
+  gap:16px!important;
+  min-height:82px!important;
+}
+.mission-board :is(.mission-list,.missions-list) .mission-card.done .mission-inline-art{
+  grid-column:2!important;
+  grid-row:1!important;
+  justify-self:end!important;
+  align-self:start!important;
+  width:96px!important;
+  height:82px!important;
+  min-height:0!important;
+  display:grid!important;
+  place-items:start center!important;
+}
+.mission-board :is(.mission-list,.missions-list) .mission-card.done .mission-thumb--inline{
+  width:auto!important;
+  max-width:72px!important;
+  max-height:72px!important;
+  object-fit:contain!important;
+}
+.mission-board :is(.mission-list,.missions-list) .mission-card.done .mission-state-pill{
+  justify-self:start!important;
+  align-self:start!important;
+  margin:8px 0 0!important;
+}
+.mission-board :is(.mission-list,.missions-list) .mission-card.done .mission-completed-stamp{
+  width:100%!important;
+  height:150px!important;
+  min-height:150px!important;
+  margin:6px auto 0!important;
+  display:grid!important;
+  place-items:center!important;
+  overflow:hidden!important;
+}
+.mission-board :is(.mission-list,.missions-list) .mission-card.done .mission-stamp--card{
+  display:block!important;
+  width:100%!important;
+  max-width:360px!important;
+  height:100%!important;
+  max-height:145px!important;
+  object-fit:contain!important;
+  margin:0 auto!important;
+}
+@media(max-width:760px){
+  .mission-board :is(.mission-list,.missions-list) .mission-card.done .mission-copy-head{
+    grid-template-columns:minmax(0,1fr) 76px!important;
+    min-height:72px!important;
+  }
+  .mission-board :is(.mission-list,.missions-list) .mission-card.done .mission-inline-art{
+    width:76px!important;
+    height:72px!important;
+  }
+  .mission-board :is(.mission-list,.missions-list) .mission-card.done .mission-thumb--inline{
+    max-width:58px!important;
+    max-height:64px!important;
+  }
+  .mission-board :is(.mission-list,.missions-list) .mission-card.done .mission-completed-stamp{
+    height:138px!important;
+    min-height:138px!important;
+  }
+  .mission-board :is(.mission-list,.missions-list) .mission-card.done .mission-stamp--card{
+    max-height:134px!important;
+  }
+}

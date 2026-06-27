@@ -212,8 +212,9 @@ function renderEvidenceView(mission, evidence) {
   }
   const url = evidenceUrl(evidence);
   const localPreview = hasLocalEvidencePreview(evidence);
+  const previewHref = url || evidence.dataUrl;
   const preview = localPreview
-    ? `<a class="evidence-preview" href="${evidence.dataUrl}" target="_blank" rel="noopener" aria-label="Abrir evidencia completa de ${mission.name}"><img src="${evidence.dataUrl}" alt="Evidencia cargada para ${mission.name}" loading="lazy" /></a>`
+    ? `<a class="evidence-preview" href="${previewHref}" target="_blank" rel="noopener" aria-label="Abrir evidencia completa de ${mission.name}"><img src="${evidence.dataUrl}" alt="Evidencia cargada para ${mission.name}" loading="lazy" /></a>`
     : `<div class="evidence-empty evidence-empty--uploaded"><strong>Evidencia registrada</strong><span>Vista previa no disponible en este dispositivo.</span></div>`;
   return preview;
 }
