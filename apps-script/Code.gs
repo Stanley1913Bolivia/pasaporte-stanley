@@ -35,7 +35,8 @@ const HEADERS = {
   misiones: [
     "mission_record_id","participant_id","mission_id","mission_name","week",
     "evidence_url","evidence_filename","completed_at","status","submitted_at",
-    "validated_at","validated_by","validation_notes","instagram_post_type","instagram_url"
+    "validated_at","validated_by","validation_notes","instagram_post_type","instagram_url",
+    "participant_name","participant_instagram","participant_whatsapp"
   ],
   premios: [
     "prize_selection_id","participant_id","level","prize_type","prize_name",
@@ -44,7 +45,7 @@ const HEADERS = {
   ],
   auditoria: [
     "audit_id","timestamp","action","participant_id","entity","entity_id",
-    "status","detail","user_agent","source"
+    "status","detail","user_agent","source","participant_name","participant_instagram"
   ]
 };
 
@@ -139,6 +140,7 @@ function saveMission_(d){
 
   const participant = findParticipant_(participantId);
   if(!participant) return {ok:false, code:"participant_not_found", error:"participant_id no encontrado."};
+  const participantInfo = participantInfo_(participant);
 
   const missionId = clean_(d.mission_id);
   if(!missionId) return {ok:false, code:"missing_mission_id", error:"Falta mission_id."};
@@ -167,7 +169,10 @@ function saveMission_(d){
     clean_(d.validated_by),
     clean_(d.validation_notes),
     clean_(d.instagram_post_type),
-    clean_(d.instagram_url)
+    clean_(d.instagram_url),
+    participantInfo.name,
+    participantInfo.instagram,
+    participantInfo.whatsapp
   ]);
 
   audit_("saveMission", participantId, "Misiones", recordId, "ok", "Mision completada con evidencia");
@@ -307,9 +312,20 @@ function participantPublic_(r){
   };
 }
 
+function participantInfo_(r){
+  if(!r) return {name:"", instagram:"", whatsapp:""};
+  return {
+    name: clean_(r[3]),
+    instagram: clean_(r[4]),
+    whatsapp: clean_(r[5])
+  };
+}
+
 function audit_(action, participantId, entity, entityId, status, detail){
   try{
     const auditoria = sheet_(SHEETS.auditoria, HEADERS.auditoria);
+    const participant = participantId ? findParticipant_(participantId) : null;
+    const participantInfo = participantInfo_(participant);
     auditoria.appendRow([
       "aud_" + Utilities.getUuid(),
       new Date(),
@@ -320,7 +336,9 @@ function audit_(action, participantId, entity, entityId, status, detail){
       status || "",
       detail || "",
       "",
-      "apps_script"
+      "apps_script",
+      participantInfo.name,
+      participantInfo.instagram
     ]);
   }catch(err){
     console.error(err);
