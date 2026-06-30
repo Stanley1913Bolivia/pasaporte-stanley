@@ -1,4 +1,4 @@
-const CONFIG = window.STANLEY || { APPS_SCRIPT_URL:"", DEADLINE:"2026-07-01T12:00:00-04:00" };
+const CONFIG = window.STANLEY || { APPS_SCRIPT_URL:"", DEADLINE:"2026-07-03T23:59:00-04:00" };
 const INSTAGRAM_COMMUNITY_URL = CONFIG.INSTAGRAM_COMMUNITY_URL || "https://www.instagram.com/channel/AbbX7p2jNimxBq8g/";
 const newId = () => (window.crypto && crypto.randomUUID) ? crypto.randomUUID()
   : 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2);
