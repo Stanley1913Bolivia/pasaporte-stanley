@@ -7,8 +7,8 @@ const MISSIONS = [
   { id:'m6', week:2, name:'Compartido sabe mejor', desc:'Mostrá cómo compartís el momento con amigos o familia.', instructions:'Compartí un momento grupal, cuidando que tu Stanley sea protagonista o parte clara de la escena.' },
   { id:'m7', week:3, name:'Set de celebración', desc:'Armá tu rincón Stanley para ver la temporada.', instructions:'Mostrá tu setup: sillón, mesa, terraza o lugar elegido para celebrar.' },
   { id:'m8', week:3, name:'El grito del momento', desc:'Compartí una reacción, festejo o emoción futbolera.', instructions:'Puede ser foto, historia o reel. Lo importante es la energía de comunidad y la etiqueta a @Stanley1913_Bolivia.' },
-  { id:'m9', week:3, name:'Misión Nostradamus', desc:'Ya viste los primeros partidos. Ahora contanos cómo imaginás que termina esta temporada futbolera.', instructions:'Respondé en Instagram: campeón esperado, goleador esperado, partido más esperado y final soñada. No hay ranking ni premio por acertar: el sello se obtiene por participar y cargar evidencia válida.' },
-  { id:'m10', week:4, name:'Mi lugar favorito', desc:'Llevá tu Stanley a un lugar que represente tu pasión.', instructions:'Mostrá tu Stanley en el lugar donde más disfrutás vivir esta temporada: casa, oficina, terraza, parque o reunión.' },
+  { id:'m9', week:3, name:'Nostradamus', desc:'Misión especial disponible en Fase 3.', instructions:'Respondé en Instagram: campeón esperado, goleador esperado, partido más esperado y final soñada. No hay ranking ni premio por acertar: el sello se obtiene por participar y cargar evidencia válida.' },
+  { id:'m10', week:3, name:'Mi lugar favorito', desc:'Llevá tu Stanley a un lugar que represente tu pasión.', instructions:'Mostrá tu Stanley en el lugar donde más disfrutás vivir esta temporada: casa, oficina, terraza, parque o reunión.' },
   { id:'m11', week:4, name:'Pasaporte casi completo', desc:'Mostrá tus sellos y celebrá tu avance.', instructions:'Compartí una captura o foto de tu progreso en Pasaporte Stanley y etiquetá a @Stanley1913_Bolivia.', highlight:true },
   { id:'m12', week:4, name:'Legend Stanley', desc:'Cerrá el pasaporte con tu mejor momento Stanley.', instructions:'Publicá tu mejor contenido de campaña. Al subir la captura desbloqueás el sello final.', highlight:true }
 ];
@@ -24,7 +24,23 @@ const INSTAGRAM_COMMUNITY_URL = CONFIG.INSTAGRAM_COMMUNITY_URL || 'https://www.i
 const STORAGE_KEY = 'stanley_passport';
 const DAILY_LIMIT = Number(CONFIG.DAILY_MISSION_LIMIT || 2);
 const DAILY_LIMIT_FLEXIBLE = Boolean(CONFIG.DAILY_LIMIT_FLEXIBLE);
-const CURRENT_WEEK = Number(new URLSearchParams(location.search).get('week') || CONFIG.CURRENT_WEEK || 1);
+const PHASES = CONFIG.PHASES || [
+  { id: 1, starts: '2026-06-01T00:00:00-04:00', ends: '2026-07-03T23:59:59-04:00' },
+  { id: 2, starts: '2026-07-04T00:00:00-04:00', ends: '2026-07-08T23:59:59-04:00' },
+  { id: 3, starts: '2026-07-09T00:00:00-04:00', ends: '2026-07-13T23:59:59-04:00' },
+  { id: 4, starts: '2026-07-14T00:00:00-04:00', ends: '2026-07-17T23:59:59-04:00' }
+];
+function phaseFromCalendar(now = new Date()) {
+  const override = Number(new URLSearchParams(location.search).get('phase'));
+  if (override >= 1 && override <= 4) return override;
+  const time = now.getTime();
+  const active = PHASES.find(phase => time >= new Date(phase.starts).getTime() && time <= new Date(phase.ends).getTime());
+  if (active) return active.id;
+  const lastOpen = PHASES.filter(phase => time >= new Date(phase.starts).getTime()).pop();
+  return lastOpen ? lastOpen.id : Number(CONFIG.CURRENT_WEEK || 1);
+}
+const CURRENT_PHASE = phaseFromCalendar();
+const CURRENT_WEEK = CURRENT_PHASE;
 const MAX_IMAGE_SIDE = 1600;
 const JPEG_QUALITY = 0.80;
 const MAX_UPLOAD_BYTES = 6 * 1024 * 1024;
@@ -321,6 +337,45 @@ function levelFor(count) {
   return { name:'Inicial', next:'Bronze', missing:4-count, pct:Math.round(count/12*100) };
 }
 
+function nextObjectiveFor(count) {
+  if (count >= 12) return { title:'Pasaporte completo', copy:'Pasaporte completo. Alcanzaste el nivel Legend.', share:true };
+  if (count >= 10) return { title:'Legend', copy:`Te faltan ${12 - count} sellos para Legend. Participás en el sorteo de Ediciones Especiales Stanley.`, share:true };
+  if (count >= 7) return { title:'Gold', copy:`Te faltan ${10 - count} sellos para Gold. Participás en el sorteo principal de la campaña.`, share:true };
+  if (count >= 4) return { title:'Silver', copy:`Te faltan ${7 - count} sellos para Silver. Participás en sorteos intermedios.`, share:true };
+  return { title:'Bronze', copy:`Te faltan ${4 - count} sellos para Bronze. Desbloqueás tu primer nivel del Pasaporte Stanley.`, share:false };
+}
+
+function renderNextObjective(count) {
+  const objective = nextObjectiveFor(count);
+  setText('#next-objective-title', objective.title);
+  setText('#next-objective-copy', objective.copy);
+  const share = $('#share-passport');
+  if (share) share.hidden = !objective.share;
+}
+
+function levelUnlockMessage(before, after) {
+  const unlocked = [
+    { at:4, msg:'¡Nivel Bronze desbloqueado! Ya tenés tus primeros 4 sellos.' },
+    { at:7, msg:'¡Nivel Silver desbloqueado! Ya participás en sorteos intermedios.' },
+    { at:10, msg:'¡Nivel Gold desbloqueado! Ya participás en el sorteo principal.' },
+    { at:12, msg:'¡Nivel Legend desbloqueado! Completaste el Pasaporte Stanley.' }
+  ].filter(item => before < item.at && after >= item.at).pop();
+  return unlocked ? unlocked.msg : '';
+}
+
+function showLevelToast(message) {
+  if (!message) return;
+  const toast = document.createElement('div');
+  toast.className = 'level-toast';
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  requestAnimationFrame(() => toast.classList.add('is-visible'));
+  setTimeout(() => {
+    toast.classList.remove('is-visible');
+    setTimeout(() => toast.remove(), 260);
+  }, 4200);
+}
+
 function thumb(mission, context) {
   if (mission.thumb) return `<img class="mission-thumb mission-thumb--${context}" src="${mission.thumb}" alt="${mission.name}">`;
   return `<span class="mission-thumb mission-thumb--empty mission-thumb--${context}">${mission.id.replace('m','')}</span>`;
@@ -414,10 +469,11 @@ function updateProgress() {
   setText('#stamp-summary', `${count} de 12 misiones completadas.`);
   setText('#current-level', level.name);
   setText('#next-level-copy', level.next ? `Te faltan ${level.missing} sellos para ${level.next}.` : 'Pasaporte completo.');
-  setText('#active-week', CURRENT_WEEK);
+  setText('#active-week', CURRENT_PHASE);
   setText('#meter-level', level.name);
   setText('#meter-stamps', `${count}/12`);
   setText('#meter-next-level', level.next ? `Te faltan ${level.missing} sellos para ${level.next}.` : 'Pasaporte completo.');
+  renderNextObjective(count);
   
   
   const bar = $('#passport-progress-bar');
@@ -440,7 +496,7 @@ function renderOverview() {
       <span class="mission-tile-number">${index + 1}</span>
       <span class="mission-tile-art">${done ? stamp(mission, 'tile') : thumb(mission, 'tile')}</span>
       <strong>${mission.name}</strong>
-      <small>${done ? 'Completada' : locked ? `Bloqueado - semana ${mission.week}` : 'Disponible'}</small>
+      <small>${done ? 'Completada' : locked ? `Bloqueado - fase ${mission.week}` : 'Disponible'}</small>
     `;
     el.onclick = () => document.getElementById(mission.id)?.scrollIntoView({ behavior:'smooth', block:'center' });
     wrap.appendChild(el);
@@ -455,7 +511,7 @@ function renderPassportSheet() {
     return `
       <article class="passport-week passport-week-large ${week > CURRENT_WEEK ? 'locked' : ''}">
         <header>
-          <span>Semana ${week}${week > CURRENT_WEEK ? ' Bloqueada' : ''}</span>
+          <span>Fase ${week}${week > CURRENT_WEEK ? ' Bloqueada' : ''}</span>
         </header>
         <div class="passport-week-grid passport-week-grid-large">
           ${weekMissions.map(mission => {
@@ -490,16 +546,16 @@ function renderMissions() {
       <div class="mission-copy">
         <div class="mission-copy-head">
           <div>
-            <span class="week-pill">Semana ${mission.week}</span>
+            <span class="week-pill">Fase ${mission.week}</span>
             <h3>${mission.name}</h3>
-            <p>${locked ? 'Pista desbloqueada: nombre del reto. La descripción completa se revelará en su semana.' : mission.desc}</p>
+            <p>${locked ? 'Pista desbloqueada: nombre del reto. La descripción completa se revelará en su fase.' : mission.desc}</p>
           </div>
           <span class="mission-inline-art">${thumb(mission, 'inline')}</span>
         </div>
         <div class="mission-instructions ${locked ? 'blurred' : ''}">
           ${locked ? 'Características e instrucciones bloqueadas.' : mission.instructions}
         </div>
-        <span class="mission-state-pill">${done ? '✓ SELLO OBTENIDO' : locked ? 'Carga bloqueada hasta su semana' : dailyBlocked ? 'Volvé mañana para completar más misiones' : 'Sello desbloqueado'}</span>
+        <span class="mission-state-pill">${done ? '✓ SELLO OBTENIDO' : locked ? 'Carga bloqueada hasta su fase' : dailyBlocked ? 'Volvé mañana para completar más misiones' : 'Sello desbloqueado'}</span>
         <div class="mission-completed-stamp">
           ${done ? stamp(mission, 'card') : ''}
         </div>
@@ -527,6 +583,7 @@ function bindUploads() {
     const mission = MISSIONS.find(item => item.id === input.dataset.mission);
     if (!mission || isLocked(mission)) return;
     const wasDone = isDone(mission);
+    const beforeCount = evidenceCount();
     if (!wasDone && dailyLimitReached()) {
       alert('Ya completaste tus 2 misiones de hoy. Volvé mañana para seguir sumando sellos.');
       input.value = '';
@@ -552,7 +609,9 @@ function bindUploads() {
         completed_at:(saved && saved.completed_at) || new Date().toISOString()
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(passport));
+      const afterCount = evidenceCount();
       renderAll();
+      showLevelToast(levelUnlockMessage(beforeCount, afterCount));
       setMissionUploadStatus(mission.id, 'Evidencia enviada correctamente.', 'success');
       setTimeout(() => setMissionUploadStatus(mission.id, '', 'info'), 1200);
     } catch (err) {
@@ -573,6 +632,13 @@ function renderAll() {
   renderOverview();
   renderPassportSheet();
   renderMissions();
+}
+
+const sharePassportButton = $('#share-passport');
+if (sharePassportButton) {
+  sharePassportButton.addEventListener('click', () => {
+    showLevelToast('Pronto podrás compartir tu Pasaporte Stanley en historias.');
+  });
 }
 
 bindUploads();

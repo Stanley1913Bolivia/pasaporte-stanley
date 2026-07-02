@@ -372,7 +372,7 @@ function updatePassportNavigation() {
 }
 
 document.addEventListener("click", event => {
-  const floating = event.target.closest("[data-floating-passport]");
+  const floating = event.target.closest("[data-floating-passport], [data-passport-access]");
   if (!floating) return;
   event.preventDefault();
   if (hasParticipantSession()) {

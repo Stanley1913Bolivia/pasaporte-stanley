@@ -40,7 +40,7 @@
 </div>
 
 <div class="passport-meter" aria-label="Estado del pasaporte">
-  <span>Semana <strong id="active-week">1</strong></span>
+  <span>Fase <strong id="active-week">1</strong></span>
   <span>Nivel <strong id="meter-level">Inicial</strong></span>
   <span><strong id="meter-stamps">0/12</strong> sellos</span>
   <small id="meter-next-level">Te faltan 4 sellos para Bronze.</small>
@@ -59,9 +59,31 @@
     <div>
       <span>Canal oficial de campaña</span>
       <h2>StanleyLovers Bolivia</h2>
-      <p>Fechas, sorteos, nuevas misiones y dinámicas exclusivas se comunicarán en nuestra comunidad de Instagram.</p>
+      <p>StanleyLovers Bolivia es el canal oficial de Pasaporte Stanley 1913. Ahí anunciaremos nuevas fases, horarios de sorteos, misiones especiales, ganadores y novedades de la campaña.</p>
     </div>
     <a class="gb-btn" href="https://www.instagram.com/channel/AbbX7p2jNimxBq8g/" target="_blank" rel="noopener" data-community-link>Unirme a la comunidad</a>
+  </section>
+
+  <section class="passport-next-objective" id="next-objective">
+    <div>
+      <span class="next-objective__label">Próximo objetivo</span>
+      <h2 id="next-objective-title">Bronze</h2>
+      <p id="next-objective-copy">Te faltan 4 sellos para Bronze. Desbloqueás tu primer nivel del Pasaporte Stanley.</p>
+    </div>
+    <button class="gb-btn gb-btn--secondary" type="button" id="share-passport" hidden>Compartir mi Pasaporte</button>
+  </section>
+
+  <section class="passport-draws">
+    <div class="stamp-panel__head">
+      <h2>Próximos sorteos</h2>
+      <p>Los horarios de cada sorteo serán comunicados por StanleyLovers Bolivia, el canal oficial de Pasaporte Stanley 1913.</p>
+    </div>
+    <div class="draws-grid draws-grid--passport">
+      <article><strong>Bronze</strong><span>4 de julio</span></article>
+      <article><strong>Silver</strong><span>9 de julio</span></article>
+      <article><strong>Gold</strong><span>14 de julio</span></article>
+      <article><strong>Legend</strong><span>18 de julio</span></article>
+    </div>
   </section>
 
   <section class="stamp-panel">
@@ -75,7 +97,7 @@
   <section class="passport-sheet-panel">
     <div class="stamp-panel__head">
       <h2>Hoja de pasaporte</h2>
-      <p>Tres sellos por semana. Acá se registran tus sellos. Las evidencias se cargan más abajo.</p>
+      <p>Misiones habilitadas por fase. Acá se registran tus sellos. Las evidencias se cargan más abajo.</p>
     </div>
     <div class="passport-sheet" id="passport-sheet"></div>
   </section>
@@ -84,7 +106,7 @@
     <div class="stage__head">
       <span class="stage__kicker">Misiones</span>
       <h2>Completá tu pasaporte</h2>
-      <p>Las semanas futuras muestran sólo el nombre de los retos. La descripción y la carga de evidencia se habilitan semana por semana.</p>
+      <p>Las fases futuras muestran sólo el nombre de los retos. La descripción y la carga de evidencia se habilitan fase por fase.</p>
     </div>
     <div class="mission-list" id="mission-list"></div>
   </section>

@@ -627,6 +627,83 @@ html[data-phase="eliminatorias"] .only-inscripcion{display:none}
 .passport-floating-access:hover{
   transform:translateY(-1px);
 }
+.now-card{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+  margin:20px 0 4px;
+  max-width:880px;
+}
+.now-card__title{
+  grid-column:1/-1;
+  justify-self:start;
+  display:inline-block;
+  border-radius:999px;
+  background:var(--ink);
+  color:#fff!important;
+  padding:7px 12px;
+  font-family:'Montserrat',sans-serif;
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.7px;
+  text-transform:uppercase;
+}
+.now-card span{
+  background:rgba(255,255,255,.92);
+  border:1px solid rgba(181,150,119,.28);
+  border-radius:8px;
+  padding:12px 14px;
+  color:var(--text);
+  font-weight:700;
+  box-shadow:0 10px 24px rgba(0,0,0,.08);
+}
+.now-card strong{
+  color:var(--green);
+}
+.draws-strip{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(360px,520px);
+  gap:28px;
+  align-items:center;
+  border:1px solid var(--line-soft);
+  border-radius:16px;
+  background:#fff;
+  box-shadow:0 18px 48px rgba(0,0,0,.06);
+}
+.draws-strip .h2{
+  text-align:left;
+  margin-bottom:12px;
+}
+.draws-strip p{
+  color:var(--text-soft);
+  font-size:18px;
+  line-height:1.5;
+  margin:0;
+}
+.draws-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+.draws-grid article{
+  border:1px solid var(--line-soft);
+  border-radius:10px;
+  background:#f7f3ec;
+  padding:18px;
+}
+.draws-grid strong{
+  display:block;
+  font-family:'Montserrat',sans-serif;
+  font-weight:900;
+  color:var(--green);
+  font-size:18px;
+}
+.draws-grid span{
+  display:block;
+  margin-top:6px;
+  color:var(--text);
+  font-weight:800;
+}
 @media(max-width:700px){
   .passport-floating-access{
     right:12px;
@@ -634,5 +711,15 @@ html[data-phase="eliminatorias"] .only-inscripcion{display:none}
     max-width:calc(100vw - 24px);
     padding:11px 13px;
     font-size:11px;
+  }
+  .now-card,
+  .draws-strip{
+    grid-template-columns:1fr;
+  }
+  .draws-strip{
+    padding:28px 18px;
+  }
+  .draws-grid{
+    grid-template-columns:1fr 1fr;
   }
 }

@@ -927,7 +927,7 @@
   white-space:nowrap!important;
 }
 
-/* Ajuste final de misiones completadas y fondos por semana */
+/* Ajuste final de misiones completadas y fondos por fase */
 .mission-tile.week-1,.mission-card.week-1{background:#fffaf1!important}
 .mission-tile.week-2,.mission-card.week-2{background:#f4fbf6!important}
 .mission-tile.week-3,.mission-card.week-3{background:#f4f8ff!important}
@@ -2754,5 +2754,87 @@ section:has(#stamps-grid) h3{
   }
   .mission-board :is(.mission-list,.missions-list) .mission-card.done .mission-stamp--card{
     max-height:108px!important;
+  }
+}
+
+.passport-next-objective,
+.passport-draws{
+  border:1px solid #ded5c9;
+  border-radius:14px;
+  background:#fff;
+  box-shadow:0 14px 36px rgba(0,0,0,.05);
+}
+.passport-next-objective{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  padding:22px 26px;
+}
+.next-objective__label{
+  display:inline-block;
+  font-family:'Montserrat',sans-serif;
+  font-weight:900;
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.7px;
+  color:#b59677;
+  margin-bottom:6px;
+}
+.passport-next-objective h2{
+  margin:0;
+  font-family:'Anton',sans-serif;
+  font-size:34px;
+  letter-spacing:0;
+  text-transform:uppercase;
+}
+.passport-next-objective p{
+  margin:5px 0 0;
+  color:#2c4145;
+  font-size:16px;
+  line-height:1.45;
+}
+.passport-draws{
+  padding:22px 26px;
+}
+.draws-grid--passport{
+  margin-top:16px;
+}
+.level-toast{
+  position:fixed;
+  left:50%;
+  bottom:26px;
+  z-index:120;
+  transform:translate(-50%,18px);
+  opacity:0;
+  max-width:min(520px,calc(100vw - 32px));
+  padding:14px 18px;
+  border-radius:999px;
+  background:#000;
+  color:#fff;
+  box-shadow:0 18px 46px rgba(0,0,0,.28);
+  font-family:'Montserrat',sans-serif;
+  font-weight:900;
+  text-align:center;
+  transition:opacity .22s ease, transform .22s ease;
+}
+.level-toast.is-visible{
+  opacity:1;
+  transform:translate(-50%,0);
+}
+@media(max-width:760px){
+  .passport-next-objective{
+    align-items:flex-start;
+    flex-direction:column;
+    padding:18px;
+  }
+  .passport-next-objective .gb-btn{
+    width:100%;
+  }
+  .passport-draws{
+    padding:18px;
+  }
+  .draws-grid--passport{
+    grid-template-columns:1fr 1fr;
   }
 }
