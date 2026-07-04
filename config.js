@@ -4,6 +4,7 @@ window.STANLEY = {
   INSTAGRAM_COMMUNITY_URL: "https://www.instagram.com/channel/AbbX7p2jNimxBq8g/",
   DEADLINE: "2026-07-03T23:59:00-04:00",
   PHASE: "inscripcion",
+  REGISTRATION_CLOSED: true,
   CURRENT_WEEK: 1,
   PHASES: [
     { id: 1, starts: "2026-06-01T00:00:00-04:00", ends: "2026-07-03T23:59:59-04:00" },

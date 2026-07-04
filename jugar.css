@@ -2764,6 +2764,38 @@ section:has(#stamps-grid) h3{
   background:#fff;
   box-shadow:0 14px 36px rgba(0,0,0,.05);
 }
+.passport-live-status{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  border:1px solid #ded5c9;
+  border-radius:14px;
+  background:#000;
+  color:#fff;
+  padding:16px 20px;
+  box-shadow:0 14px 36px rgba(0,0,0,.1);
+}
+.passport-live-status span{
+  display:inline-block;
+  border-radius:999px;
+  background:#00a86b;
+  color:#fff;
+  padding:7px 12px;
+  font-family:'Montserrat',sans-serif;
+  font-weight:900;
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+}
+.passport-live-status strong{
+  font-family:'Montserrat',sans-serif;
+  font-weight:900;
+}
+.passport-live-status p{
+  margin:0;
+  color:rgba(255,255,255,.82);
+}
 .passport-next-objective{
   display:flex;
   align-items:center;
@@ -2827,6 +2859,11 @@ section:has(#stamps-grid) h3{
     align-items:flex-start;
     flex-direction:column;
     padding:18px;
+  }
+  .passport-live-status{
+    align-items:flex-start;
+    flex-direction:column;
+    padding:16px;
   }
   .passport-next-objective .gb-btn{
     width:100%;
