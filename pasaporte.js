@@ -235,6 +235,16 @@ function renderEvidenceView(mission, evidence) {
   return preview;
 }
 
+function phaseMeta(phase) {
+  const data = {
+    1: { title:'FASE 1', subtitle:'Misiones iniciales del Pasaporte Stanley.' },
+    2: { title:'FASE 2', subtitle:'Disponible del 4 al 8 de julio.' },
+    3: { title:'FASE 3', subtitle:'Disponible del 9 al 13 de julio.' },
+    4: { title:'FASE 4 · RECTA FINAL', subtitle:'Disponible del 14 al 17 de julio.' }
+  };
+  return data[phase] || { title:`FASE ${phase}`, subtitle:'' };
+}
+
 function updateSessionIndicator() {
   const id = participantId();
   const ig = normalizedIg(player && player.instagram);
@@ -533,44 +543,60 @@ function renderMissions() {
   if (!wrap) return;
   const noMoreToday = dailyLimitReached();
   wrap.innerHTML = '';
-  MISSIONS.forEach(mission => {
-    const done = isDone(mission);
-    const locked = isLocked(mission);
-    const dailyBlocked = noMoreToday && !done && !locked;
-    const evidence = passport.evidence && passport.evidence[mission.id];
-    const openEvidenceButton = done && evidenceUrl(evidence) ? `<a class="gb-btn evidence-open" href="${evidenceUrl(evidence)}" target="_blank" rel="noopener">Ver evidencia cargada</a>` : '';
-    const article = document.createElement('article');
-    article.id = mission.id;
-    article.className = `mission-card ${done ? 'done' : locked ? 'locked' : dailyBlocked ? 'daily-blocked' : 'available'}`;
-    article.innerHTML = `
-      <div class="mission-copy">
-        <div class="mission-copy-head">
-          <div>
-            <span class="week-pill">Fase ${mission.week}</span>
-            <h3>${mission.name}</h3>
-            <p>${locked ? 'Pista desbloqueada: nombre del reto. La descripción completa se revelará en su fase.' : mission.desc}</p>
-          </div>
-          <span class="mission-inline-art">${thumb(mission, 'inline')}</span>
+  [1, 2, 3, 4].forEach(phase => {
+    const meta = phaseMeta(phase);
+    const group = document.createElement('section');
+    group.className = `mission-phase mission-phase--${phase} ${phase > CURRENT_PHASE ? 'is-locked' : 'is-open'}`;
+    group.innerHTML = `
+      <header class="mission-phase__head">
+        <div>
+          <span>${meta.title}</span>
+          <p>${meta.subtitle}</p>
         </div>
-        <div class="mission-instructions ${locked ? 'blurred' : ''}">
-          ${locked ? 'Características e instrucciones bloqueadas.' : mission.instructions}
-        </div>
-        <span class="mission-state-pill">${done ? '✓ SELLO OBTENIDO' : locked ? 'Carga bloqueada hasta su fase' : dailyBlocked ? 'Volvé mañana para completar más misiones' : 'Sello desbloqueado'}</span>
-        <div class="mission-completed-stamp">
-          ${done ? stamp(mission, 'card') : ''}
-        </div>
-      </div>
-      <div class="mission-evidence">
-        ${done ? renderEvidenceView(mission, evidence) : `<div class="evidence-empty">${locked ? 'Carga bloqueada' : dailyBlocked ? 'Límite diario alcanzado' : 'Subí captura de Instagram'}</div>`}
-        <p class="upload-status" data-upload-status="${mission.id}" hidden></p>
-        ${locked ? `<span class="gb-btn evidence-btn disabled">Bloqueado</span>` : `<label class="gb-btn evidence-btn ${dailyBlocked ? 'disabled' : ''}">
-          ${done ? (evidenceUrl(evidence) ? 'Cambiar evidencia' : 'Subir evidencia nuevamente') : dailyBlocked ? 'Disponible mañana' : 'Subir evidencia'}
-          <input type="file" accept="image/*,.jpg,.jpeg,.png,.heic,.heif,.pdf" data-mission="${mission.id}" ${dailyBlocked ? 'disabled' : ''}>
-        </label>`}
-        ${openEvidenceButton}
-      </div>
+      </header>
+      <div class="mission-phase__list"></div>
     `;
-    wrap.appendChild(article);
+    const list = group.querySelector('.mission-phase__list');
+    MISSIONS.filter(mission => mission.week === phase).forEach(mission => {
+      const done = isDone(mission);
+      const locked = isLocked(mission);
+      const dailyBlocked = noMoreToday && !done && !locked;
+      const evidence = passport.evidence && passport.evidence[mission.id];
+      const openEvidenceButton = done && evidenceUrl(evidence) ? `<a class="gb-btn evidence-open" href="${evidenceUrl(evidence)}" target="_blank" rel="noopener">Ver evidencia cargada</a>` : '';
+      const article = document.createElement('article');
+      article.id = mission.id;
+      article.className = `mission-card phase-${phase} ${done ? 'done' : locked ? 'locked' : dailyBlocked ? 'daily-blocked' : 'available'}`;
+      article.innerHTML = `
+        <div class="mission-copy">
+          <div class="mission-copy-head">
+            <div>
+              <span class="week-pill">Fase ${mission.week}</span>
+              <h3>${mission.name}</h3>
+              <p>${locked ? 'Pista desbloqueada: nombre del reto. La descripción completa se revelará en su fase.' : mission.desc}</p>
+            </div>
+            <span class="mission-inline-art">${thumb(mission, 'inline')}</span>
+          </div>
+          <div class="mission-instructions ${locked ? 'blurred' : ''}">
+            ${locked ? 'Características e instrucciones bloqueadas.' : mission.instructions}
+          </div>
+          <span class="mission-state-pill">${done ? '✓ SELLO OBTENIDO' : locked ? 'Carga bloqueada hasta su fase' : dailyBlocked ? 'Volvé mañana para completar más misiones' : 'Sello desbloqueado'}</span>
+          <div class="mission-completed-stamp">
+            ${done ? stamp(mission, 'card') : ''}
+          </div>
+        </div>
+        <div class="mission-evidence">
+          ${done ? renderEvidenceView(mission, evidence) : `<div class="evidence-empty">${locked ? 'Carga bloqueada' : dailyBlocked ? 'Límite diario alcanzado' : 'Subí captura de Instagram'}</div>`}
+          <p class="upload-status" data-upload-status="${mission.id}" hidden></p>
+          ${locked ? `<span class="gb-btn evidence-btn disabled">Bloqueado</span>` : `<label class="gb-btn evidence-btn ${dailyBlocked ? 'disabled' : ''}">
+            ${done ? (evidenceUrl(evidence) ? 'Cambiar evidencia' : 'Subir evidencia nuevamente') : dailyBlocked ? 'Disponible mañana' : 'Subir evidencia'}
+            <input type="file" accept="image/*,.jpg,.jpeg,.png,.heic,.heif,.pdf" data-mission="${mission.id}" ${dailyBlocked ? 'disabled' : ''}>
+          </label>`}
+          ${openEvidenceButton}
+        </div>
+      `;
+      list.appendChild(article);
+    });
+    wrap.appendChild(group);
   });
 }
 

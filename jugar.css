@@ -2757,6 +2757,118 @@ section:has(#stamps-grid) h3{
   }
 }
 
+/* Misiones agrupadas por fase */
+.mission-board :is(.mission-list,.missions-list){
+  display:grid!important;
+  gap:22px!important;
+}
+.mission-phase{
+  border:1px solid rgba(0,115,73,.16);
+  border-radius:18px;
+  padding:18px;
+  display:grid;
+  gap:14px;
+  box-shadow:0 14px 34px rgba(21,39,31,.06);
+}
+.mission-phase--1{
+  background:linear-gradient(145deg,#fffdf8,#fffaf1);
+}
+.mission-phase--2{
+  background:linear-gradient(145deg,#f3fbf5,#e8f6ee);
+  border-color:rgba(0,115,73,.20);
+}
+.mission-phase--3{
+  background:linear-gradient(145deg,#fbf6ed,#f1e3cf);
+  border-color:rgba(185,154,120,.34);
+}
+.mission-phase--4{
+  background:linear-gradient(145deg,#25211b,#0f0f0e);
+  border-color:rgba(185,154,120,.45);
+  box-shadow:0 18px 42px rgba(0,0,0,.18);
+}
+.mission-phase__head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:4px 4px 10px;
+}
+.mission-phase__head span{
+  display:inline-block;
+  font-family:'Montserrat',sans-serif;
+  font-size:13px;
+  font-weight:900;
+  letter-spacing:1.2px;
+  text-transform:uppercase;
+  color:#007349;
+}
+.mission-phase--3 .mission-phase__head span{
+  color:#8a6949;
+}
+.mission-phase--4 .mission-phase__head span{
+  color:#d1b08d;
+}
+.mission-phase__head p{
+  margin:5px 0 0;
+  color:#66727a;
+  font-weight:700;
+}
+.mission-phase--4 .mission-phase__head p{
+  color:rgba(255,255,255,.72);
+}
+.mission-phase__list{
+  display:grid;
+  gap:14px;
+}
+.mission-phase .mission-card{
+  margin:0!important;
+}
+.mission-phase--1 .mission-card{
+  background:#fff!important;
+}
+.mission-phase--2 .mission-card{
+  background:#fbfffc!important;
+  border-color:rgba(0,115,73,.18)!important;
+}
+.mission-phase--3 .mission-card{
+  background:#fffaf2!important;
+  border-color:rgba(185,154,120,.28)!important;
+}
+.mission-phase--4 .mission-card{
+  background:#fff!important;
+  border-color:rgba(185,154,120,.36)!important;
+}
+.mission-phase .mission-card.locked{
+  border-style:dashed!important;
+}
+.mission-phase--2 .mission-card.locked{
+  background:#eef8f1!important;
+}
+.mission-phase--3 .mission-card.locked{
+  background:#f2e7d7!important;
+}
+.mission-phase--4 .mission-card.locked{
+  background:#eee5d7!important;
+}
+@media(max-width:760px){
+  .mission-phase{
+    padding:14px;
+    border-radius:14px;
+    gap:12px;
+  }
+  .mission-phase__head{
+    align-items:flex-start;
+    flex-direction:column;
+    padding:2px 2px 8px;
+  }
+  .mission-phase__head span{
+    font-size:12px;
+  }
+  .mission-phase__head p{
+    font-size:13px;
+  }
+}
+
 .passport-next-objective,
 .passport-draws{
   border:1px solid #ded5c9;
