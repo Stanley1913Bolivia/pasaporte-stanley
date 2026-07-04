@@ -13,10 +13,11 @@ window.STANLEY = {
     { id: 4, starts: "2026-07-14T00:00:00-04:00", ends: "2026-07-17T23:59:59-04:00" }
   ],
   DRAW_DATES: {
-    Bronze: "4 de julio",
-    Silver: "9 de julio",
-    Gold: "14 de julio",
-    Legend: "18 de julio"
+    registered: { label: "Primer sorteo de participantes registrados", date: "2026-07-04", display: "4 de julio" },
+    silver: { label: "Próximo sorteo Silver", date: "2026-07-09", display: "9 de julio" },
+    gold: { label: "Próximo sorteo Gold", date: "2026-07-14", display: "14 de julio" },
+    legend: { label: "Próximo sorteo Legend", date: "2026-07-18", display: "18 de julio" },
+    finished: { label: "Campaña finalizada", date: "2026-07-19", display: "Ganadores publicados" }
   }
 };
 

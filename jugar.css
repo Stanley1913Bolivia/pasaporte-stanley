@@ -2984,6 +2984,6 @@ section:has(#stamps-grid) h3{
     padding:18px;
   }
   .draws-grid--passport{
-    grid-template-columns:1fr 1fr;
+    grid-template-columns:1fr;
   }
 }
