@@ -14,9 +14,9 @@ window.STANLEY = {
   ],
   DRAW_DATES: {
     registered: { label: "Sorteo inicial", date: "2026-07-04", display: "4 de julio" },
-    silver: { label: "Próximo sorteo Silver", date: "2026-07-09", display: "9 de julio" },
-    gold: { label: "Próximo sorteo Gold", date: "2026-07-14", display: "14 de julio" },
-    legend: { label: "Próximo sorteo Legend", date: "2026-07-18", display: "18 de julio" },
+    silver: { label: "Próximo sorteo Silver", date: "2026-07-10", display: "10 de julio · noche" },
+    gold: { label: "Próximo sorteo Gold", date: "2026-07-15", display: "15 de julio · noche" },
+    legend: { label: "Próximo sorteo Legend", date: "2026-07-18", display: "18 de julio · mañana" },
     finished: { label: "Campaña finalizada", date: "2026-07-19", display: "Ganadores publicados" }
   }
 };
