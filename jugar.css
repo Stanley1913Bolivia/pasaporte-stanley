@@ -2987,3 +2987,40 @@ section:has(#stamps-grid) h3{
     grid-template-columns:1fr;
   }
 }
+
+.mission-type{
+  display:inline-block;
+  margin-top:8px;
+  border-radius:999px;
+  padding:5px 10px;
+  background:rgba(0,166,115,.1);
+  color:#007349;
+  font-family:'Montserrat',sans-serif;
+  font-weight:900;
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+}
+
+.mission-board :is(.mission-list,.missions-list) .mission-card.special-locked{
+  border-color:rgba(185,154,120,.62)!important;
+  background:linear-gradient(145deg,#fffaf1,#f1e2cc)!important;
+  box-shadow:0 18px 42px rgba(185,154,120,.18)!important;
+}
+.mission-board :is(.mission-list,.missions-list) .mission-card.special-locked .week-pill{
+  background:#111!important;
+  color:#d1b08d!important;
+}
+.mission-board :is(.mission-list,.missions-list) .mission-card.special-locked .mission-instructions{
+  filter:none!important;
+  color:#6e563d!important;
+  background:rgba(255,255,255,.64)!important;
+  border-left-color:#B99A78!important;
+}
+.mission-board :is(.mission-list,.missions-list) .mission-card.special-locked .mission-state-pill{
+  background:#111!important;
+  color:#d1b08d!important;
+}
+.mission-board :is(.mission-list,.missions-list) .mission-card.special-locked .mission-evidence{
+  background:rgba(255,255,255,.48)!important;
+}

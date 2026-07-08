@@ -5,10 +5,10 @@ const MISSIONS = [
   { id:'m4', week:2, name:'Stanley en la mesa', desc:'Mostrá tu mesa, snack o bebida de temporada.', instructions:'Compartí una foto o video de tu mesa con presencia Stanley. Etiquetá a @Stanley1913_Bolivia.' },
   { id:'m5', week:2, name:'La Cábala Stanley', desc:'Contá qué no puede faltar cuando vivís fútbol.', instructions:'Publicá tu cábala, rutina o detalle favorito junto a tu Stanley. Subí captura visible.' },
   { id:'m6', week:2, name:'Compartido sabe mejor', desc:'Mostrá cómo compartís el momento con amigos o familia.', instructions:'Compartí un momento grupal, cuidando que tu Stanley sea protagonista o parte clara de la escena.' },
-  { id:'m7', week:3, name:'Set de celebración', desc:'Armá tu rincón Stanley para ver la temporada.', instructions:'Mostrá tu setup: sillón, mesa, terraza o lugar elegido para celebrar.' },
-  { id:'m8', week:3, name:'El grito del momento', desc:'Compartí una reacción, festejo o emoción futbolera.', instructions:'Puede ser foto, historia o reel. Lo importante es la energía de comunidad y la etiqueta a @Stanley1913_Bolivia.' },
-  { id:'m9', week:3, name:'Nostradamus', desc:'Misión especial disponible en Fase 3.', instructions:'Respondé en Instagram: campeón esperado, goleador esperado, partido más esperado y final soñada. No hay ranking ni premio por acertar: el sello se obtiene por participar y cargar evidencia válida.' },
-  { id:'m10', week:3, name:'Mi lugar favorito', desc:'Llevá tu Stanley a un lugar que represente tu pasión.', instructions:'Mostrá tu Stanley en el lugar donde más disfrutás vivir esta temporada: casa, oficina, terraza, parque o reunión.' },
+  { id:'m7', week:3, name:'El grito del momento', type:'Emoción', publicHint:'Queremos ver cómo vivís cada emoción.', desc:'Queremos ver la pasión con la que vivís cada partido. Capturá ese instante que hace especial cada encuentro: un grito de gol, una celebración, una reacción inesperada, la tensión de una jugada o cualquier emoción que compartas junto a tu Stanley.', instructions:'Subilo a Instagram, etiquetá a @Stanley1913_Bolivia (la etiqueta debe verse en la captura de pantalla) y subí tu evidencia.' },
+  { id:'m8', week:3, name:'Throwback Stanley', type:'Lifestyle', publicHint:'Volvé al origen. Queremos conocer tu historia con Stanley.', desc:'Todos tenemos una historia con nuestro Stanley. Buscá la foto más antigua que tengas junto a él o ese recuerdo inolvidable que todavía guardás en tu galería y compartilo con nosotros.', instructions:'Subilo a Instagram, etiquetá a @Stanley1913_Bolivia (la etiqueta debe verse en la captura de pantalla) y subí tu evidencia.' },
+  { id:'m9', week:3, name:'Colección Stanley', type:'Lifestyle', publicHint:'Cada Stanley tiene una historia. Mostranos tu colección.', desc:'¿Tenés un solo Stanley o ya empezaste tu colección? Mostranos todos los productos Stanley que forman parte de tu día a día. Queremos conocer la colección de nuestra comunidad.', instructions:'Subilo a Instagram, etiquetá a @Stanley1913_Bolivia (la etiqueta debe verse en la captura de pantalla) y subí tu evidencia.' },
+  { id:'m10', week:3, name:'Nostradamus Stanley', type:'Participación especial', publicHint:'¿Ya tenés tus favoritos? Prepará tus pronósticos mundialeros.', desc:'Llegó el momento de sacar tu lado más futbolero. Compartinos tus pronósticos para el cierre del Mundial: campeón, máximo goleador, jugador del torneo y resultado de la Final. No existen respuestas correctas o incorrectas. Esta misión otorga el sello simplemente por participar.', instructions:'Subilo a Instagram, etiquetá a @Stanley1913_Bolivia (la etiqueta debe verse en la captura de pantalla) y subí tu evidencia.', unlockAt:'2026-07-13T00:00:00-04:00', specialLock:true },
   { id:'m11', week:4, name:'Pasaporte casi completo', desc:'Mostrá tus sellos y celebrá tu avance.', instructions:'Compartí una captura o foto de tu progreso en Pasaporte Stanley y etiquetá a @Stanley1913_Bolivia.', highlight:true },
   { id:'m12', week:4, name:'Legend Stanley', desc:'Cerrá el pasaporte con tu mejor momento Stanley.', instructions:'Publicá tu mejor contenido de campaña. Al subir la captura desbloqueás el sello final.', highlight:true }
 ];
@@ -64,7 +64,8 @@ const $ = sel => document.querySelector(sel);
 const setText = (sel, value) => { const el = $(sel); if (el) el.textContent = value; };
 const evidenceCount = () => Object.values(passport.evidence || {}).filter(Boolean).length;
 const isDone = mission => Boolean(passport.evidence && passport.evidence[mission.id]);
-const isLocked = mission => mission.week > CURRENT_WEEK;
+const isDateLocked = mission => Boolean(mission.unlockAt && Date.now() < new Date(mission.unlockAt).getTime());
+const isLocked = mission => mission.week > CURRENT_WEEK || isDateLocked(mission);
 
 
 function participantId() {
@@ -506,7 +507,7 @@ function renderOverview() {
       <span class="mission-tile-number">${index + 1}</span>
       <span class="mission-tile-art">${done ? stamp(mission, 'tile') : thumb(mission, 'tile')}</span>
       <strong>${mission.name}</strong>
-      <small>${done ? 'Completada' : locked ? `Bloqueado - fase ${mission.week}` : 'Disponible'}</small>
+      <small>${done ? 'Completada' : locked && mission.specialLock ? 'Disponible 13 de julio' : locked ? `Bloqueado - fase ${mission.week}` : 'Disponible'}</small>
     `;
     el.onclick = () => document.getElementById(mission.id)?.scrollIntoView({ behavior:'smooth', block:'center' });
     wrap.appendChild(el);
@@ -563,31 +564,33 @@ function renderMissions() {
       const dailyBlocked = noMoreToday && !done && !locked;
       const evidence = passport.evidence && passport.evidence[mission.id];
       const openEvidenceButton = done && evidenceUrl(evidence) ? `<a class="gb-btn evidence-open" href="${evidenceUrl(evidence)}" target="_blank" rel="noopener">Ver evidencia cargada</a>` : '';
+      const specialLocked = locked && mission.specialLock;
       const article = document.createElement('article');
       article.id = mission.id;
-      article.className = `mission-card phase-${phase} ${done ? 'done' : locked ? 'locked' : dailyBlocked ? 'daily-blocked' : 'available'}`;
+      article.className = `mission-card phase-${phase} ${specialLocked ? 'special-locked' : done ? 'done' : locked ? 'locked' : dailyBlocked ? 'daily-blocked' : 'available'}`;
       article.innerHTML = `
         <div class="mission-copy">
           <div class="mission-copy-head">
             <div>
-              <span class="week-pill">Fase ${mission.week}</span>
+              <span class="week-pill">${specialLocked ? '🔮 MISIÓN ESPECIAL' : `Fase ${mission.week}`}</span>
               <h3>${mission.name}</h3>
-              <p>${locked ? 'Pista desbloqueada: nombre del reto. La descripción completa se revelará en su fase.' : mission.desc}</p>
+              <p>${specialLocked ? 'Disponible el 13 de julio.' : locked ? (mission.publicHint || 'Pista desbloqueada: nombre del reto. La descripción completa se revelará en su fase.') : mission.desc}</p>
+              ${mission.type && !specialLocked ? `<small class="mission-type">${mission.type}</small>` : ''}
             </div>
             <span class="mission-inline-art">${thumb(mission, 'inline')}</span>
           </div>
-          <div class="mission-instructions ${locked ? 'blurred' : ''}">
-            ${locked ? 'Características e instrucciones bloqueadas.' : mission.instructions}
+          <div class="mission-instructions ${locked && !specialLocked ? 'blurred' : ''}">
+            ${specialLocked ? 'Andá preparando tus pronósticos mundialeros. Sólo durante la recta final del Mundial.' : locked ? 'Características e instrucciones bloqueadas.' : mission.instructions}
           </div>
-          <span class="mission-state-pill">${done ? '✓ SELLO OBTENIDO' : locked ? 'Carga bloqueada hasta su fase' : dailyBlocked ? 'Volvé mañana para completar más misiones' : 'Sello desbloqueado'}</span>
+          <span class="mission-state-pill">${done ? '✓ SELLO OBTENIDO' : specialLocked ? 'Disponible el 13 de julio' : locked ? 'Carga bloqueada hasta su fase' : dailyBlocked ? 'Volvé mañana para completar más misiones' : 'Sello desbloqueado'}</span>
           <div class="mission-completed-stamp">
             ${done ? stamp(mission, 'card') : ''}
           </div>
         </div>
         <div class="mission-evidence">
-          ${done ? renderEvidenceView(mission, evidence) : `<div class="evidence-empty">${locked ? 'Carga bloqueada' : dailyBlocked ? 'Límite diario alcanzado' : 'Subí captura de Instagram'}</div>`}
+          ${done ? renderEvidenceView(mission, evidence) : `<div class="evidence-empty">${specialLocked ? 'Disponible el 13 de julio' : locked ? 'Carga bloqueada' : dailyBlocked ? 'Límite diario alcanzado' : 'Subí captura de Instagram'}</div>`}
           <p class="upload-status" data-upload-status="${mission.id}" hidden></p>
-          ${locked ? `<span class="gb-btn evidence-btn disabled">Bloqueado</span>` : `<label class="gb-btn evidence-btn ${dailyBlocked ? 'disabled' : ''}">
+          ${locked ? `<span class="gb-btn evidence-btn disabled">${specialLocked ? 'Disponible pronto' : 'Bloqueado'}</span>` : `<label class="gb-btn evidence-btn ${dailyBlocked ? 'disabled' : ''}">
             ${done ? (evidenceUrl(evidence) ? 'Cambiar evidencia' : 'Subir evidencia nuevamente') : dailyBlocked ? 'Disponible mañana' : 'Subir evidencia'}
             <input type="file" accept="image/*,.jpg,.jpeg,.png,.heic,.heif,.pdf" data-mission="${mission.id}" ${dailyBlocked ? 'disabled' : ''}>
           </label>`}
