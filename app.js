@@ -4,6 +4,10 @@ const REGISTRATION_CLOSED = Boolean(CONFIG.REGISTRATION_CLOSED);
 const newId = () => (window.crypto && crypto.randomUUID) ? crypto.randomUUID()
   : 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2);
 const normalizeInstagram = value => String(value || "").trim().replace(/\s+/g, "").replace(/^@+/, "").toLowerCase();
+const setText = (selector, value) => {
+  const el = document.querySelector(selector);
+  if (el) el.textContent = value;
+};
 
 const fileInput = document.getElementById("comprobante");
 const fileHint = document.getElementById("file-hint");
@@ -198,6 +202,93 @@ function applyCommunityLinks() {
   });
 }
 
+function parseCampaignDate(value, endOfDay = false) {
+  if (!value) return null;
+  const text = String(value);
+  const date = text.includes("T") ? new Date(text) : new Date(`${text}T${endOfDay ? "23:59:59" : "00:00:00"}-04:00`);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function activeCampaignPhase(now = new Date()) {
+  const phases = Array.isArray(CONFIG.PHASES) ? CONFIG.PHASES : [];
+  const time = now.getTime();
+  const active = phases.find(phase => {
+    const starts = parseCampaignDate(phase.starts);
+    const ends = parseCampaignDate(phase.ends, true);
+    return starts && ends && time >= starts.getTime() && time <= ends.getTime();
+  });
+  if (active) return { ...active, state: "active" };
+  const lastOpen = phases.filter(phase => {
+    const starts = parseCampaignDate(phase.starts);
+    return starts && time >= starts.getTime();
+  }).pop();
+  if (lastOpen) return { ...lastOpen, state: "closed" };
+  return phases[0] ? { ...phases[0], state: "upcoming" } : { id: Number(CONFIG.CURRENT_WEEK || 1), state: "active" };
+}
+
+function nextCampaignDraw(now = new Date()) {
+  const draws = CONFIG.DRAW_DATES || {};
+  const order = ["registered", "silver", "gold", "legend"];
+  const nextKey = order.find(key => {
+    const item = draws[key];
+    const end = parseCampaignDate(item && item.date, true);
+    return end && now.getTime() <= end.getTime();
+  });
+  if (nextKey) return { key: nextKey, ...draws[nextKey] };
+  return { key: "finished", ...(draws.finished || { label: "Campaña finalizada", display: "Ganadores publicados" }) };
+}
+
+function drawTitle(draw) {
+  const titles = {
+    registered: "Sorteo de Bienvenida",
+    silver: "Sorteo Silver",
+    gold: "Sorteo Gold",
+    legend: "Sorteo Legend",
+    finished: "Campaña finalizada"
+  };
+  return titles[draw.key] || draw.label || "Próximo sorteo";
+}
+
+function drawCopy(draw) {
+  const copies = {
+    registered: "El sorteo de bienvenida corresponde a participantes que activaron correctamente su Pasaporte durante el período de inscripción.",
+    silver: "El próximo sorteo corresponde a participantes que alcancen el nivel Silver o superior, sujeto a validación.",
+    gold: "El próximo sorteo corresponde a participantes que alcancen el nivel Gold o superior, sujeto a validación.",
+    legend: "El sorteo Legend corresponde a participantes que completen los 12 sellos y alcancen el nivel Legend, sujeto a validación.",
+    finished: "La campaña llegó a su tramo final. Los anuncios oficiales se comunicarán en StanleyLovers Bolivia."
+  };
+  return copies[draw.key] || "Los horarios y anuncios oficiales se comunicarán en StanleyLovers Bolivia.";
+}
+
+function updateCampaignStatus() {
+  const phase = activeCampaignPhase();
+  const draw = nextCampaignDraw();
+  const drawDisplay = draw.display || "";
+  const phaseLabel = phase && phase.id ? `Fase ${phase.id}` : "Pasaporte Stanley";
+  const phaseStatus = phase.state === "closed" ? "cerrada" : phase.state === "upcoming" ? "por iniciar" : "en curso";
+  const drawLabels = { registered: "Bienvenida", silver: "Silver", gold: "Gold", legend: "Legend" };
+  const drawLabel = drawLabels[draw.key] || drawTitle(draw).replace("Sorteo ", "");
+
+  document.querySelectorAll("[data-now-phase]").forEach(el => {
+    el.innerHTML = `<strong>${phaseLabel}</strong> ${phaseStatus}`;
+  });
+  document.querySelectorAll("[data-now-draw]").forEach(el => {
+    el.innerHTML = draw.key === "finished"
+      ? `<strong>Estado:</strong> Ganadores y novedades finales se comunicarán en StanleyLovers Bolivia.`
+      : `<strong>Próximo sorteo:</strong> ${drawLabel}${drawDisplay ? ` · ${drawDisplay}` : ""}.`;
+  });
+  document.querySelectorAll("[data-now-legend]").forEach(el => {
+    el.innerHTML = `<strong>Meta Legend:</strong> completá tus sellos y llegá a Legend.`;
+  });
+
+  setText("[data-draw-kicker]", draw.key === "finished" ? "Estado de campaña" : "Próximo sorteo");
+  setText("[data-draw-title]", drawTitle(draw));
+  setText("[data-draw-copy]", drawCopy(draw));
+  setText("[data-draw-detail]", draw.key === "finished"
+    ? "Revisá StanleyLovers Bolivia para conocer ganadores, novedades y comunicaciones oficiales."
+    : "Completá tus sellos, seguí avanzando de nivel y apuntá a Legend para participar por Ediciones Especiales Stanley.");
+}
+
 function showError(msg) {
   if (!errorEl) return;
   errorEl.textContent = msg;
@@ -390,6 +481,7 @@ document.addEventListener("click", event => {
 
 updatePassportNavigation();
 applyCommunityLinks();
+updateCampaignStatus();
 
 const recoverForm = document.getElementById("recover-form");
 const recoverErrorEl = document.getElementById("recover-error");
