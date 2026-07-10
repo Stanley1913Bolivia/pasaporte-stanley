@@ -62,8 +62,8 @@ if (player && Object.prototype.hasOwnProperty.call(player, 'documento')) {
 
 const $ = sel => document.querySelector(sel);
 const setText = (sel, value) => { const el = $(sel); if (el) el.textContent = value; };
-const evidenceCount = () => Object.values(passport.evidence || {}).filter(Boolean).length;
 const isDone = mission => Boolean(passport.evidence && passport.evidence[mission.id]);
+const evidenceCount = () => MISSIONS.filter(isDone).length;
 const isDateLocked = mission => Boolean(mission.unlockAt && Date.now() < new Date(mission.unlockAt).getTime());
 const isLocked = mission => mission.week > CURRENT_WEEK || isDateLocked(mission);
 
@@ -487,7 +487,7 @@ function updateProgress() {
   renderNextObjective(count);
   
   
-  const bar = $('#passport-progress-bar');
+  const bar = $('#passport-progress-bar') || $('#pg-fill');
   if (bar) bar.style.width = `${level.pct}%`;
   const mini = $('#meter-progress-bar');
   if (mini) mini.style.width = `${level.pct}%`;
