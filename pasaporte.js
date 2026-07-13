@@ -576,10 +576,10 @@ async function generateNostradamusImage(state) {
     ctx.fillRect(x, 0, 70, canvas.height);
   }
   ctx.fillStyle = '#0b0b0b';
-  ctx.fillRect(70, 80, 430, 58);
+  ctx.fillRect(70, 109, 430, 58);
   ctx.fillStyle = '#d1b08d';
   ctx.font = '900 24px Montserrat, Arial';
-  ctx.fillText('PASAPORTE STANLEY 1913', 92, 118);
+  ctx.fillText('PASAPORTE STANLEY 1913', 92, 147);
 
   ctx.fillStyle = '#fff';
   ctx.font = '900 84px Montserrat, Arial';
