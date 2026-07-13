@@ -44,6 +44,38 @@ const CURRENT_WEEK = CURRENT_PHASE;
 const MAX_IMAGE_SIDE = 1600;
 const JPEG_QUALITY = 0.80;
 const MAX_UPLOAD_BYTES = 6 * 1024 * 1024;
+const NOSTRADAMUS_KEY = 'stanley_nostradamus_prediction';
+const NOSTRADAMUS_TEAMS = {
+  argentina: { name:'Argentina', abbr:'ARG', colors:['#74acdf','#fff','#74acdf'] },
+  france: { name:'Francia', abbr:'FRA', colors:['#1f4ea3','#fff','#e43d30'] },
+  spain: { name:'España', abbr:'ESP', colors:['#c60b1e','#ffc400','#c60b1e'] },
+  england: { name:'Inglaterra', abbr:'ING', colors:['#fff','#cf142b','#fff'] },
+  brazil: { name:'Brasil', abbr:'BRA', colors:['#009b3a','#ffdf00','#002776'] },
+  norway: { name:'Noruega', abbr:'NOR', colors:['#ba0c2f','#fff','#00205b'] },
+  capeverde: { name:'Cabo Verde', abbr:'CPV', colors:['#003893','#fff','#cf2027'] }
+};
+const NOSTRADAMUS_SEMIS = [
+  { id:'semi1', title:'Cruce 1', teams:['france','spain'] },
+  { id:'semi2', title:'Cruce 2', teams:['argentina','england'] }
+];
+const NOSTRADAMUS_SCORERS = [
+  { id:'messi', name:'Lionel Messi', team:'argentina' },
+  { id:'mbappe', name:'Kylian Mbappé', team:'france' },
+  { id:'kane', name:'Harry Kane', team:'england' },
+  { id:'dembele', name:'Ousmane Dembélé', team:'france' },
+  { id:'bellingham', name:'Jude Bellingham', team:'england' }
+];
+const NOSTRADAMUS_PLAYERS = [
+  ...NOSTRADAMUS_SCORERS,
+  { id:'yamal', name:'Lamine Yamal', team:'spain' },
+  { id:'vozinha', name:'Vozinha', team:'capeverde' },
+  { id:'julian', name:'Julián Álvarez', team:'argentina' },
+  { id:'haaland', name:'Erling Haaland', team:'norway' },
+  { id:'vinicius', name:'Vinicius Junior', team:'brazil' },
+  { id:'olise', name:'Michael Olise', team:'france' },
+  { id:'unai', name:'Unai Simón', team:'spain' }
+];
+let nostradamusShareFile = null;
 let passport = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{"evidence":{}}');
 let player = JSON.parse(localStorage.getItem('stanley_player') || '{}');
 if (!player.id && localStorage.getItem('participant_id')) player.id = localStorage.getItem('participant_id');
@@ -234,6 +266,358 @@ function renderEvidenceView(mission, evidence) {
     ? `<a class="evidence-preview" href="${previewHref}" target="_blank" rel="noopener" aria-label="Abrir evidencia completa de ${mission.name}"><img src="${evidence.dataUrl}" alt="Evidencia cargada para ${mission.name}" loading="lazy" /></a>`
     : `<div class="evidence-empty evidence-empty--uploaded"><strong>Evidencia registrada</strong><span>Vista previa no disponible en este dispositivo.</span></div>`;
   return preview;
+}
+
+function readNostradamusState() {
+  try {
+    return JSON.parse(localStorage.getItem(NOSTRADAMUS_KEY) || '{}');
+  } catch (err) {
+    console.warn('No se pudo leer Nostradamus desde localStorage.', err);
+    return {};
+  }
+}
+
+function saveNostradamusState(next) {
+  localStorage.setItem(NOSTRADAMUS_KEY, JSON.stringify(next || {}));
+}
+
+function teamLabel(teamId) {
+  const team = NOSTRADAMUS_TEAMS[teamId];
+  return team ? team.name : 'Pendiente';
+}
+
+function teamAbbr(teamId) {
+  const team = NOSTRADAMUS_TEAMS[teamId];
+  return team ? team.abbr : '--';
+}
+
+function playerLabel(playerId, list) {
+  const player = list.find(item => item.id === playerId);
+  if (!player) return 'Pendiente';
+  return `${player.name} · ${teamAbbr(player.team)}`;
+}
+
+function nostradamusFinalists(state) {
+  return [state.semi1, state.semi2].filter(Boolean);
+}
+
+function scoreOptions(selected) {
+  return Array.from({ length: 10 }, (_, value) => `<option value="${value}" ${String(selected ?? '') === String(value) ? 'selected' : ''}>${value}</option>`).join('');
+}
+
+function playerOptions(list, selected) {
+  return `<option value="">Elegí una opción...</option>${list.map(player => `<option value="${player.id}" ${selected === player.id ? 'selected' : ''}>${player.name} · ${teamAbbr(player.team)}</option>`).join('')}`;
+}
+
+function flagMarkup(teamId) {
+  const team = NOSTRADAMUS_TEAMS[teamId];
+  if (!team) return '<span class="nostra-flag nostra-flag--empty"></span>';
+  return `<span class="nostra-flag nostra-flag--${teamId}" aria-hidden="true"><i></i></span>`;
+}
+
+function teamChoiceMarkup(teamId, active, attrs) {
+  const team = NOSTRADAMUS_TEAMS[teamId];
+  return `
+    <button class="nostra-team ${active ? 'is-active' : ''}" type="button" ${attrs} data-team="${teamId}">
+      ${flagMarkup(teamId)}
+      <strong>${team.name}</strong>
+      <small>${team.abbr}</small>
+    </button>
+  `;
+}
+
+function validateNostradamus(state) {
+  const finalists = nostradamusFinalists(state);
+  if (finalists.length < 2) return 'Elegí un ganador por semifinal para definir la Final.';
+  if (!state.champion || !finalists.includes(state.champion)) return 'Elegí un campeón entre tus dos finalistas.';
+  if (!state.scorer) return 'Elegí quién será el máximo goleador.';
+  if (!state.bestPlayer) return 'Elegí quién será el mejor jugador del torneo.';
+  if (state.score1 === undefined || state.score1 === '' || state.score2 === undefined || state.score2 === '') return 'Completá el marcador previsto de la Final.';
+  const score1 = Number(state.score1);
+  const score2 = Number(state.score2);
+  if (score1 === score2) return 'Elegí un marcador con un ganador. Para esta misión, registrá el resultado final del partido.';
+  const winner = score1 > score2 ? finalists[0] : finalists[1];
+  if (winner !== state.champion) return 'El marcador no coincide con el campeón seleccionado.';
+  return '';
+}
+
+function isIncompleteNostradamus(error) {
+  return [
+    'Elegí un ganador por semifinal para definir la Final.',
+    'Elegí un campeón entre tus dos finalistas.',
+    'Elegí quién será el máximo goleador.',
+    'Elegí quién será el mejor jugador del torneo.',
+    'Completá el marcador previsto de la Final.'
+  ].includes(error);
+}
+
+function renderNostradamusBuilder() {
+  const state = readNostradamusState();
+  const finalists = nostradamusFinalists(state);
+  const championOptions = finalists.length === 2
+    ? finalists.map(teamId => teamChoiceMarkup(teamId, state.champion === teamId, 'data-nostra-champion')).join('')
+    : '<p class="nostra-empty">Primero elegí los ganadores de las dos semifinales.</p>';
+  const scoreReady = finalists.length === 2;
+  const status = validateNostradamus(state);
+
+  return `
+    <section class="nostradamus-builder" data-nostradamus>
+      <div class="nostra-hero">
+        <div>
+          <span>Nostradamus Stanley</span>
+          <h4>Armá tu pronóstico y generá tu historia</h4>
+          <p>Publicá tu historia en Instagram, etiquetá a @Stanley1913_Bolivia y subí la captura como evidencia para obtener tu sello.</p>
+        </div>
+        <div class="nostra-ball" aria-hidden="true"></div>
+      </div>
+
+      <div class="nostra-step">
+        <h5>Elegí quién avanza a la Final</h5>
+        <div class="nostra-semis">
+          ${NOSTRADAMUS_SEMIS.map(match => `
+            <article class="nostra-match">
+              <span>${match.title}</span>
+              <div class="nostra-team-grid">
+                ${match.teams.map(teamId => teamChoiceMarkup(teamId, state[match.id] === teamId, `data-nostra-semi="${match.id}"`)).join('')}
+              </div>
+            </article>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="nostra-step">
+        <h5>¿Quién será campeón?</h5>
+        <div class="nostra-team-grid nostra-team-grid--champion">${championOptions}</div>
+      </div>
+
+      <div class="nostra-step nostra-fields">
+        <label>
+          <span>¿Quién será el máximo goleador?</span>
+          <select data-nostra-field="scorer">${playerOptions(NOSTRADAMUS_SCORERS, state.scorer)}</select>
+        </label>
+        <label>
+          <span>¿Quién será el mejor jugador del torneo?</span>
+          <select data-nostra-field="bestPlayer">${playerOptions(NOSTRADAMUS_PLAYERS, state.bestPlayer)}</select>
+        </label>
+      </div>
+
+      <div class="nostra-step">
+        <h5>¿Cómo terminará la Final?</h5>
+        <div class="nostra-score">
+          <label><span>${flagMarkup(finalists[0])}${teamLabel(finalists[0])}</span><select data-nostra-field="score1" ${scoreReady ? '' : 'disabled'}>${scoreOptions(state.score1)}</select></label>
+          <strong>VS.</strong>
+          <label><span>${flagMarkup(finalists[1])}${teamLabel(finalists[1])}</span><select data-nostra-field="score2" ${scoreReady ? '' : 'disabled'}>${scoreOptions(state.score2)}</select></label>
+        </div>
+      </div>
+
+      <div class="nostra-summary">
+        <span>Mi pronóstico Nostradamus</span>
+        <p><strong>Final:</strong> ${flagMarkup(finalists[0])}${teamLabel(finalists[0])} vs. ${teamLabel(finalists[1])}${flagMarkup(finalists[1])}</p>
+        <p><strong>Campeón:</strong> ${flagMarkup(state.champion)}${teamLabel(state.champion)}</p>
+        <p><strong>Marcador:</strong> ${state.score1 ?? '-'} - ${state.score2 ?? '-'}</p>
+        <p><strong>Máximo goleador:</strong> ${playerLabel(state.scorer, NOSTRADAMUS_SCORERS)}</p>
+        <p><strong>Mejor jugador:</strong> ${playerLabel(state.bestPlayer, NOSTRADAMUS_PLAYERS)}</p>
+        <small data-nostra-message>${status || 'Listo para generar tu historia.'}</small>
+      </div>
+
+      <div class="nostra-actions">
+        <button class="gb-btn" type="button" data-nostra-generate>Generar mi historia</button>
+        <button class="gb-btn gb-btn--secondary" type="button" data-nostra-share disabled>Compartir mi pronóstico</button>
+        <a class="gb-btn gb-btn--secondary" data-nostra-download download="nostradamus-stanley.png" hidden>Descargar imagen</a>
+        <button class="gb-btn gb-btn--secondary" type="button" data-nostra-upload>Ya la publiqué, subir evidencia</button>
+      </div>
+      <div class="nostra-preview" data-nostra-preview hidden></div>
+      <p class="nostra-note">La etiqueta debe verse en la captura de pantalla. El sello se desbloquea únicamente cuando subís la evidencia.</p>
+    </section>
+  `;
+}
+
+function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight) {
+  const words = String(text || '').split(/\s+/);
+  let line = '';
+  words.forEach(word => {
+    const test = line ? `${line} ${word}` : word;
+    if (ctx.measureText(test).width > maxWidth && line) {
+      ctx.fillText(line, x, y);
+      line = word;
+      y += lineHeight;
+    } else {
+      line = test;
+    }
+  });
+  if (line) ctx.fillText(line, x, y);
+  return y;
+}
+
+function drawRoundRect(ctx, x, y, w, h, r) {
+  const radius = Math.min(r, w / 2, h / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.arcTo(x + w, y, x + w, y + h, radius);
+  ctx.arcTo(x + w, y + h, x, y + h, radius);
+  ctx.arcTo(x, y + h, x, y, radius);
+  ctx.arcTo(x, y, x + w, y, radius);
+  ctx.closePath();
+}
+
+function drawFlag(ctx, teamId, x, y, w, h) {
+  const team = NOSTRADAMUS_TEAMS[teamId];
+  if (!team) return;
+  ctx.save();
+  drawRoundRect(ctx, x, y, w, h, 12);
+  ctx.clip();
+  const colors = team.colors;
+  if (teamId === 'england') {
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(x, y, w, h);
+    ctx.fillStyle = '#cf142b';
+    ctx.fillRect(x + w * .42, y, w * .16, h);
+    ctx.fillRect(x, y + h * .40, w, h * .20);
+  } else {
+    colors.forEach((color, index) => {
+      ctx.fillStyle = color;
+      if (teamId === 'france' || teamId === 'norway') ctx.fillRect(x + (w / colors.length) * index, y, w / colors.length, h);
+      else ctx.fillRect(x, y + (h / colors.length) * index, w, h / colors.length);
+    });
+  }
+  ctx.restore();
+}
+
+function drawBall(ctx, x, y, r) {
+  ctx.save();
+  ctx.fillStyle = '#f8f3ea';
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = '#111';
+  ctx.lineWidth = 6;
+  ctx.stroke();
+  ctx.fillStyle = '#111';
+  ctx.beginPath();
+  ctx.moveTo(x, y - r * .42);
+  for (let i = 0; i < 5; i++) {
+    const a = -Math.PI / 2 + i * Math.PI * 2 / 5;
+    ctx.lineTo(x + Math.cos(a) * r * .24, y + Math.sin(a) * r * .24);
+    const b = a + Math.PI / 5;
+    ctx.lineTo(x + Math.cos(b) * r * .42, y + Math.sin(b) * r * .42);
+  }
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
+function canvasToPngBlob(canvas) {
+  return new Promise((resolve, reject) => {
+    try {
+      canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('No pudimos generar la imagen.')), 'image/png', 1);
+    } catch (err) {
+      reject(err);
+    }
+  });
+}
+
+async function generateNostradamusImage(state) {
+  const error = validateNostradamus(state);
+  if (error) throw new Error(isIncompleteNostradamus(error) ? 'Completá todos tus pronósticos para generar tu historia.' : error);
+  const finalists = nostradamusFinalists(state);
+  const canvas = document.createElement('canvas');
+  canvas.width = 1080;
+  canvas.height = 1920;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('Tu navegador no permitió generar la imagen.');
+
+  ctx.fillStyle = '#00a66f';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  for (let x = -120; x < canvas.width; x += 180) {
+    ctx.fillStyle = 'rgba(0,0,0,.05)';
+    ctx.fillRect(x, 0, 70, canvas.height);
+  }
+  ctx.fillStyle = '#0b0b0b';
+  ctx.fillRect(70, 80, 430, 58);
+  ctx.fillStyle = '#d1b08d';
+  ctx.font = '900 24px Montserrat, Arial';
+  ctx.fillText('PASAPORTE STANLEY 1913', 92, 118);
+  drawBall(ctx, 930, 145, 72);
+
+  ctx.fillStyle = '#fff';
+  ctx.font = '900 88px Montserrat, Arial';
+  wrapCanvasText(ctx, 'MI PRONÓSTICO NOSTRADAMUS', 70, 280, 920, 92);
+
+  const ig = normalizedIg(player && player.instagram);
+  if (ig) {
+    ctx.fillStyle = '#111';
+    drawRoundRect(ctx, 70, 390, 330, 54, 27);
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.font = '800 26px Montserrat, Arial';
+    ctx.fillText(ig, 96, 426);
+  }
+
+  drawRoundRect(ctx, 70, 485, 940, 940, 34);
+  ctx.fillStyle = 'rgba(255,255,255,.94)';
+  ctx.fill();
+  ctx.fillStyle = '#b99a78';
+  ctx.font = '900 28px Montserrat, Arial';
+  ctx.fillText('FINAL', 120, 560);
+  drawFlag(ctx, finalists[0], 120, 600, 120, 78);
+  drawFlag(ctx, finalists[1], 840, 600, 120, 78);
+  ctx.fillStyle = '#111';
+  ctx.font = '900 58px Montserrat, Arial';
+  ctx.fillText(teamLabel(finalists[0]).toUpperCase(), 120, 750);
+  ctx.textAlign = 'right';
+  ctx.fillText(teamLabel(finalists[1]).toUpperCase(), 960, 750);
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#00a66f';
+  ctx.font = '900 54px Montserrat, Arial';
+  ctx.fillText('VS.', 540, 735);
+  ctx.fillStyle = '#111';
+  ctx.font = '900 110px Montserrat, Arial';
+  ctx.fillText(`${state.score1} - ${state.score2}`, 540, 920);
+  ctx.textAlign = 'left';
+
+  const rows = [
+    ['CAMPEÓN', `${teamLabel(state.champion)}`],
+    ['MÁXIMO GOLEADOR', playerLabel(state.scorer, NOSTRADAMUS_SCORERS)],
+    ['MEJOR JUGADOR', playerLabel(state.bestPlayer, NOSTRADAMUS_PLAYERS)]
+  ];
+  let y = 1040;
+  rows.forEach(([label, value]) => {
+    ctx.fillStyle = '#b99a78';
+    ctx.font = '900 24px Montserrat, Arial';
+    ctx.fillText(label, 120, y);
+    ctx.fillStyle = '#111';
+    ctx.font = '900 42px Montserrat, Arial';
+    wrapCanvasText(ctx, value, 120, y + 54, 820, 48);
+    y += 150;
+  });
+
+  drawRoundRect(ctx, 70, 1510, 940, 210, 30);
+  ctx.fillStyle = '#111';
+  ctx.fill();
+  ctx.fillStyle = '#fff';
+  ctx.font = '900 42px Montserrat, Arial';
+  ctx.fillText('La recta final se vive con Stanley.', 120, 1585);
+  ctx.fillStyle = '#d1b08d';
+  ctx.font = '800 30px Montserrat, Arial';
+  wrapCanvasText(ctx, 'Compartilo y etiquetá a @Stanley1913_Bolivia', 120, 1645, 790, 38);
+
+  ctx.strokeStyle = '#d1b08d';
+  ctx.lineWidth = 5;
+  drawRoundRect(ctx, 735, 150, 250, 250, 24);
+  ctx.stroke();
+  ctx.fillStyle = '#fff';
+  ctx.font = '900 42px Montserrat, Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('NOSTRA', 860, 255);
+  ctx.fillText('DAMUS', 860, 305);
+  ctx.fillStyle = '#d1b08d';
+  ctx.font = '800 24px Montserrat, Arial';
+  ctx.fillText('STANLEY', 860, 350);
+  ctx.textAlign = 'left';
+
+  const blob = await canvasToPngBlob(canvas);
+  const dataUrl = canvas.toDataURL('image/png');
+  return { blob, dataUrl };
 }
 
 function phaseMeta(phase) {
@@ -567,7 +951,7 @@ function renderMissions() {
       const specialLocked = locked && mission.specialLock;
       const article = document.createElement('article');
       article.id = mission.id;
-      article.className = `mission-card phase-${phase} ${specialLocked ? 'special-locked' : done ? 'done' : locked ? 'locked' : dailyBlocked ? 'daily-blocked' : 'available'}`;
+      article.className = `mission-card phase-${phase} ${mission.id === 'm10' && !locked && !done ? 'nostradamus-active' : ''} ${specialLocked ? 'special-locked' : done ? 'done' : locked ? 'locked' : dailyBlocked ? 'daily-blocked' : 'available'}`;
       article.innerHTML = `
         <div class="mission-copy">
           <div class="mission-copy-head">
@@ -582,6 +966,7 @@ function renderMissions() {
           <div class="mission-instructions ${locked && !specialLocked ? 'blurred' : ''}">
             ${specialLocked ? 'Andá preparando tus pronósticos mundialeros. Sólo durante la recta final del Mundial.' : locked ? 'Características e instrucciones bloqueadas.' : mission.instructions}
           </div>
+          ${mission.id === 'm10' && !locked && !done ? renderNostradamusBuilder() : ''}
           <span class="mission-state-pill">${done ? '✓ SELLO OBTENIDO' : specialLocked ? 'Disponible el 13 de julio' : locked ? 'Carga bloqueada hasta su fase' : dailyBlocked ? 'Volvé mañana para completar más misiones' : 'Sello desbloqueado'}</span>
           <div class="mission-completed-stamp">
             ${done ? stamp(mission, 'card') : ''}
@@ -600,6 +985,127 @@ function renderMissions() {
       list.appendChild(article);
     });
     wrap.appendChild(group);
+  });
+}
+
+function refreshNostradamus() {
+  renderAll();
+  const target = document.getElementById('m10');
+  if (target) target.scrollIntoView({ block:'center' });
+}
+
+function setNostradamusMessage(message, state = 'info') {
+  const el = document.querySelector('[data-nostra-message]');
+  if (!el) return;
+  el.textContent = message;
+  el.dataset.state = state;
+}
+
+function bindNostradamus() {
+  document.addEventListener('click', async event => {
+    const semi = event.target.closest('[data-nostra-semi]');
+    if (semi) {
+      const state = readNostradamusState();
+      const matchId = semi.dataset.nostraSemi;
+      state[matchId] = semi.dataset.team;
+      const finalists = [state.semi1, state.semi2].filter(Boolean);
+      if (!finalists.includes(state.champion)) state.champion = '';
+      saveNostradamusState(state);
+      refreshNostradamus();
+      return;
+    }
+
+    const champion = event.target.closest('[data-nostra-champion]');
+    if (champion) {
+      const state = readNostradamusState();
+      const finalists = nostradamusFinalists(state);
+      if (!finalists.includes(champion.dataset.team)) return;
+      state.champion = champion.dataset.team;
+      saveNostradamusState(state);
+      refreshNostradamus();
+      return;
+    }
+
+    const generate = event.target.closest('[data-nostra-generate]');
+    if (generate) {
+      const state = readNostradamusState();
+      const error = validateNostradamus(state);
+      if (error) {
+        setNostradamusMessage(isIncompleteNostradamus(error) ? 'Completá todos tus pronósticos para generar tu historia.' : error, 'error');
+        return;
+      }
+      generate.disabled = true;
+      generate.textContent = 'Generando...';
+      try {
+        const image = await generateNostradamusImage(state);
+        try {
+          nostradamusShareFile = new File([image.blob], 'nostradamus-stanley.png', { type:'image/png' });
+        } catch (fileErr) {
+          console.warn('El navegador no permite preparar archivo para compartir; queda disponible descarga.', fileErr);
+          nostradamusShareFile = null;
+        }
+        const preview = document.querySelector('[data-nostra-preview]');
+        const download = document.querySelector('[data-nostra-download]');
+        const share = document.querySelector('[data-nostra-share]');
+        if (preview) {
+          preview.hidden = false;
+          preview.innerHTML = `<img src="${image.dataUrl}" alt="Historia generada Nostradamus Stanley">`;
+        }
+        if (download) {
+          download.hidden = false;
+          download.href = image.dataUrl;
+        }
+        if (share) share.disabled = false;
+        setNostradamusMessage('Historia generada. Compartila en Instagram y luego subí la captura como evidencia.', 'success');
+      } catch (err) {
+        console.error('Error generando historia Nostradamus:', err);
+        setNostradamusMessage(err && err.message ? err.message : 'No pudimos generar la historia. Intentá nuevamente.', 'error');
+      } finally {
+        generate.disabled = false;
+        generate.textContent = 'Generar mi historia';
+      }
+      return;
+    }
+
+    const share = event.target.closest('[data-nostra-share]');
+    if (share) {
+      try {
+        if (nostradamusShareFile && navigator.canShare && navigator.canShare({ files:[nostradamusShareFile] }) && navigator.share) {
+          await navigator.share({
+            files:[nostradamusShareFile],
+            title:'Mi pronóstico Nostradamus Stanley',
+            text:'La recta final se vive con Stanley.'
+          });
+          setNostradamusMessage('Listo. Después de publicarla, subí la captura como evidencia.', 'success');
+        } else {
+          const download = document.querySelector('[data-nostra-download]');
+          if (download && download.href) download.click();
+          setNostradamusMessage('Tu navegador no permite compartir archivos directamente. Descargá la imagen y subila a Instagram.', 'info');
+        }
+      } catch (err) {
+        console.error('Error compartiendo historia Nostradamus:', err);
+        setNostradamusMessage('No pudimos compartir directamente. Usá Descargar imagen y publicala en Instagram.', 'error');
+      }
+      return;
+    }
+
+    const upload = event.target.closest('[data-nostra-upload]');
+    if (upload) {
+      const input = document.querySelector('input[type="file"][data-mission="m10"]');
+      const mission = document.getElementById('m10');
+      if (mission) mission.scrollIntoView({ behavior:'smooth', block:'center' });
+      if (input && !input.disabled) setTimeout(() => input.click(), 240);
+      else setNostradamusMessage('La carga de evidencia no está disponible en este momento.', 'error');
+    }
+  });
+
+  document.addEventListener('change', event => {
+    const field = event.target.closest('[data-nostra-field]');
+    if (!field) return;
+    const state = readNostradamusState();
+    state[field.dataset.nostraField] = field.value;
+    saveNostradamusState(state);
+    renderAll();
   });
 }
 
@@ -670,6 +1176,7 @@ if (sharePassportButton) {
   });
 }
 
+bindNostradamus();
 bindUploads();
 renderAll();
 hydratePassportFromBackend().then(renderAll);

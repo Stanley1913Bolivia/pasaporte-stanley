@@ -3024,3 +3024,306 @@ section:has(#stamps-grid) h3{
 .mission-board :is(.mission-list,.missions-list) .mission-card.special-locked .mission-evidence{
   background:rgba(255,255,255,.48)!important;
 }
+
+/* Nostradamus Stanley */
+.mission-board :is(.mission-list,.missions-list) .mission-card.nostradamus-active{
+  height:auto!important;
+  min-height:0!important;
+  align-items:start!important;
+  overflow:visible!important;
+  border-color:rgba(185,154,120,.55)!important;
+  background:linear-gradient(145deg,#fffaf1,#f5ead8)!important;
+}
+.mission-board :is(.mission-list,.missions-list) .mission-card.nostradamus-active .mission-copy{
+  overflow:visible!important;
+}
+.nostradamus-builder{
+  margin-top:18px;
+  display:grid;
+  gap:16px;
+  color:#20383a;
+}
+.nostra-hero,
+.nostra-step,
+.nostra-summary{
+  border:1px solid rgba(185,154,120,.35);
+  border-radius:14px;
+  background:rgba(255,255,255,.72);
+  padding:16px;
+}
+.nostra-hero{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  background:#00a66f;
+  color:#fff;
+  overflow:hidden;
+  position:relative;
+}
+.nostra-hero::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:repeating-linear-gradient(90deg,rgba(0,0,0,.06) 0 56px,transparent 56px 112px);
+  pointer-events:none;
+}
+.nostra-hero>*{
+  position:relative;
+  z-index:1;
+}
+.nostra-hero span,
+.nostra-summary span{
+  display:inline-block;
+  font-family:'Montserrat',sans-serif;
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.8px;
+  text-transform:uppercase;
+}
+.nostra-hero h4{
+  margin:5px 0;
+  font-family:'Montserrat',sans-serif;
+  font-size:24px;
+  font-weight:900;
+  line-height:1.05;
+  text-transform:uppercase;
+}
+.nostra-hero p,
+.nostra-step p,
+.nostra-note{
+  margin:0;
+  line-height:1.45;
+}
+.nostra-ball{
+  width:68px;
+  height:68px;
+  flex:0 0 68px;
+  border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#fff 0 38%,#111 39% 45%,#fff 46% 100%);
+  border:4px solid #111;
+  box-shadow:0 14px 28px rgba(0,0,0,.18);
+  animation:nostra-float 2.8s ease-in-out infinite;
+}
+@keyframes nostra-float{
+  0%,100%{transform:translateY(0) rotate(-4deg)}
+  50%{transform:translateY(-7px) rotate(5deg)}
+}
+.nostra-step h5{
+  margin:0 0 12px;
+  font-family:'Montserrat',sans-serif;
+  font-size:17px;
+  font-weight:900;
+  color:#111;
+}
+.nostra-semis{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+.nostra-match>span{
+  display:block;
+  margin-bottom:8px;
+  color:#9b7b55;
+  font-family:'Montserrat',sans-serif;
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.7px;
+  text-transform:uppercase;
+}
+.nostra-team-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+.nostra-team{
+  display:grid;
+  justify-items:center;
+  gap:7px;
+  min-height:112px;
+  border:2px solid rgba(0,166,115,.18);
+  border-radius:14px;
+  background:#fff;
+  color:#111;
+  padding:13px 10px;
+  cursor:pointer;
+  font-family:'Montserrat',sans-serif;
+  font-weight:900;
+  transition:transform .14s ease,border-color .14s ease,box-shadow .14s ease,background .14s ease;
+}
+.nostra-team:hover,
+.nostra-team:focus-visible{
+  transform:translateY(-1px);
+  border-color:#00a66f;
+  outline:0;
+}
+.nostra-team.is-active{
+  border-color:#00a66f;
+  background:#e9f8f2;
+  box-shadow:0 12px 26px rgba(0,166,115,.15);
+}
+.nostra-team small{
+  color:#7b8b8d;
+}
+.nostra-empty{
+  grid-column:1/-1;
+  margin:0;
+  color:#6d7779;
+  font-weight:700;
+}
+.nostra-flag{
+  width:42px;
+  height:28px;
+  display:inline-block;
+  border:1px solid rgba(0,0,0,.16);
+  border-radius:5px;
+  overflow:hidden;
+  box-shadow:0 2px 6px rgba(0,0,0,.08);
+  vertical-align:middle;
+  margin-right:7px;
+}
+.nostra-team .nostra-flag{
+  margin-right:0;
+  width:52px;
+  height:34px;
+}
+.nostra-flag--argentina{background:linear-gradient(#74acdf 0 33%,#fff 33% 66%,#74acdf 66%)}
+.nostra-flag--france{background:linear-gradient(90deg,#1f4ea3 0 33%,#fff 33% 66%,#e43d30 66%)}
+.nostra-flag--spain{background:linear-gradient(#c60b1e 0 25%,#ffc400 25% 75%,#c60b1e 75%)}
+.nostra-flag--england{background:linear-gradient(#fff,#fff);position:relative}
+.nostra-flag--england::before{content:"";position:absolute;left:42%;top:0;width:16%;height:100%;background:#cf142b}
+.nostra-flag--england::after{content:"";position:absolute;left:0;top:40%;width:100%;height:20%;background:#cf142b}
+.nostra-flag--brazil{background:linear-gradient(#009b3a 0 33%,#ffdf00 33% 66%,#002776 66%)}
+.nostra-flag--norway{background:linear-gradient(90deg,#ba0c2f 0 33%,#fff 33% 66%,#00205b 66%)}
+.nostra-flag--capeverde{background:linear-gradient(#003893 0 40%,#fff 40% 50%,#cf2027 50% 58%,#fff 58% 68%,#003893 68%)}
+.nostra-fields{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+.nostra-fields label,
+.nostra-score label{
+  display:grid;
+  gap:8px;
+  font-weight:900;
+}
+.nostra-fields span,
+.nostra-score span{
+  color:#111;
+}
+.nostra-fields select,
+.nostra-score select{
+  width:100%;
+  border:1px solid rgba(185,154,120,.55);
+  border-radius:10px;
+  background:#fff;
+  padding:12px;
+  color:#111;
+  font:800 14px 'Montserrat',sans-serif;
+}
+.nostra-score{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+  gap:12px;
+  align-items:end;
+}
+.nostra-score strong{
+  padding-bottom:13px;
+  color:#00a66f;
+  font-family:'Montserrat',sans-serif;
+  font-weight:900;
+}
+.nostra-summary{
+  background:#111;
+  color:#fff;
+}
+.nostra-summary span{
+  color:#d1b08d;
+}
+.nostra-summary p{
+  margin:8px 0;
+  line-height:1.35;
+}
+.nostra-summary small{
+  display:block;
+  margin-top:10px;
+  border-radius:999px;
+  background:rgba(255,255,255,.12);
+  padding:9px 12px;
+  font-weight:900;
+}
+.nostra-summary small[data-state="error"]{
+  background:#ffe5df;
+  color:#a32714;
+}
+.nostra-summary small[data-state="success"]{
+  background:#e3f7ef;
+  color:#007349;
+}
+.nostra-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+.nostra-actions .gb-btn{
+  min-height:40px;
+}
+.nostra-actions .gb-btn[disabled]{
+  opacity:.55;
+  cursor:not-allowed;
+}
+.nostra-preview{
+  border-radius:16px;
+  background:#111;
+  padding:12px;
+  max-width:260px;
+}
+.nostra-preview img{
+  display:block;
+  width:100%;
+  border-radius:10px;
+}
+.nostra-note{
+  border-left:4px solid #b99a78;
+  border-radius:10px;
+  background:rgba(255,255,255,.72);
+  padding:12px 14px;
+  color:#37494c;
+  font-weight:800;
+}
+@media(max-width:900px){
+  .nostra-semis,
+  .nostra-fields{
+    grid-template-columns:1fr;
+  }
+}
+@media(max-width:760px){
+  .mission-board :is(.mission-list,.missions-list) .mission-card.nostradamus-active{
+    overflow:hidden!important;
+  }
+  .nostra-hero{
+    align-items:flex-start;
+  }
+  .nostra-hero h4{
+    font-size:21px;
+  }
+  .nostra-ball{
+    width:52px;
+    height:52px;
+    flex-basis:52px;
+  }
+  .nostra-team-grid,
+  .nostra-score{
+    grid-template-columns:1fr;
+  }
+  .nostra-score strong{
+    padding:0;
+    text-align:center;
+  }
+  .nostra-actions .gb-btn{
+    width:100%;
+  }
+  .nostra-preview{
+    max-width:100%;
+  }
+}
