@@ -670,11 +670,9 @@ async function generateNostradamusImage(state) {
   ctx.fillText(championName, 540, 1167);
   ctx.textAlign = 'left';
 
-  const scorer = NOSTRADAMUS_SCORERS.find(item => item.id === state.scorer);
-  const bestPlayer = NOSTRADAMUS_PLAYERS.find(item => item.id === state.bestPlayer);
   const cards = [
-    { x:70, label:'MÁXIMO GOLEADOR', icon:'ball', value:playerLabel(state.scorer, NOSTRADAMUS_SCORERS), code:scorer ? teamAbbr(scorer.team) : '' },
-    { x:555, label:'MEJOR JUGADOR', icon:'star', value:playerLabel(state.bestPlayer, NOSTRADAMUS_PLAYERS), code:bestPlayer ? teamAbbr(bestPlayer.team) : '' }
+    { x:70, label:'MÁXIMO GOLEADOR', icon:'ball', value:playerLabel(state.scorer, NOSTRADAMUS_SCORERS) },
+    { x:555, label:'MEJOR JUGADOR', icon:'star', value:playerLabel(state.bestPlayer, NOSTRADAMUS_PLAYERS) }
   ];
   cards.forEach(card => {
     drawRoundRect(ctx, card.x, 1250, 455, 185, 26);
@@ -703,11 +701,8 @@ async function generateNostradamusImage(state) {
       drawBall(ctx, card.x + 388, 1300, 25);
     }
     ctx.fillStyle = '#111';
-    fitTextToWidth(ctx, card.value, 340, 36, 24);
-    wrapCanvasText(ctx, card.value, card.x + 34, 1368, 335, 40);
-    ctx.fillStyle = '#6d7779';
-    ctx.font = '900 22px Montserrat, Arial';
-    ctx.fillText(card.code, card.x + 34, 1410);
+    fitTextToWidth(ctx, card.value, 350, 36, 24);
+    wrapCanvasText(ctx, card.value, card.x + 34, 1376, 350, 40);
   });
 
   drawRoundRect(ctx, 70, 1488, 940, 206, 30);
