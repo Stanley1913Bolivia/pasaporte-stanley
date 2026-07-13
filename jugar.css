@@ -3283,6 +3283,53 @@ section:has(#stamps-grid) h3{
   width:100%;
   border-radius:10px;
 }
+.nostra-generating{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  border:1px solid rgba(0,166,115,.22);
+  border-radius:16px;
+  background:#fffaf1;
+  padding:14px 16px;
+  color:#111;
+  font-family:'Montserrat',sans-serif;
+  font-weight:900;
+}
+.nostra-generating[hidden]{
+  display:none;
+}
+.nostra-spin-ball{
+  width:42px;
+  height:42px;
+  flex:0 0 42px;
+  border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#fff 0 38%,#111 39% 45%,#fff 46% 100%);
+  border:3px solid #111;
+  animation:nostra-spin .75s linear infinite;
+}
+.nostra-stamp-pop{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:42px;
+  border:2px solid #00a66f;
+  border-radius:999px;
+  padding:8px 16px;
+  color:#00a66f;
+  text-transform:uppercase;
+  letter-spacing:.6px;
+  transform:scale(.92) rotate(-2deg);
+  animation:nostra-stamp-pop 1s cubic-bezier(.2,.8,.2,1) both;
+}
+@keyframes nostra-spin{
+  to{transform:rotate(360deg)}
+}
+@keyframes nostra-stamp-pop{
+  0%{opacity:0;transform:scale(1.35) rotate(-8deg)}
+  45%{opacity:1;transform:scale(.88) rotate(-2deg)}
+  70%{transform:scale(1.03) rotate(-2deg)}
+  100%{opacity:1;transform:scale(1) rotate(-2deg)}
+}
 .nostra-note{
   border-left:4px solid #b99a78;
   border-radius:10px;

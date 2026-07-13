@@ -427,6 +427,10 @@ function renderNostradamusBuilder() {
         <button class="gb-btn gb-btn--secondary" type="button" data-nostra-upload>Ya la publiqué, subir evidencia</button>
       </div>
       <div class="nostra-preview" data-nostra-preview hidden></div>
+      <div class="nostra-generating" data-nostra-generating hidden>
+        <span class="nostra-spin-ball" aria-hidden="true"></span>
+        <span class="nostra-stamp-pop" aria-hidden="true">Nostradamus Stanley</span>
+      </div>
       <p class="nostra-note">La etiqueta debe verse en la captura de pantalla. El sello se desbloquea únicamente cuando subís la evidencia.</p>
     </section>
   `;
@@ -449,6 +453,18 @@ function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight) {
   return y;
 }
 
+function fitTextToWidth(ctx, text, maxWidth, maxFontSize, minFontSize, weight = 900) {
+  let size = maxFontSize;
+  const family = 'Montserrat, Arial';
+  do {
+    ctx.font = `${weight} ${size}px ${family}`;
+    if (ctx.measureText(text).width <= maxWidth) return size;
+    size -= 2;
+  } while (size >= minFontSize);
+  ctx.font = `${weight} ${minFontSize}px ${family}`;
+  return minFontSize;
+}
+
 function drawRoundRect(ctx, x, y, w, h, r) {
   const radius = Math.min(r, w / 2, h / 2);
   ctx.beginPath();
@@ -458,6 +474,25 @@ function drawRoundRect(ctx, x, y, w, h, r) {
   ctx.arcTo(x, y + h, x, y, radius);
   ctx.arcTo(x, y, x + w, y, radius);
   ctx.closePath();
+}
+
+function loadCanvasImage(src) {
+  return new Promise(resolve => {
+    if (!src) return resolve(null);
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => resolve(null);
+    image.src = src;
+  });
+}
+
+function drawImageContain(ctx, image, x, y, w, h) {
+  if (!image) return false;
+  const scale = Math.min(w / image.naturalWidth, h / image.naturalHeight);
+  const dw = image.naturalWidth * scale;
+  const dh = image.naturalHeight * scale;
+  ctx.drawImage(image, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
+  return true;
 }
 
 function drawFlag(ctx, teamId, x, y, w, h) {
@@ -520,6 +555,14 @@ async function generateNostradamusImage(state) {
   const error = validateNostradamus(state);
   if (error) throw new Error(isIncompleteNostradamus(error) ? 'Completá todos tus pronósticos para generar tu historia.' : error);
   const finalists = nostradamusFinalists(state);
+  const stampAssets = await Promise.all([
+    loadCanvasImage('assets/sellos/01-sello.png'),
+    loadCanvasImage('assets/sellos/02-sello.png'),
+    loadCanvasImage('assets/sellos/03-sello.png'),
+    loadCanvasImage('assets/sellos/04-sello.png'),
+    loadCanvasImage('assets/sellos/10-sello.png')
+  ]);
+  const nostraStamp = stampAssets[4];
   const canvas = document.createElement('canvas');
   canvas.width = 1080;
   canvas.height = 1920;
@@ -537,83 +580,167 @@ async function generateNostradamusImage(state) {
   ctx.fillStyle = '#d1b08d';
   ctx.font = '900 24px Montserrat, Arial';
   ctx.fillText('PASAPORTE STANLEY 1913', 92, 118);
-  drawBall(ctx, 930, 145, 72);
 
   ctx.fillStyle = '#fff';
-  ctx.font = '900 88px Montserrat, Arial';
-  wrapCanvasText(ctx, 'MI PRONÓSTICO NOSTRADAMUS', 70, 280, 920, 92);
+  ctx.font = '900 84px Montserrat, Arial';
+  ctx.fillText('MI PRONÓSTICO', 70, 272);
+  ctx.fillText('NOSTRADAMUS', 70, 360);
+
+  ctx.save();
+  ctx.globalAlpha = .98;
+  if (nostraStamp) {
+    drawImageContain(ctx, nostraStamp, 772, 70, 230, 190);
+  } else {
+    ctx.strokeStyle = '#d1b08d';
+    ctx.lineWidth = 6;
+    drawRoundRect(ctx, 782, 78, 205, 165, 24);
+    ctx.stroke();
+    ctx.fillStyle = '#fff';
+    ctx.font = '900 30px Montserrat, Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('NOSTRADAMUS', 884, 155);
+    ctx.fillStyle = '#d1b08d';
+    ctx.font = '800 20px Montserrat, Arial';
+    ctx.fillText('STANLEY', 884, 192);
+    ctx.textAlign = 'left';
+  }
+  ctx.restore();
 
   const ig = normalizedIg(player && player.instagram);
   if (ig) {
     ctx.fillStyle = '#111';
-    drawRoundRect(ctx, 70, 390, 330, 54, 27);
+    drawRoundRect(ctx, 70, 395, 330, 54, 27);
     ctx.fill();
     ctx.fillStyle = '#fff';
     ctx.font = '800 26px Montserrat, Arial';
-    ctx.fillText(ig, 96, 426);
+    ctx.fillText(ig, 96, 431);
   }
 
-  drawRoundRect(ctx, 70, 485, 940, 940, 34);
+  drawRoundRect(ctx, 70, 505, 940, 495, 34);
   ctx.fillStyle = 'rgba(255,255,255,.94)';
   ctx.fill();
+  ctx.strokeStyle = 'rgba(185,154,120,.34)';
+  ctx.lineWidth = 3;
+  ctx.stroke();
   ctx.fillStyle = '#b99a78';
   ctx.font = '900 28px Montserrat, Arial';
-  ctx.fillText('FINAL', 120, 560);
-  drawFlag(ctx, finalists[0], 120, 600, 120, 78);
-  drawFlag(ctx, finalists[1], 840, 600, 120, 78);
+  ctx.fillText('FINAL', 120, 575);
+  drawFlag(ctx, finalists[0], 128, 615, 150, 92);
+  drawFlag(ctx, finalists[1], 802, 615, 150, 92);
   ctx.fillStyle = '#111';
-  ctx.font = '900 58px Montserrat, Arial';
-  ctx.fillText(teamLabel(finalists[0]).toUpperCase(), 120, 750);
+  const leftName = teamLabel(finalists[0]).toUpperCase();
+  const rightName = teamLabel(finalists[1]).toUpperCase();
+  fitTextToWidth(ctx, leftName, 330, 58, 36);
+  ctx.fillText(leftName, 120, 805);
   ctx.textAlign = 'right';
-  ctx.fillText(teamLabel(finalists[1]).toUpperCase(), 960, 750);
+  fitTextToWidth(ctx, rightName, 330, 58, 36);
+  ctx.fillText(rightName, 960, 805);
   ctx.textAlign = 'center';
   ctx.fillStyle = '#00a66f';
   ctx.font = '900 54px Montserrat, Arial';
-  ctx.fillText('VS.', 540, 735);
+  ctx.fillText('VS.', 540, 688);
+  ctx.save();
+  ctx.shadowColor = 'rgba(0,0,0,.14)';
+  ctx.shadowBlur = 20;
+  ctx.shadowOffsetY = 12;
+  drawRoundRect(ctx, 390, 835, 300, 114, 24);
+  ctx.fillStyle = '#fffaf1';
+  ctx.fill();
+  ctx.restore();
+  ctx.strokeStyle = '#00a66f';
+  ctx.lineWidth = 4;
+  drawRoundRect(ctx, 390, 835, 300, 114, 24);
+  ctx.stroke();
   ctx.fillStyle = '#111';
-  ctx.font = '900 110px Montserrat, Arial';
-  ctx.fillText(`${state.score1} - ${state.score2}`, 540, 920);
+  ctx.font = '900 78px Montserrat, Arial';
+  ctx.fillText(`${state.score1} - ${state.score2}`, 540, 915);
   ctx.textAlign = 'left';
 
-  const rows = [
-    ['CAMPEÓN', `${teamLabel(state.champion)}`],
-    ['MÁXIMO GOLEADOR', playerLabel(state.scorer, NOSTRADAMUS_SCORERS)],
-    ['MEJOR JUGADOR', playerLabel(state.bestPlayer, NOSTRADAMUS_PLAYERS)]
+  drawRoundRect(ctx, 70, 1035, 940, 185, 30);
+  ctx.fillStyle = '#111';
+  ctx.fill();
+  drawFlag(ctx, state.champion, 122, 1082, 112, 72);
+  ctx.fillStyle = '#d1b08d';
+  ctx.font = '900 28px Montserrat, Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('CAMPEÓN', 540, 1098);
+  ctx.fillStyle = '#fff';
+  const championName = teamLabel(state.champion).toUpperCase();
+  fitTextToWidth(ctx, championName, 560, 68, 42);
+  ctx.fillText(championName, 540, 1167);
+  ctx.textAlign = 'left';
+
+  const scorer = NOSTRADAMUS_SCORERS.find(item => item.id === state.scorer);
+  const bestPlayer = NOSTRADAMUS_PLAYERS.find(item => item.id === state.bestPlayer);
+  const cards = [
+    { x:70, label:'MÁXIMO GOLEADOR', icon:'ball', value:playerLabel(state.scorer, NOSTRADAMUS_SCORERS), code:scorer ? teamAbbr(scorer.team) : '' },
+    { x:555, label:'MEJOR JUGADOR', icon:'star', value:playerLabel(state.bestPlayer, NOSTRADAMUS_PLAYERS), code:bestPlayer ? teamAbbr(bestPlayer.team) : '' }
   ];
-  let y = 1040;
-  rows.forEach(([label, value]) => {
+  cards.forEach(card => {
+    drawRoundRect(ctx, card.x, 1250, 455, 185, 26);
+    ctx.fillStyle = '#fffaf1';
+    ctx.fill();
+    ctx.strokeStyle = card.icon === 'star' ? '#d1b08d' : '#00a66f';
+    ctx.lineWidth = 3;
+    ctx.stroke();
     ctx.fillStyle = '#b99a78';
-    ctx.font = '900 24px Montserrat, Arial';
-    ctx.fillText(label, 120, y);
+    ctx.font = '900 22px Montserrat, Arial';
+    ctx.fillText(card.label, card.x + 34, 1307);
+    ctx.fillStyle = card.icon === 'star' ? '#d1b08d' : '#00a66f';
+    if (card.icon === 'star') {
+      ctx.beginPath();
+      for (let i = 0; i < 10; i += 1) {
+        const a = -Math.PI / 2 + i * Math.PI / 5;
+        const r = i % 2 ? 13 : 26;
+        const px = card.x + 386 + Math.cos(a) * r;
+        const py = 1300 + Math.sin(a) * r;
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+      ctx.fill();
+    } else {
+      drawBall(ctx, card.x + 388, 1300, 25);
+    }
     ctx.fillStyle = '#111';
-    ctx.font = '900 42px Montserrat, Arial';
-    wrapCanvasText(ctx, value, 120, y + 54, 820, 48);
-    y += 150;
+    fitTextToWidth(ctx, card.value, 340, 36, 24);
+    wrapCanvasText(ctx, card.value, card.x + 34, 1368, 335, 40);
+    ctx.fillStyle = '#6d7779';
+    ctx.font = '900 22px Montserrat, Arial';
+    ctx.fillText(card.code, card.x + 34, 1410);
   });
 
-  drawRoundRect(ctx, 70, 1510, 940, 210, 30);
+  drawRoundRect(ctx, 70, 1488, 940, 206, 30);
   ctx.fillStyle = '#111';
   ctx.fill();
   ctx.fillStyle = '#fff';
   ctx.font = '900 42px Montserrat, Arial';
-  ctx.fillText('La recta final se vive con Stanley.', 120, 1585);
+  ctx.fillText('La recta final se vive con Stanley.', 120, 1565);
   ctx.fillStyle = '#d1b08d';
   ctx.font = '800 30px Montserrat, Arial';
-  wrapCanvasText(ctx, 'Compartilo y etiquetá a @Stanley1913_Bolivia', 120, 1645, 790, 38);
+  wrapCanvasText(ctx, 'Subilo a tus historias y etiquetá a @Stanley1913_Bolivia', 120, 1625, 800, 38);
 
-  ctx.strokeStyle = '#d1b08d';
-  ctx.lineWidth = 5;
-  drawRoundRect(ctx, 735, 150, 250, 250, 24);
-  ctx.stroke();
-  ctx.fillStyle = '#fff';
-  ctx.font = '900 42px Montserrat, Arial';
-  ctx.textAlign = 'center';
-  ctx.fillText('NOSTRA', 860, 255);
-  ctx.fillText('DAMUS', 860, 305);
-  ctx.fillStyle = '#d1b08d';
-  ctx.font = '800 24px Montserrat, Arial';
-  ctx.fillText('STANLEY', 860, 350);
-  ctx.textAlign = 'left';
+  drawRoundRect(ctx, 70, 1725, 940, 150, 28);
+  ctx.fillStyle = '#fffaf1';
+  ctx.fill();
+  ctx.save();
+  const bottomStamps = [
+    { img:stampAssets[0], x:108, y:1745, w:145, h:105, r:-.10, a:.28 },
+    { img:stampAssets[1], x:270, y:1744, w:145, h:115, r:.07, a:.34 },
+    { img:stampAssets[2], x:430, y:1754, w:210, h:95, r:-.04, a:.40 },
+    { img:stampAssets[3], x:665, y:1745, w:145, h:112, r:.09, a:.28 },
+    { img:nostraStamp, x:802, y:1734, w:176, h:126, r:-.03, a:1 }
+  ];
+  bottomStamps.forEach(item => {
+    if (!item.img) return;
+    ctx.save();
+    ctx.globalAlpha = item.a;
+    ctx.translate(item.x + item.w / 2, item.y + item.h / 2);
+    ctx.rotate(item.r);
+    drawImageContain(ctx, item.img, -item.w / 2, -item.h / 2, item.w, item.h);
+    ctx.restore();
+  });
+  ctx.restore();
 
   const blob = await canvasToPngBlob(canvas);
   const dataUrl = canvas.toDataURL('image/png');
@@ -1034,10 +1161,17 @@ function bindNostradamus() {
         setNostradamusMessage(isIncompleteNostradamus(error) ? 'Completá todos tus pronósticos para generar tu historia.' : error, 'error');
         return;
       }
+      const builder = generate.closest('[data-nostradamus]');
+      const generating = builder && builder.querySelector('[data-nostra-generating]');
       generate.disabled = true;
       generate.textContent = 'Generando...';
+      if (builder) builder.classList.add('is-generating');
+      if (generating) generating.hidden = false;
       try {
-        const image = await generateNostradamusImage(state);
+        const [image] = await Promise.all([
+          generateNostradamusImage(state),
+          new Promise(resolve => setTimeout(resolve, 950))
+        ]);
         try {
           nostradamusShareFile = new File([image.blob], 'nostradamus-stanley.png', { type:'image/png' });
         } catch (fileErr) {
@@ -1056,11 +1190,13 @@ function bindNostradamus() {
           download.href = image.dataUrl;
         }
         if (share) share.disabled = false;
-        setNostradamusMessage('Historia generada. Compartila en Instagram y luego subí la captura como evidencia.', 'success');
+        setNostradamusMessage('Tu pronóstico está listo.', 'success');
       } catch (err) {
         console.error('Error generando historia Nostradamus:', err);
         setNostradamusMessage(err && err.message ? err.message : 'No pudimos generar la historia. Intentá nuevamente.', 'error');
       } finally {
+        if (builder) builder.classList.remove('is-generating');
+        if (generating) generating.hidden = true;
         generate.disabled = false;
         generate.textContent = 'Generar mi historia';
       }
