@@ -17,6 +17,11 @@
 
 const SHEET_ID  = "PEGAR_ID_DE_LA_HOJA";
 const FOLDER_ID = "PEGAR_ID_DE_LA_CARPETA";
+const OFFICIAL_TIME_ZONE = "America/La_Paz";
+const LEGEND_SHARE_ID = "legend_share";
+const CORE_MISSION_IDS = ["m1","m2","m3","m4","m5","m6","m7","m8","m9","m10","m11","m12"];
+const M12_UNLOCK_AT = new Date("2026-07-15T00:00:00-04:00");
+const LEGEND_SHARE_UNLOCK_AT = new Date("2026-07-16T00:00:00-04:00");
 
 const SHEETS = {
   participantes: "Participantes",
@@ -58,6 +63,7 @@ function doPost(e){
     if(action === "getParticipantMissions") return json(getParticipantMissions_(d));
     if(action === "saveEvidence") return json(saveMission_(d));
     if(action === "saveMission") return json(saveMission_(d));
+    if(action === "getLegendEligibleParticipants") return json(getLegendEligibleParticipants_());
     if(action === "selectPrize") return json(selectPrize_(d));
     return json({ok:false, error:"accion desconocida: " + action});
   }catch(err){
@@ -75,6 +81,7 @@ function doGet(e){
   }
   if(p.action === "recoverParticipant") return json(recoverParticipant_(p));
   if(p.action === "getParticipantMissions") return json(getParticipantMissions_(p));
+  if(p.action === "getLegendEligibleParticipants") return json(getLegendEligibleParticipants_());
   return json({ok:true, msg:"Pasaporte Stanley API activa."});
 }
 
@@ -144,27 +151,55 @@ function saveMission_(d){
 
   const missionId = clean_(d.mission_id);
   if(!missionId) return {ok:false, code:"missing_mission_id", error:"Falta mission_id."};
+  const isCoreMission = CORE_MISSION_IDS.indexOf(missionId) !== -1;
+  const isLegendShare = missionId === LEGEND_SHARE_ID;
+  if(!isCoreMission && !isLegendShare){
+    return {ok:false, code:"invalid_mission_id", error:"mission_id no valido."};
+  }
+  if(missionId === "m12" && new Date().getTime() < M12_UNLOCK_AT.getTime()){
+    return {ok:false, code:"mission_locked", error:"Legend Stanley se habilita el 15 de julio."};
+  }
+  if(isLegendShare){
+    if(new Date().getTime() < LEGEND_SHARE_UNLOCK_AT.getTime()){
+      return {ok:false, code:"legend_share_locked", error:"El comprobante Legend se habilita el 16 de julio."};
+    }
+    if(!isParticipantActive_(participant)){
+      return {ok:false, code:"participant_inactive", error:"El participante no esta activo."};
+    }
+    if(completedCoreMissionIds_(participantId).length < 12){
+      return {ok:false, code:"legend_incomplete", error:"Necesitas completar las 12 misiones antes de subir el comprobante Legend."};
+    }
+  }
 
   const misiones = sheet_(SHEETS.misiones, HEADERS.misiones);
-  const recordId = d.mission_record_id || [participantId, missionId].join("_");
-  let evidenceUrl = clean_(d.evidence_url);
-  let evidenceName = "";
+  const recordId = [participantId, missionId].join("_");
+  const existing = findMissionRecord_(recordId);
+  let evidenceUrl = clean_(d.evidence_url) || (existing ? clean_(existing[5]) : "");
+  let evidenceName = existing ? clean_(existing[6]) : "";
   if(d.evidence && d.evidence.b64){
     evidenceUrl = saveFile_(d.evidence, participantId, missionId);
     evidenceName = clean_(d.evidence.name);
   }
+  if(!evidenceUrl){
+    return {ok:false, code:"missing_evidence", error:"Falta la evidencia de la mision."};
+  }
+
+  const now = new Date();
+  const completedAt = existing && existing[7] ? existing[7] : now;
+  const missionName = isLegendShare ? "Pasaporte Legend compartido" : clean_(d.mission_name);
+  const phase = isLegendShare ? "Final Legend" : clean_(d.week);
 
   upsert_(misiones, 0, recordId, [
     recordId,
     participantId,
     missionId,
-    clean_(d.mission_name),
-    clean_(d.week),
+    missionName,
+    phase,
     evidenceUrl,
     evidenceName,
-    new Date(),
+    completedAt,
     "completada",
-    new Date(),
+    now,
     clean_(d.validated_at),
     clean_(d.validated_by),
     clean_(d.validation_notes),
@@ -175,8 +210,9 @@ function saveMission_(d){
     participantInfo.whatsapp
   ]);
 
-  audit_("saveMission", participantId, "Misiones", recordId, "ok", "Mision completada con evidencia");
-  return {ok:true, participant_id:participantId, mission_record_id:recordId, evidence_url:evidenceUrl};
+  if(isCoreMission) updateParticipantProgress_(participantId);
+  audit_("saveMission", participantId, "Misiones", recordId, "ok", isLegendShare ? "Pasaporte Legend compartido" : "Mision completada con evidencia");
+  return {ok:true, participant_id:participantId, mission_record_id:recordId, evidence_url:evidenceUrl, completed_at:dateString_(completedAt), stamps_count:completedCoreMissionIds_(participantId).length};
 }
 
 function recoverParticipant_(d){
@@ -229,6 +265,35 @@ function getParticipantMissions_(d){
   return {ok:true, participant_id:participantId, missions:missions};
 }
 
+function getLegendEligibleParticipants_(){
+  const participantsSheet = getSheet_(SHEETS.participantes);
+  if(!participantsSheet || participantsSheet.getLastRow() < 2) return {ok:true, participants:[]};
+  const participantRows = participantsSheet.getDataRange().getValues();
+  const missionRows = missionRows_();
+  const out = [];
+  for(let i = 1; i < participantRows.length; i++){
+    const participant = participantRows[i];
+    if(!isParticipantActive_(participant)) continue;
+    const participantId = clean_(participant[0]);
+    const coreIds = completedCoreMissionIdsFromRows_(missionRows, participantId);
+    if(coreIds.length < 12) continue;
+    const legendShare = missionRows.find(function(row){
+      return clean_(row[1]) === participantId && clean_(row[2]) === LEGEND_SHARE_ID && clean_(row[8]).toLowerCase() === "completada" && clean_(row[5]);
+    });
+    if(!legendShare) continue;
+    out.push({
+      participant_id: participantId,
+      nombre: clean_(participant[3]),
+      instagram: clean_(participant[4]),
+      stamps_count: coreIds.length,
+      level: "Legend",
+      legend_share_status: clean_(legendShare[8]),
+      legend_share_evidence_url: clean_(legendShare[5])
+    });
+  }
+  return {ok:true, count:out.length, participants:out};
+}
+
 function selectPrize_(d){
   const participantId = clean_(d.participant_id || d.id);
   if(!participantId) return {ok:false, code:"missing_participant_id", error:"Falta participant_id."};
@@ -256,6 +321,66 @@ function selectPrize_(d){
 
   audit_("selectPrize", participantId, "Premios", selectionId, "ok", "Seleccion de premio registrada");
   return {ok:true, participant_id:participantId, prize_selection_id:selectionId};
+}
+
+function missionRows_(){
+  const sh = getSheet_(SHEETS.misiones);
+  if(!sh || sh.getLastRow() < 2) return [];
+  return sh.getDataRange().getValues().slice(1);
+}
+
+function completedCoreMissionIdsFromRows_(rows, participantId){
+  const completed = {};
+  (rows || []).forEach(function(row){
+    const missionId = clean_(row[2]);
+    if(clean_(row[1]) !== clean_(participantId)) return;
+    if(CORE_MISSION_IDS.indexOf(missionId) === -1) return;
+    if(clean_(row[8]).toLowerCase() !== "completada") return;
+    if(!clean_(row[5])) return;
+    completed[missionId] = true;
+  });
+  return CORE_MISSION_IDS.filter(function(missionId){ return completed[missionId]; });
+}
+
+function completedCoreMissionIds_(participantId){
+  return completedCoreMissionIdsFromRows_(missionRows_(), participantId);
+}
+
+function levelForStampCount_(count){
+  if(count >= 12) return "Legend";
+  if(count >= 10) return "Gold";
+  if(count >= 7) return "Silver";
+  if(count >= 4) return "Bronze";
+  return "Sin nivel";
+}
+
+function updateParticipantProgress_(participantId){
+  const sh = getSheet_(SHEETS.participantes);
+  if(!sh || sh.getLastRow() < 2) return;
+  const data = sh.getDataRange().getValues();
+  const count = completedCoreMissionIds_(participantId).length;
+  for(let i = 1; i < data.length; i++){
+    if(clean_(data[i][0]) !== clean_(participantId)) continue;
+    sh.getRange(i + 1, 14).setValue(new Date());
+    sh.getRange(i + 1, 15, 1, 2).setValues([[levelForStampCount_(count), count]]);
+    return;
+  }
+}
+
+function isParticipantActive_(participant){
+  if(!participant) return false;
+  const status = clean_(participant[11]).toLowerCase();
+  return status === "activo" || status === "active";
+}
+
+function findMissionRecord_(recordId){
+  const sh = getSheet_(SHEETS.misiones);
+  if(!sh || sh.getLastRow() < 2) return null;
+  const data = sh.getDataRange().getValues();
+  for(let i = 1; i < data.length; i++){
+    if(clean_(data[i][0]) === clean_(recordId)) return data[i];
+  }
+  return null;
 }
 
 function findDuplicates_(ci, comprobanteNumero, excludeParticipantId){

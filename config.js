@@ -6,6 +6,21 @@ window.STANLEY = {
   PHASE: "inscripcion",
   REGISTRATION_CLOSED: true,
   CURRENT_WEEK: 1,
+  LEGEND_FINALISTS_READY: false,
+  LEGEND_FINALISTS: [
+    {
+      name: "Finalista 1",
+      shortName: "Finalista 1",
+      code: "F1",
+      flag: "assets/finalistas/finalista-1.svg"
+    },
+    {
+      name: "Finalista 2",
+      shortName: "Finalista 2",
+      code: "F2",
+      flag: "assets/finalistas/finalista-2.svg"
+    }
+  ],
   PHASES: [
     { id: 1, starts: "2026-06-01T00:00:00-04:00", ends: "2026-07-03T23:59:59-04:00" },
     { id: 2, starts: "2026-07-04T00:00:00-04:00", ends: "2026-07-08T23:59:59-04:00" },

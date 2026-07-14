@@ -9,8 +9,8 @@ const MISSIONS = [
   { id:'m8', week:3, name:'Throwback Stanley', type:'Lifestyle', publicHint:'Volvé al origen. Queremos conocer tu historia con Stanley.', desc:'Todos tenemos una historia con nuestro Stanley. Buscá la foto más antigua que tengas junto a él o ese recuerdo inolvidable que todavía guardás en tu galería y compartilo con nosotros.', instructions:'Subilo a Instagram, etiquetá a @Stanley1913_Bolivia (la etiqueta debe verse en la captura de pantalla) y subí tu evidencia.' },
   { id:'m9', week:3, name:'Colección Stanley', type:'Lifestyle', publicHint:'Cada Stanley tiene una historia. Mostranos tu colección.', desc:'¿Tenés un solo Stanley o ya empezaste tu colección? Mostranos todos los productos Stanley que forman parte de tu día a día. Queremos conocer la colección de nuestra comunidad.', instructions:'Subilo a Instagram, etiquetá a @Stanley1913_Bolivia (la etiqueta debe verse en la captura de pantalla) y subí tu evidencia.' },
   { id:'m10', week:3, name:'Nostradamus Stanley', type:'Participación especial', publicHint:'¿Ya tenés tus favoritos? Prepará tus pronósticos mundialeros.', desc:'Llegó el momento de sacar tu lado más futbolero. Compartinos tus pronósticos para el cierre del Mundial: campeón, máximo goleador, jugador del torneo y resultado de la Final. No existen respuestas correctas o incorrectas. Esta misión otorga el sello simplemente por participar.', instructions:'Subilo a Instagram, etiquetá a @Stanley1913_Bolivia (la etiqueta debe verse en la captura de pantalla) y subí tu evidencia.', unlockAt:'2026-07-13T00:00:00-04:00', specialLock:true },
-  { id:'m11', week:4, name:'Pasaporte casi completo', desc:'Mostrá tus sellos y celebrá tu avance.', instructions:'Compartí una captura o foto de tu progreso en Pasaporte Stanley y etiquetá a @Stanley1913_Bolivia.', highlight:true },
-  { id:'m12', week:4, name:'Legend Stanley', desc:'Cerrá el pasaporte con tu mejor momento Stanley.', instructions:'Publicá tu mejor contenido de campaña. Al subir la captura desbloqueás el sello final.', highlight:true }
+  { id:'m11', week:4, name:'Pasaporte casi completo', type:'Historia Stanley / Producto', publicHint:'Toda gran historia tiene un protagonista. Contanos qué hace especial al tuyo.', desc:'Ya recorriste casi todo el camino. Antes de llegar a Legend queremos conocer un poco más sobre el Stanley que te acompaña. Tomale una foto a tu Stanley y contanos en una frase: “¿Qué hace especial a tu Stanley?”. No buscamos la mejor fotografía. Buscamos una respuesta auténtica.', instructions:'Subí una foto de tu Stanley a Instagram, etiquetá a @Stanley1913_Bolivia —la etiqueta debe verse en la captura— y acompañala con una frase breve contando qué lo hace especial. Luego subí tu evidencia.', highlight:true, featuredText:'Ya casi llegás a Legend.', examples:['Nunca sale de mi escritorio.','Fue un regalo que todavía uso todos los días.','Me acompaña en cada entrenamiento.','Es el primer Stanley que compré.'] },
+  { id:'m12', week:4, name:'Legend Stanley', type:'Identidad / Comunidad', publicHint:'La categoría Legend más importante sos vos.', desc:'Llegaste a la última misión del recorrido. Ahora queremos conocer a la persona detrás del Pasaporte Stanley 1913. Sacate una selfie o una foto posando junto al Stanley que más te representa. Puede ser un solo producto o toda tu colección. Lo importante es que aparezcas vos.', instructions:'Publicá una selfie o foto junto a tu Stanley favorito, etiquetá a @Stanley1913_Bolivia —la etiqueta debe verse en la captura— y subí tu evidencia.', highlight:true, featuredText:'Ponéle cara a tu Pasaporte.', unlockAt:'2026-07-15T00:00:00-04:00', lockedDesc:'La última misión no trata solamente sobre tu Stanley. Trata sobre vos.', lockedText:'Disponible el 15 de julio.' }
 ];
 
 MISSIONS.forEach((mission, index) => {
@@ -24,8 +24,19 @@ const INSTAGRAM_COMMUNITY_URL = CONFIG.INSTAGRAM_COMMUNITY_URL || 'https://www.i
 const STORAGE_KEY = 'stanley_passport';
 const DAILY_LIMIT = Number(CONFIG.DAILY_MISSION_LIMIT || 2);
 const DAILY_LIMIT_FLEXIBLE = Boolean(CONFIG.DAILY_LIMIT_FLEXIBLE);
-const PHASE_4_UPLOADS_PAUSED = true;
-const PHASE_4_PAUSE_MESSAGE = 'Estamos actualizando estas 2 misiones. Se liberarán en las próximas horas.';
+const LEGEND_GENERATOR_UNLOCK_AT = '2026-07-16T00:00:00-04:00';
+const LEGEND_SHARE_ID = 'legend_share';
+const LEGEND_SHARE_NAME = 'Pasaporte Legend compartido';
+const LEGEND_FINALISTS_READY = CONFIG.LEGEND_FINALISTS_READY === true;
+const LEGEND_FINALISTS = Array.isArray(CONFIG.LEGEND_FINALISTS) ? CONFIG.LEGEND_FINALISTS : [];
+const LEGEND_STAMP_ASSETS = Object.freeze({
+  m1:'assets/sellos/01-sello.png', m2:'assets/sellos/02-sello.png',
+  m3:'assets/sellos/03-sello.png', m4:'assets/sellos/04-sello.png',
+  m5:'assets/sellos/05-sello.png', m6:'assets/sellos/06-sello.png',
+  m7:'assets/sellos/07-sello.png', m8:'assets/sellos/08-sello.png',
+  m9:'assets/sellos/09-sello.png', m10:'assets/sellos/10-sello.png',
+  m11:'assets/sellos/11-sello.png', m12:'assets/sellos/12-sello.png'
+});
 const PHASES = CONFIG.PHASES || [
   { id: 1, starts: '2026-06-01T00:00:00-04:00', ends: '2026-07-03T23:59:59-04:00' },
   { id: 2, starts: '2026-07-04T00:00:00-04:00', ends: '2026-07-08T23:59:59-04:00' },
@@ -78,6 +89,8 @@ const NOSTRADAMUS_PLAYERS = [
   { id:'unai', name:'Unai Simón', team:'spain' }
 ];
 let nostradamusShareFile = null;
+let legendPassportFile = null;
+let legendPassportDataUrl = '';
 let passport = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{"evidence":{}}');
 let player = JSON.parse(localStorage.getItem('stanley_player') || '{}');
 if (!player.id && localStorage.getItem('participant_id')) player.id = localStorage.getItem('participant_id');
@@ -100,7 +113,6 @@ const isDone = mission => Boolean(passport.evidence && passport.evidence[mission
 const evidenceCount = () => MISSIONS.filter(isDone).length;
 const isDateLocked = mission => Boolean(mission.unlockAt && Date.now() < new Date(mission.unlockAt).getTime());
 const isLocked = mission => mission.week > CURRENT_WEEK || isDateLocked(mission);
-const isPhaseUploadPaused = mission => PHASE_4_UPLOADS_PAUSED && mission.week === 4;
 
 
 function participantId() {
@@ -745,6 +757,250 @@ async function generateNostradamusImage(state) {
   return { blob, dataUrl };
 }
 
+function fittedCanvasText(ctx, value, maxWidth, maxFontSize, minFontSize, weight = 900) {
+  const original = String(value || '');
+  let size = maxFontSize;
+  while (size > minFontSize) {
+    ctx.font = `${weight} ${size}px Montserrat, Arial`;
+    if (ctx.measureText(original).width <= maxWidth) return { text:original, size };
+    size -= 2;
+  }
+  ctx.font = `${weight} ${minFontSize}px Montserrat, Arial`;
+  if (ctx.measureText(original).width <= maxWidth) return { text:original, size:minFontSize };
+  let shortened = original;
+  while (shortened.length > 2 && ctx.measureText(`${shortened}…`).width > maxWidth) shortened = shortened.slice(0, -1);
+  return { text:`${shortened}…`, size:minFontSize };
+}
+
+function drawFittedCanvasText(ctx, value, x, y, maxWidth, maxFontSize, minFontSize, weight = 900) {
+  const fitted = fittedCanvasText(ctx, value, maxWidth, maxFontSize, minFontSize, weight);
+  ctx.font = `${weight} ${fitted.size}px Montserrat, Arial`;
+  ctx.fillText(fitted.text, x, y);
+  return fitted;
+}
+
+function legendGeneratorAvailable(now = Date.now()) {
+  return now >= new Date(LEGEND_GENERATOR_UNLOCK_AT).getTime();
+}
+
+function readLegendChoice() {
+  const index = Number(localStorage.getItem('stanley_legend_finalist'));
+  return index === 0 || index === 1 ? index : null;
+}
+
+function legendFinalistsReady() {
+  return LEGEND_FINALISTS_READY && LEGEND_FINALISTS.length === 2 && LEGEND_FINALISTS.every(item => item && item.name && item.code && item.flag);
+}
+
+function legendShareEvidence() {
+  return passport.legendShare || null;
+}
+
+function legendEligible() {
+  return Boolean(participantId() && evidenceCount() === 12 && legendShareEvidence() && evidenceUrl(legendShareEvidence()));
+}
+
+async function generateLegendPassportImage(championIndex) {
+  if (evidenceCount() !== 12) throw new Error('Necesitás los 12 sellos para generar tu Pasaporte Legend.');
+  if (!legendGeneratorAvailable()) throw new Error('El generador se habilita el 16 de julio.');
+  if (!legendFinalistsReady()) throw new Error('Los finalistas todavía no fueron configurados.');
+  if (championIndex !== 0 && championIndex !== 1) throw new Error('Elegí quién será tu campeón.');
+
+  const champion = LEGEND_FINALISTS[championIndex];
+  const runnerUp = LEGEND_FINALISTS[championIndex === 0 ? 1 : 0];
+  const stampIds = Object.keys(LEGEND_STAMP_ASSETS);
+  const [campaignStamp, championFlag, runnerFlag, ...stampImages] = await Promise.all([
+    loadCanvasImage('assets/sellos/sello-00.png'),
+    loadCanvasImage(champion.flag),
+    loadCanvasImage(runnerUp.flag),
+    ...stampIds.map(id => loadCanvasImage(LEGEND_STAMP_ASSETS[id]))
+  ]);
+
+  const canvas = document.createElement('canvas');
+  canvas.width = 1080;
+  canvas.height = 1920;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('Tu navegador no permitió generar la imagen.');
+
+  ctx.fillStyle = '#f7f3ec';
+  ctx.fillRect(0, 0, 1080, 1920);
+  ctx.fillStyle = '#00a66f';
+  ctx.fillRect(0, 0, 1080, 390);
+  for (let x = -90; x < 1080; x += 170) {
+    ctx.fillStyle = 'rgba(0,0,0,.045)';
+    ctx.fillRect(x, 0, 64, 390);
+  }
+
+  ctx.fillStyle = '#111';
+  drawRoundRect(ctx, 68, 68, 390, 58, 12);
+  ctx.fill();
+  ctx.fillStyle = '#d1b08d';
+  ctx.font = '900 23px Montserrat, Arial';
+  ctx.fillText('PASAPORTE STANLEY 1913', 92, 106);
+  ctx.fillStyle = '#fff';
+  ctx.font = '900 76px Montserrat, Arial';
+  ctx.fillText('MI PASAPORTE', 68, 232);
+  ctx.fillText('STANLEY', 68, 316);
+  ctx.fillStyle = '#111';
+  ctx.font = '900 30px Montserrat, Arial';
+  ctx.fillText('12/12 sellos · Nivel Legend', 70, 365);
+  if (campaignStamp) drawImageContain(ctx, campaignStamp, 800, 56, 220, 245);
+
+  const participantLabel = normalizedIg(player && player.instagram) || String((player && player.nombre) || 'StanleyLover');
+  ctx.fillStyle = '#111';
+  drawRoundRect(ctx, 68, 420, 944, 92, 24);
+  ctx.fill();
+  ctx.fillStyle = '#fff';
+  drawFittedCanvasText(ctx, participantLabel, 104, 480, 730, 38, 24, 800);
+
+  ctx.fillStyle = '#b99a78';
+  ctx.font = '900 23px Montserrat, Arial';
+  ctx.fillText('MIS 12 SELLOS', 68, 570);
+  drawRoundRect(ctx, 68, 595, 944, 625, 30);
+  ctx.fillStyle = '#fff';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(185,154,120,.35)';
+  ctx.lineWidth = 3;
+  ctx.stroke();
+
+  stampImages.forEach((image, index) => {
+    const column = index % 4;
+    const row = Math.floor(index / 4);
+    const x = 92 + column * 226;
+    const y = 626 + row * 190;
+    ctx.fillStyle = row === 2 ? '#f4efe7' : '#fbfaf7';
+    drawRoundRect(ctx, x, y, 202, 164, 22);
+    ctx.fill();
+    if (image) drawImageContain(ctx, image, x + 18, y + 15, 166, 134);
+  });
+
+  ctx.fillStyle = '#111';
+  drawRoundRect(ctx, 68, 1260, 944, 415, 32);
+  ctx.fill();
+  ctx.fillStyle = '#d1b08d';
+  ctx.font = '900 26px Montserrat, Arial';
+  ctx.fillText('MI CAMPEÓN', 110, 1324);
+  if (championFlag) drawImageContain(ctx, championFlag, 108, 1360, 560, 200);
+  ctx.fillStyle = '#fff';
+  drawFittedCanvasText(ctx, String(champion.name).toUpperCase(), 108, 1630, 600, 60, 34);
+
+  ctx.globalAlpha = .66;
+  ctx.fillStyle = '#fff';
+  drawRoundRect(ctx, 740, 1348, 220, 230, 24);
+  ctx.fill();
+  if (runnerFlag) drawImageContain(ctx, runnerFlag, 770, 1380, 160, 98);
+  ctx.fillStyle = '#111';
+  ctx.textAlign = 'center';
+  ctx.font = '900 18px Montserrat, Arial';
+  ctx.fillText('FINALISTA', 850, 1514);
+  drawFittedCanvasText(ctx, runnerUp.shortName || runnerUp.name, 850, 1550, 180, 24, 16, 900);
+  ctx.textAlign = 'left';
+  ctx.globalAlpha = 1;
+
+  ctx.fillStyle = '#00a66f';
+  ctx.font = '900 38px Montserrat, Arial';
+  ctx.fillText('La fiesta del fútbol se vive con Stanley.', 68, 1743);
+  ctx.fillStyle = '#111';
+  ctx.font = '800 26px Montserrat, Arial';
+  ctx.fillText('Orgullosamente parte de StanleyLovers Bolivia.', 68, 1793);
+  ctx.fillStyle = '#b99a78';
+  drawRoundRect(ctx, 68, 1830, 944, 62, 18);
+  ctx.fill();
+  ctx.fillStyle = '#111';
+  ctx.font = '900 24px Montserrat, Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('Compartilo y etiquetá a @Stanley1913_Bolivia', 540, 1871);
+  ctx.textAlign = 'left';
+
+  const blob = await canvasToPngBlob(canvas);
+  return { blob, dataUrl:canvas.toDataURL('image/png') };
+}
+
+function legendFinalistCards(selected) {
+  if (!legendFinalistsReady()) return '<p class="legend-final__notice">Los dos finalistas se cargarán antes de habilitar el generador.</p>';
+  return LEGEND_FINALISTS.map((item, index) => `
+    <button class="legend-finalist ${selected === index ? 'is-selected' : ''}" type="button" data-legend-finalist="${index}" aria-pressed="${selected === index}">
+      <img src="${item.flag}" alt="Bandera de ${item.name}">
+      <span>${item.code}</span>
+      <strong>${item.name}</strong>
+    </button>
+  `).join('');
+}
+
+function renderLegendFinal() {
+  const host = $('#legend-final');
+  if (!host) return;
+  if (!participantId()) {
+    host.hidden = true;
+    host.innerHTML = '';
+    return;
+  }
+  host.hidden = false;
+  const count = evidenceCount();
+  if (count < 12) {
+    host.innerHTML = `
+      <span class="stage__kicker">Cierre Legend</span>
+      <h2>Tu historia final</h2>
+      <p>Completá los 12 sellos para generar tu Pasaporte Legend.</p>
+      <strong class="legend-final__progress">${count}/12 sellos</strong>`;
+    return;
+  }
+  if (!legendGeneratorAvailable()) {
+    host.innerHTML = `
+      <span class="stage__kicker">Nivel Legend alcanzado</span>
+      <h2>¡Pasaporte completo!</h2>
+      <p>El 16 de julio podrás generar tu historia final, elegir a tu campeón y compartir tu Pasaporte completo.</p>
+      <strong class="legend-final__progress">12/12 sellos · Disponible el 16 de julio</strong>`;
+    return;
+  }
+
+  const selected = readLegendChoice();
+  const finalEvidence = legendShareEvidence();
+  const hasGenerated = Boolean(legendPassportDataUrl);
+  host.innerHTML = `
+    <div class="legend-final__head">
+      <div>
+        <span class="stage__kicker">Nivel Legend</span>
+        <h2>¡Pasaporte completo!</h2>
+        <p>Alcanzaste el nivel Legend. Generá tu historia final, elegí a tu campeón y compartí tu Pasaporte completo para quedar habilitado en el Sorteo Legend.</p>
+      </div>
+      <strong>12/12 sellos</strong>
+    </div>
+    ${legendEligible() ? '<div class="legend-eligibility is-ready">¡Ya estás habilitado para el Sorteo Legend!</div>' : '<div class="legend-eligibility">Completaste los 12 sellos. Para quedar habilitado en el Sorteo Legend, compartí tu Pasaporte completo y subí la evidencia final.</div>'}
+    <div class="legend-builder">
+      <div class="legend-builder__choices">
+        <h3>¿Quién será tu campeón?</h3>
+        <p>Elegí exactamente una selección. La otra quedará como finalista.</p>
+        <div class="legend-finalists">${legendFinalistCards(selected)}</div>
+        <button class="gb-btn" type="button" data-legend-generate ${selected === null || !legendFinalistsReady() ? 'disabled' : ''}>Generar mi Pasaporte Legend</button>
+        <p class="upload-status" data-legend-status hidden></p>
+      </div>
+      <div class="legend-builder__result">
+        <div class="legend-preview" data-legend-preview>${hasGenerated ? `<img src="${legendPassportDataUrl}" alt="Pasaporte Legend generado">` : '<span>Tu historia Legend aparecerá acá.</span>'}</div>
+        <div class="legend-actions" ${hasGenerated ? '' : 'hidden'}>
+          <button class="gb-btn" type="button" data-legend-share>Compartir mi Pasaporte</button>
+          <a class="gb-btn gb-btn--secondary" data-legend-download href="${legendPassportDataUrl}" download="pasaporte-stanley-legend.png">Descargar imagen</a>
+        </div>
+      </div>
+    </div>
+    <div class="legend-proof">
+      <div>
+        <h3>Evidencia final para el Sorteo Legend</h3>
+        <p>Compartí tu Pasaporte completo en historias, etiquetá a @Stanley1913_Bolivia y subí una captura donde se vea la publicación y la etiqueta.</p>
+        ${finalEvidence ? '<strong>✓ PASAPORTE LEGEND COMPARTIDO</strong>' : ''}
+      </div>
+      <div class="legend-proof__evidence">
+        ${finalEvidence ? renderEvidenceView({ name:LEGEND_SHARE_NAME }, finalEvidence) : '<div class="evidence-empty">Subí el comprobante final</div>'}
+        <p class="upload-status" data-upload-status="legend_share" hidden></p>
+        <label class="gb-btn evidence-btn">
+          ${finalEvidence ? 'Cambiar evidencia' : 'Ya lo compartí · Subir comprobante final'}
+          <input type="file" accept="image/*,.jpg,.jpeg,.png,.heic,.heif,.pdf" data-legend-share>
+        </label>
+        ${finalEvidence && evidenceUrl(finalEvidence) ? `<a class="gb-btn gb-btn--secondary" href="${evidenceUrl(finalEvidence)}" target="_blank" rel="noopener">Ver evidencia cargada</a>` : ''}
+      </div>
+    </div>`;
+}
+
 function phaseMeta(phase) {
   const data = {
     1: { title:'FASE 1', subtitle:'Misiones iniciales del Pasaporte Stanley.' },
@@ -781,7 +1037,10 @@ function localDay(value = new Date()) {
 
 function completedTodayCount() {
   const today = localDay();
-  return Object.values(passport.evidence || {}).filter(item => localDay(item.date || item.completedAt) === today).length;
+  return MISSIONS.reduce((total, mission) => {
+    const item = passport.evidence && passport.evidence[mission.id];
+    return total + (item && localDay(item.date || item.completedAt) === today ? 1 : 0);
+  }, 0);
 }
 
 function remainingToday() {
@@ -939,10 +1198,26 @@ function hasLocalEvidence() {
 
 function missionRowsToEvidence(rows) {
   const evidence = {};
+  let legendShare = null;
   (rows || []).forEach(row => {
+    const url = row.evidence_url || row.url || '';
+    if (row.mission_id === LEGEND_SHARE_ID) {
+      legendShare = {
+        name:row.evidence_filename || LEGEND_SHARE_NAME,
+        evidence_filename:row.evidence_filename || '',
+        dataUrl:'',
+        evidence_url:url,
+        instagram_url:row.instagram_url || '',
+        instagram_post_type:row.instagram_post_type || '',
+        date:row.completed_at || row.submitted_at || new Date().toISOString(),
+        completed_at:row.completed_at || '',
+        updatedAt:row.submitted_at || row.completed_at || new Date().toISOString(),
+        source:'backend'
+      };
+      return;
+    }
     const mission = MISSIONS.find(item => item.id === row.mission_id);
     if (!mission) return;
-    const url = row.evidence_url || row.url || '';
     evidence[mission.id] = {
       name: row.evidence_filename || row.mission_name || mission.name || 'Evidencia cargada',
       evidence_filename: row.evidence_filename || '',
@@ -956,11 +1231,11 @@ function missionRowsToEvidence(rows) {
       source: 'backend'
     };
   });
-  return evidence;
+  return { evidence, legendShare };
 }
 
 async function hydratePassportFromBackend() {
-  if (hasLocalEvidence() || !CONFIG.APPS_SCRIPT_URL || !player || !player.id) return;
+  if (!CONFIG.APPS_SCRIPT_URL || !player || !player.id) return;
   try {
     const payload = { action: 'getParticipantMissions', participant_id: player.id };
     const saved = await fetch(CONFIG.APPS_SCRIPT_URL, {
@@ -971,9 +1246,26 @@ async function hydratePassportFromBackend() {
       console.warn('No se pudo recuperar el progreso desde el backend.', saved);
       return;
     }
-    const evidence = missionRowsToEvidence(saved.missions || []);
-    if (!Object.keys(evidence).length) return;
-    passport.evidence = evidence;
+    const recovered = missionRowsToEvidence(saved.missions || []);
+    const localEvidence = passport.evidence || {};
+    passport.evidence = { ...recovered.evidence };
+    Object.keys(localEvidence).forEach(id => {
+      const remote = passport.evidence[id] || {};
+      passport.evidence[id] = {
+        ...remote,
+        ...localEvidence[id],
+        evidence_url:remote.evidence_url || localEvidence[id].evidence_url || '',
+        completed_at:remote.completed_at || localEvidence[id].completed_at || ''
+      };
+    });
+    if (recovered.legendShare) {
+      passport.legendShare = {
+        ...recovered.legendShare,
+        ...(passport.legendShare || {}),
+        evidence_url:recovered.legendShare.evidence_url || (passport.legendShare && passport.legendShare.evidence_url) || '',
+        completed_at:recovered.legendShare.completed_at || (passport.legendShare && passport.legendShare.completed_at) || ''
+      };
+    }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(passport));
   } catch (err) {
     console.warn('No se pudo reconstruir el progreso desde el backend.', err);
@@ -1009,15 +1301,14 @@ function renderOverview() {
   MISSIONS.forEach((mission, index) => {
     const done = isDone(mission);
     const locked = isLocked(mission);
-    const phasePaused = isPhaseUploadPaused(mission);
     const el = document.createElement('button');
     el.type = 'button';
-    el.className = `mission-tile ${done ? 'done' : locked || phasePaused ? 'locked' : 'available'}`;
+    el.className = `mission-tile ${done ? 'done' : locked ? 'locked' : 'available'}`;
     el.innerHTML = `
       <span class="mission-tile-number">${index + 1}</span>
       <span class="mission-tile-art">${done ? stamp(mission, 'tile') : thumb(mission, 'tile')}</span>
       <strong>${mission.name}</strong>
-      <small>${done ? 'Completada' : locked && mission.specialLock ? 'Disponible 13 de julio' : phasePaused ? 'Actualizando - próximas horas' : locked ? `Bloqueado - fase ${mission.week}` : 'Disponible'}</small>
+      <small>${done ? 'Completada' : locked && mission.lockedText ? mission.lockedText : locked && mission.specialLock ? 'Disponible 13 de julio' : locked ? `Bloqueado - fase ${mission.week}` : 'Disponible'}</small>
     `;
     el.onclick = () => document.getElementById(mission.id)?.scrollIntoView({ behavior:'smooth', block:'center' });
     wrap.appendChild(el);
@@ -1038,11 +1329,10 @@ function renderPassportSheet() {
           ${weekMissions.map(mission => {
             const done = isDone(mission);
             const locked = isLocked(mission);
-            const phasePaused = isPhaseUploadPaused(mission);
             return `
-              <div class="passport-slot-large ${done ? 'done' : locked || phasePaused ? 'locked' : 'available'}">
+              <div class="passport-slot-large ${done ? 'done' : locked ? 'locked' : 'available'}">
                 ${done ? stamp(mission, 'sheet') : `<span class="passport-empty-number">${mission.id.replace('m','')}</span>`}
-                ${phasePaused ? '<small>ACTUALIZANDO</small>' : locked ? '<small>BLOQUEADA</small>' : ''}
+                ${locked ? '<small>BLOQUEADA</small>' : ''}
               </div>`;
           }).join('')}
         </div>
@@ -1072,38 +1362,42 @@ function renderMissions() {
     MISSIONS.filter(mission => mission.week === phase).forEach(mission => {
       const done = isDone(mission);
       const locked = isLocked(mission);
-      const phasePaused = isPhaseUploadPaused(mission);
-      const dailyBlocked = noMoreToday && !done && !locked && !phasePaused;
+      const dailyBlocked = noMoreToday && !done && !locked;
       const evidence = passport.evidence && passport.evidence[mission.id];
       const openEvidenceButton = done && evidenceUrl(evidence) ? `<a class="gb-btn evidence-open" href="${evidenceUrl(evidence)}" target="_blank" rel="noopener">Ver evidencia cargada</a>` : '';
       const specialLocked = locked && mission.specialLock;
+      const datedLocked = locked && Boolean(mission.lockedText);
+      const missionDescription = specialLocked ? 'Disponible el 13 de julio.' : datedLocked ? mission.lockedDesc : locked ? (mission.publicHint || 'Pista desbloqueada: nombre del reto. La descripción completa se revelará en su fase.') : mission.desc;
+      const missionInstruction = specialLocked ? 'Andá preparando tus pronósticos mundialeros. Sólo durante la recta final del Mundial.' : datedLocked ? mission.lockedText : locked ? 'Características e instrucciones bloqueadas.' : mission.instructions;
       const article = document.createElement('article');
       article.id = mission.id;
-      article.className = `mission-card phase-${phase} ${mission.id === 'm10' && !locked && !done ? 'nostradamus-active' : ''} ${specialLocked ? 'special-locked' : phasePaused ? 'locked phase-paused' : done ? 'done' : locked ? 'locked' : dailyBlocked ? 'daily-blocked' : 'available'}`;
+      article.className = `mission-card phase-${phase} ${mission.id === 'm10' && !locked && !done ? 'nostradamus-active' : ''} ${specialLocked ? 'special-locked' : done ? 'done' : locked ? 'locked' : dailyBlocked ? 'daily-blocked' : 'available'}`;
       article.innerHTML = `
         <div class="mission-copy">
           <div class="mission-copy-head">
             <div>
               <span class="week-pill">${specialLocked ? '🔮 MISIÓN ESPECIAL' : `Fase ${mission.week}`}</span>
               <h3>${mission.name}</h3>
-              <p>${specialLocked ? 'Disponible el 13 de julio.' : phasePaused ? PHASE_4_PAUSE_MESSAGE : locked ? (mission.publicHint || 'Pista desbloqueada: nombre del reto. La descripción completa se revelará en su fase.') : mission.desc}</p>
+              <p>${missionDescription}</p>
               ${mission.type && !specialLocked ? `<small class="mission-type">${mission.type}</small>` : ''}
             </div>
             <span class="mission-inline-art">${thumb(mission, 'inline')}</span>
           </div>
-          <div class="mission-instructions ${locked && !specialLocked ? 'blurred' : ''}">
-            ${specialLocked ? 'Andá preparando tus pronósticos mundialeros. Sólo durante la recta final del Mundial.' : phasePaused ? 'La carga de evidencia para esta misión está pausada momentáneamente.' : locked ? 'Características e instrucciones bloqueadas.' : mission.instructions}
+          <div class="mission-instructions ${locked && !specialLocked && !datedLocked ? 'blurred' : ''}">
+            ${missionInstruction}
           </div>
+          ${!locked && mission.featuredText ? `<strong class="mission-featured">${mission.featuredText}</strong>` : ''}
+          ${!locked && !done && mission.examples ? `<div class="mission-examples"><span>Podés inspirarte:</span>${mission.examples.map(example => `<q>${example}</q>`).join('')}</div>` : ''}
           ${mission.id === 'm10' && !locked && !done ? renderNostradamusBuilder() : ''}
-          <span class="mission-state-pill">${done ? '✓ SELLO OBTENIDO' : specialLocked ? 'Disponible el 13 de julio' : phasePaused ? 'Actualizando misión' : locked ? 'Carga bloqueada hasta su fase' : dailyBlocked ? 'Volvé mañana para completar más misiones' : 'Sello desbloqueado'}</span>
+          <span class="mission-state-pill">${done ? '✓ SELLO OBTENIDO' : specialLocked ? 'Disponible el 13 de julio' : datedLocked ? 'Última misión' : locked ? 'Carga bloqueada hasta su fase' : dailyBlocked ? 'Volvé mañana para completar más misiones' : 'Sello desbloqueado'}</span>
           <div class="mission-completed-stamp">
             ${done ? stamp(mission, 'card') : ''}
           </div>
         </div>
         <div class="mission-evidence">
-          ${done ? renderEvidenceView(mission, evidence) : `<div class="evidence-empty">${specialLocked ? 'Disponible el 13 de julio' : phasePaused ? 'Actualización en curso' : locked ? 'Carga bloqueada' : dailyBlocked ? 'Límite diario alcanzado' : 'Subí captura de Instagram'}</div>`}
+          ${done ? renderEvidenceView(mission, evidence) : `<div class="evidence-empty">${specialLocked ? 'Disponible el 13 de julio' : datedLocked ? 'Carga bloqueada' : locked ? 'Carga bloqueada' : dailyBlocked ? 'Límite diario alcanzado' : 'Subí captura de Instagram'}</div>`}
           <p class="upload-status" data-upload-status="${mission.id}" hidden></p>
-          ${locked || phasePaused ? `<span class="gb-btn evidence-btn disabled">${specialLocked ? 'Disponible pronto' : phasePaused ? 'Disponible en próximas horas' : 'Bloqueado'}</span>` : `<label class="gb-btn evidence-btn ${dailyBlocked ? 'disabled' : ''}">
+          ${locked ? `<span class="gb-btn evidence-btn disabled">${specialLocked ? 'Disponible pronto' : 'Bloqueado'}</span>` : `<label class="gb-btn evidence-btn ${dailyBlocked ? 'disabled' : ''}">
             ${done ? (evidenceUrl(evidence) ? 'Cambiar evidencia' : 'Subir evidencia nuevamente') : dailyBlocked ? 'Disponible mañana' : 'Subir evidencia'}
             <input type="file" accept="image/*,.jpg,.jpeg,.png,.heic,.heif,.pdf" data-mission="${mission.id}" ${dailyBlocked ? 'disabled' : ''}>
           </label>`}
@@ -1254,12 +1548,6 @@ function bindUploads() {
     if (!file) return;
     const mission = MISSIONS.find(item => item.id === input.dataset.mission);
     if (!mission || isLocked(mission)) return;
-    if (isPhaseUploadPaused(mission)) {
-      alert(PHASE_4_PAUSE_MESSAGE);
-      input.value = '';
-      renderAll();
-      return;
-    }
     const wasDone = isDone(mission);
     const beforeCount = evidenceCount();
     if (!wasDone && dailyLimitReached()) {
@@ -1304,12 +1592,121 @@ function bindUploads() {
   });
 }
 
+function setLegendStatus(message, state = 'info') {
+  const el = document.querySelector('[data-legend-status]');
+  if (!el) return;
+  el.textContent = message || '';
+  el.dataset.state = state;
+  el.hidden = !message;
+}
+
+function bindLegend() {
+  document.addEventListener('click', async event => {
+    const finalist = event.target.closest('[data-legend-finalist]');
+    if (finalist) {
+      localStorage.setItem('stanley_legend_finalist', finalist.dataset.legendFinalist);
+      renderLegendFinal();
+      return;
+    }
+
+    const generate = event.target.closest('[data-legend-generate]');
+    if (generate) {
+      const selected = readLegendChoice();
+      generate.disabled = true;
+      generate.textContent = 'Generando...';
+      setLegendStatus('Preparando tu Pasaporte Legend...', 'info');
+      try {
+        const image = await generateLegendPassportImage(selected);
+        legendPassportDataUrl = image.dataUrl;
+        try {
+          legendPassportFile = new File([image.blob], 'pasaporte-stanley-legend.png', { type:'image/png' });
+        } catch (fileErr) {
+          console.warn('El navegador no permite preparar un archivo para compartir.', fileErr);
+          legendPassportFile = null;
+        }
+        renderLegendFinal();
+        setLegendStatus('Tu Pasaporte Legend está listo.', 'success');
+      } catch (err) {
+        console.error('Error generando Pasaporte Legend:', err);
+        generate.disabled = false;
+        generate.textContent = 'Generar mi Pasaporte Legend';
+        setLegendStatus(err && err.message ? err.message : 'No pudimos generar la imagen.', 'error');
+      }
+      return;
+    }
+
+    const share = event.target.closest('[data-legend-share]');
+    if (share) {
+      try {
+        if (legendPassportFile && navigator.canShare && navigator.canShare({ files:[legendPassportFile] }) && navigator.share) {
+          await navigator.share({
+            files:[legendPassportFile],
+            title:'Mi Pasaporte Stanley Legend',
+            text:'La fiesta del fútbol se vive con Stanley.'
+          });
+          setLegendStatus('Listo. Publicalo, etiquetá a @Stanley1913_Bolivia y subí la captura final.', 'success');
+        } else {
+          const download = document.querySelector('[data-legend-download]');
+          if (download) download.click();
+          setLegendStatus('Descargamos la imagen. Ahora podés publicarla desde tu galería.', 'info');
+        }
+      } catch (err) {
+        console.error('Error compartiendo Pasaporte Legend:', err);
+        setLegendStatus('No pudimos compartir directamente. Usá “Descargar imagen”.', 'error');
+      }
+    }
+  });
+
+  document.addEventListener('change', async event => {
+    const input = event.target.closest('input[type="file"][data-legend-share]');
+    if (!input) return;
+    const file = input.files && input.files[0];
+    if (!file) return;
+    if (evidenceCount() !== 12 || !legendGeneratorAvailable()) {
+      alert('La evidencia final se habilita con 12 sellos desde el 16 de julio.');
+      input.value = '';
+      return;
+    }
+    const button = input.closest('.evidence-btn');
+    input.disabled = true;
+    if (button) button.classList.add('disabled', 'is-uploading');
+    setMissionUploadStatus(LEGEND_SHARE_ID, 'Procesando imagen...', 'info');
+    try {
+      const prepared = await prepareUploadFile(file);
+      setMissionUploadStatus(LEGEND_SHARE_ID, 'Subiendo evidencia...', 'info');
+      const saved = await syncMissionEvidence_({ id:LEGEND_SHARE_ID, name:LEGEND_SHARE_NAME, week:'Final Legend' }, prepared);
+      passport.legendShare = {
+        name:prepared.fileName,
+        evidence_filename:prepared.fileName,
+        dataUrl:prepared.dataUrl,
+        evidence_url:(saved && saved.evidence_url) || prepared.dataUrl,
+        date:new Date().toISOString(),
+        updatedAt:new Date().toISOString(),
+        completed_at:(saved && saved.completed_at) || new Date().toISOString()
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(passport));
+      renderAll();
+      setMissionUploadStatus(LEGEND_SHARE_ID, 'Evidencia final enviada correctamente.', 'success');
+    } catch (err) {
+      console.error('Error completo al subir evidencia Legend:', err);
+      const message = err && err.message ? err.message : 'No pudimos subir la evidencia final. Intentá nuevamente.';
+      setMissionUploadStatus(LEGEND_SHARE_ID, message, 'error');
+      alert(message);
+    } finally {
+      input.disabled = false;
+      if (button) button.classList.remove('disabled', 'is-uploading');
+      input.value = '';
+    }
+  });
+}
+
 function renderAll() {
   updateSessionIndicator();
   updateProgress();
   renderOverview();
   renderPassportSheet();
   renderMissions();
+  renderLegendFinal();
 }
 
 const sharePassportButton = $('#share-passport');
@@ -1321,5 +1718,6 @@ if (sharePassportButton) {
 
 bindNostradamus();
 bindUploads();
+bindLegend();
 renderAll();
 hydratePassportFromBackend().then(renderAll);
