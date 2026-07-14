@@ -24,6 +24,8 @@ const INSTAGRAM_COMMUNITY_URL = CONFIG.INSTAGRAM_COMMUNITY_URL || 'https://www.i
 const STORAGE_KEY = 'stanley_passport';
 const DAILY_LIMIT = Number(CONFIG.DAILY_MISSION_LIMIT || 2);
 const DAILY_LIMIT_FLEXIBLE = Boolean(CONFIG.DAILY_LIMIT_FLEXIBLE);
+const PHASE_4_UPLOADS_PAUSED = true;
+const PHASE_4_PAUSE_MESSAGE = 'Estamos actualizando estas 2 misiones. Se liberarán en las próximas horas.';
 const PHASES = CONFIG.PHASES || [
   { id: 1, starts: '2026-06-01T00:00:00-04:00', ends: '2026-07-03T23:59:59-04:00' },
   { id: 2, starts: '2026-07-04T00:00:00-04:00', ends: '2026-07-08T23:59:59-04:00' },
@@ -98,6 +100,7 @@ const isDone = mission => Boolean(passport.evidence && passport.evidence[mission
 const evidenceCount = () => MISSIONS.filter(isDone).length;
 const isDateLocked = mission => Boolean(mission.unlockAt && Date.now() < new Date(mission.unlockAt).getTime());
 const isLocked = mission => mission.week > CURRENT_WEEK || isDateLocked(mission);
+const isPhaseUploadPaused = mission => PHASE_4_UPLOADS_PAUSED && mission.week === 4;
 
 
 function participantId() {
@@ -1006,14 +1009,15 @@ function renderOverview() {
   MISSIONS.forEach((mission, index) => {
     const done = isDone(mission);
     const locked = isLocked(mission);
+    const phasePaused = isPhaseUploadPaused(mission);
     const el = document.createElement('button');
     el.type = 'button';
-    el.className = `mission-tile ${done ? 'done' : locked ? 'locked' : 'available'}`;
+    el.className = `mission-tile ${done ? 'done' : locked || phasePaused ? 'locked' : 'available'}`;
     el.innerHTML = `
       <span class="mission-tile-number">${index + 1}</span>
       <span class="mission-tile-art">${done ? stamp(mission, 'tile') : thumb(mission, 'tile')}</span>
       <strong>${mission.name}</strong>
-      <small>${done ? 'Completada' : locked && mission.specialLock ? 'Disponible 13 de julio' : locked ? `Bloqueado - fase ${mission.week}` : 'Disponible'}</small>
+      <small>${done ? 'Completada' : locked && mission.specialLock ? 'Disponible 13 de julio' : phasePaused ? 'Actualizando - próximas horas' : locked ? `Bloqueado - fase ${mission.week}` : 'Disponible'}</small>
     `;
     el.onclick = () => document.getElementById(mission.id)?.scrollIntoView({ behavior:'smooth', block:'center' });
     wrap.appendChild(el);
@@ -1034,10 +1038,11 @@ function renderPassportSheet() {
           ${weekMissions.map(mission => {
             const done = isDone(mission);
             const locked = isLocked(mission);
+            const phasePaused = isPhaseUploadPaused(mission);
             return `
-              <div class="passport-slot-large ${done ? 'done' : locked ? 'locked' : 'available'}">
+              <div class="passport-slot-large ${done ? 'done' : locked || phasePaused ? 'locked' : 'available'}">
                 ${done ? stamp(mission, 'sheet') : `<span class="passport-empty-number">${mission.id.replace('m','')}</span>`}
-                ${locked ? '<small>BLOQUEADA</small>' : ''}
+                ${phasePaused ? '<small>ACTUALIZANDO</small>' : locked ? '<small>BLOQUEADA</small>' : ''}
               </div>`;
           }).join('')}
         </div>
@@ -1067,37 +1072,38 @@ function renderMissions() {
     MISSIONS.filter(mission => mission.week === phase).forEach(mission => {
       const done = isDone(mission);
       const locked = isLocked(mission);
-      const dailyBlocked = noMoreToday && !done && !locked;
+      const phasePaused = isPhaseUploadPaused(mission);
+      const dailyBlocked = noMoreToday && !done && !locked && !phasePaused;
       const evidence = passport.evidence && passport.evidence[mission.id];
       const openEvidenceButton = done && evidenceUrl(evidence) ? `<a class="gb-btn evidence-open" href="${evidenceUrl(evidence)}" target="_blank" rel="noopener">Ver evidencia cargada</a>` : '';
       const specialLocked = locked && mission.specialLock;
       const article = document.createElement('article');
       article.id = mission.id;
-      article.className = `mission-card phase-${phase} ${mission.id === 'm10' && !locked && !done ? 'nostradamus-active' : ''} ${specialLocked ? 'special-locked' : done ? 'done' : locked ? 'locked' : dailyBlocked ? 'daily-blocked' : 'available'}`;
+      article.className = `mission-card phase-${phase} ${mission.id === 'm10' && !locked && !done ? 'nostradamus-active' : ''} ${specialLocked ? 'special-locked' : phasePaused ? 'locked phase-paused' : done ? 'done' : locked ? 'locked' : dailyBlocked ? 'daily-blocked' : 'available'}`;
       article.innerHTML = `
         <div class="mission-copy">
           <div class="mission-copy-head">
             <div>
               <span class="week-pill">${specialLocked ? '🔮 MISIÓN ESPECIAL' : `Fase ${mission.week}`}</span>
               <h3>${mission.name}</h3>
-              <p>${specialLocked ? 'Disponible el 13 de julio.' : locked ? (mission.publicHint || 'Pista desbloqueada: nombre del reto. La descripción completa se revelará en su fase.') : mission.desc}</p>
+              <p>${specialLocked ? 'Disponible el 13 de julio.' : phasePaused ? PHASE_4_PAUSE_MESSAGE : locked ? (mission.publicHint || 'Pista desbloqueada: nombre del reto. La descripción completa se revelará en su fase.') : mission.desc}</p>
               ${mission.type && !specialLocked ? `<small class="mission-type">${mission.type}</small>` : ''}
             </div>
             <span class="mission-inline-art">${thumb(mission, 'inline')}</span>
           </div>
           <div class="mission-instructions ${locked && !specialLocked ? 'blurred' : ''}">
-            ${specialLocked ? 'Andá preparando tus pronósticos mundialeros. Sólo durante la recta final del Mundial.' : locked ? 'Características e instrucciones bloqueadas.' : mission.instructions}
+            ${specialLocked ? 'Andá preparando tus pronósticos mundialeros. Sólo durante la recta final del Mundial.' : phasePaused ? 'La carga de evidencia para esta misión está pausada momentáneamente.' : locked ? 'Características e instrucciones bloqueadas.' : mission.instructions}
           </div>
           ${mission.id === 'm10' && !locked && !done ? renderNostradamusBuilder() : ''}
-          <span class="mission-state-pill">${done ? '✓ SELLO OBTENIDO' : specialLocked ? 'Disponible el 13 de julio' : locked ? 'Carga bloqueada hasta su fase' : dailyBlocked ? 'Volvé mañana para completar más misiones' : 'Sello desbloqueado'}</span>
+          <span class="mission-state-pill">${done ? '✓ SELLO OBTENIDO' : specialLocked ? 'Disponible el 13 de julio' : phasePaused ? 'Actualizando misión' : locked ? 'Carga bloqueada hasta su fase' : dailyBlocked ? 'Volvé mañana para completar más misiones' : 'Sello desbloqueado'}</span>
           <div class="mission-completed-stamp">
             ${done ? stamp(mission, 'card') : ''}
           </div>
         </div>
         <div class="mission-evidence">
-          ${done ? renderEvidenceView(mission, evidence) : `<div class="evidence-empty">${specialLocked ? 'Disponible el 13 de julio' : locked ? 'Carga bloqueada' : dailyBlocked ? 'Límite diario alcanzado' : 'Subí captura de Instagram'}</div>`}
+          ${done ? renderEvidenceView(mission, evidence) : `<div class="evidence-empty">${specialLocked ? 'Disponible el 13 de julio' : phasePaused ? 'Actualización en curso' : locked ? 'Carga bloqueada' : dailyBlocked ? 'Límite diario alcanzado' : 'Subí captura de Instagram'}</div>`}
           <p class="upload-status" data-upload-status="${mission.id}" hidden></p>
-          ${locked ? `<span class="gb-btn evidence-btn disabled">${specialLocked ? 'Disponible pronto' : 'Bloqueado'}</span>` : `<label class="gb-btn evidence-btn ${dailyBlocked ? 'disabled' : ''}">
+          ${locked || phasePaused ? `<span class="gb-btn evidence-btn disabled">${specialLocked ? 'Disponible pronto' : phasePaused ? 'Disponible en próximas horas' : 'Bloqueado'}</span>` : `<label class="gb-btn evidence-btn ${dailyBlocked ? 'disabled' : ''}">
             ${done ? (evidenceUrl(evidence) ? 'Cambiar evidencia' : 'Subir evidencia nuevamente') : dailyBlocked ? 'Disponible mañana' : 'Subir evidencia'}
             <input type="file" accept="image/*,.jpg,.jpeg,.png,.heic,.heif,.pdf" data-mission="${mission.id}" ${dailyBlocked ? 'disabled' : ''}>
           </label>`}
@@ -1248,6 +1254,12 @@ function bindUploads() {
     if (!file) return;
     const mission = MISSIONS.find(item => item.id === input.dataset.mission);
     if (!mission || isLocked(mission)) return;
+    if (isPhaseUploadPaused(mission)) {
+      alert(PHASE_4_PAUSE_MESSAGE);
+      input.value = '';
+      renderAll();
+      return;
+    }
     const wasDone = isDone(mission);
     const beforeCount = evidenceCount();
     if (!wasDone && dailyLimitReached()) {
