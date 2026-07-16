@@ -6,19 +6,19 @@ window.STANLEY = {
   PHASE: "inscripcion",
   REGISTRATION_CLOSED: true,
   CURRENT_WEEK: 1,
-  LEGEND_FINALISTS_READY: false,
+  LEGEND_FINALISTS_READY: true,
   LEGEND_FINALISTS: [
     {
-      name: "Finalista 1",
-      shortName: "Finalista 1",
-      code: "F1",
-      flag: "assets/finalistas/finalista-1.svg"
+      name: "Argentina",
+      shortName: "Argentina",
+      code: "ARG",
+      flag: "assets/finalistas/argentina.svg"
     },
     {
-      name: "Finalista 2",
-      shortName: "Finalista 2",
-      code: "F2",
-      flag: "assets/finalistas/finalista-2.svg"
+      name: "España",
+      shortName: "España",
+      code: "ESP",
+      flag: "assets/finalistas/espana.svg"
     }
   ],
   PHASES: [

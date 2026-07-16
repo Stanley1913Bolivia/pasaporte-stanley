@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" role="img" aria-label="Bandera de España">
+  <rect width="900" height="600" fill="#aa151b"/>
+  <rect y="150" width="900" height="300" fill="#f1bf00"/>
+  <g transform="translate(250 300)">
+    <rect x="-48" y="-88" width="96" height="136" rx="8" fill="#c60b1e" stroke="#f7d56b" stroke-width="8"/>
+    <path d="M-34-66h68v48c0 42-34 58-34 58s-34-16-34-58Z" fill="#f7d56b"/>
+    <path d="M0-66v106M-34-18h68" stroke="#c60b1e" stroke-width="8"/>
+    <rect x="-70" y="54" width="140" height="18" rx="9" fill="#c60b1e"/>
+    <path d="M-54-104h108l-12-24H-42Z" fill="#f7d56b" stroke="#c60b1e" stroke-width="5"/>
+  </g>
+</svg>
